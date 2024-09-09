@@ -53,7 +53,7 @@ The component maintains a local state `task` with the following structure:
   description: string,
   points: number,
   priority: 'low' | 'medium' | 'high',
-  status: 'todo' | 'inProgress' | 'done',
+  status: 'todo' | 'inprogress' | 'done',
   assignedTo: string
 }
 ```

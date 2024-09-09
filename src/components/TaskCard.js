@@ -220,9 +220,9 @@ const TaskCard = ({ id: propId }) => {
                                     onChange={handleInputChange}
                                 >
                                     <MenuItem value="todo">To Do</MenuItem>
-                                    <MenuItem value="inProgress">In Progress</MenuItem>
-                                    <MenuItem value="readyToTest">Ready to Test</MenuItem>
-                                    <MenuItem value="codeReview">Code Review</MenuItem>
+                                    <MenuItem value="inprogress">In Progress</MenuItem>
+                                    <MenuItem value="readytotest">Ready to Test</MenuItem>
+                                    <MenuItem value="codereview">Code Review</MenuItem>
                                     <MenuItem value="qa">QA</MenuItem>
                                     <MenuItem value="done">Done</MenuItem>
                                 </Select>

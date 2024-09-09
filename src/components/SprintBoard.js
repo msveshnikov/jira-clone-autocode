@@ -22,9 +22,9 @@ const SprintBoard = () => {
     const theme = useTheme();
     const [columns, setColumns] = useState({
         todo: { title: 'To Do', items: [] },
-        inProgress: { title: 'In Progress', items: [] },
-        codeReview: { title: 'Code Review', items: [] },
-        readyToTest: { title: 'Ready to Test', items: [] },
+        inprogress: { title: 'In Progress', items: [] },
+        codereview: { title: 'Code Review', items: [] },
+        readytotest: { title: 'Ready to Test', items: [] },
         qa: { title: 'QA', items: [] },
         done: { title: 'Done', items: [] }
     });

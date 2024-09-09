@@ -25,7 +25,7 @@ const initialData = {
             description: 'Create wireframes and mockups for the sprint board interface',
             points: 3,
             priority: 'medium',
-            status: 'inProgress',
+            status: 'inprogress',
             timeSpent: 0,
             attachments: [],
             comments: [],
@@ -38,7 +38,7 @@ const initialData = {
             description: 'Add the ability to drag and drop task cards between columns',
             points: 8,
             priority: 'high',
-            status: 'inProgress',
+            status: 'inprogress',
             timeSpent: 0,
             attachments: [],
             comments: [],
@@ -68,12 +68,12 @@ const initialData = {
             tasks: []
         }
     ],
-    statuses: ['todo', 'inProgress', 'codeReview', 'readyToTest', 'qa', 'done'],
+    statuses: ['todo', 'inprogress', 'codereview', 'readytotest', 'qa', 'done'],
     workflows: [
         {
             id: uuidv4(),
             name: 'Default',
-            statuses: ['todo', 'inProgress', 'codeReview', 'readyToTest', 'qa', 'done']
+            statuses: ['todo', 'inprogress', 'codereview', 'readytotest', 'qa', 'done']
         }
     ]
 };
