@@ -109,5 +109,9 @@ src/
 
 ## TODO
 
--   allow backlog ordering (by mouse, keep position)
+-   allow backlog ordering (by mouse, keep position,  it always returns back, add order prop to ask)
+-   on Update task, remember changes!!
+-   Remember status of task in localStorage, it always reset to default
+-   Fix query.js:317 Error: Task not found
+    at fetchTask (apiService.js:56:1)
 

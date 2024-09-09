@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import PropTypes from 'prop-types';
 import { useQuery, useMutation, useQueryClient } from 'react-query';
 import {
     Container,
@@ -103,7 +104,7 @@ const Backlog = () => {
     if (isError) return <Typography>Error loading tasks</Typography>;
 
     return (
-        <Box sx={{ my:4, width: '100%', overflowX: 'auto' }}>
+        <Box sx={{ my: 3, width: '100%', overflowX: 'auto' }}>
             <Container maxWidth={false}>
                 <Typography variant="h4" gutterBottom>
                     Backlog
@@ -244,6 +245,20 @@ const Backlog = () => {
             </Container>
         </Box>
     );
+};
+
+Backlog.propTypes = {
+    tasks: PropTypes.arrayOf(
+        PropTypes.shape({
+            id: PropTypes.number.isRequired,
+            title: PropTypes.string.isRequired,
+            description: PropTypes.string,
+            points: PropTypes.number.isRequired,
+            priority: PropTypes.oneOf(['low', 'medium', 'high']).isRequired,
+            assignedTo: PropTypes.string,
+            status: PropTypes.oneOf(['todo', 'inProgress', 'done']).isRequired
+        })
+    )
 };
 
 export default Backlog;

@@ -1,11 +1,23 @@
 import React, { useState, useEffect } from 'react';
+import PropTypes from 'prop-types';
 import { DragDropContext, Droppable, Draggable } from 'react-beautiful-dnd';
-import { Box, Typography, Paper, Grid, Chip, Dialog, DialogTitle, DialogContent } from '@mui/material';
+import {
+    Box,
+    Typography,
+    Paper,
+    Grid,
+    Chip,
+    Dialog,
+    DialogTitle,
+    DialogContent
+} from '@mui/material';
 import { useQuery, useMutation, useQueryClient } from 'react-query';
 import { fetchTasks, updateTask } from '../services/apiService';
 import TaskCard from './TaskCard';
+import { useTheme } from '@mui/material/styles';
 
 const SprintBoard = () => {
+    const theme = useTheme();
     const [columns, setColumns] = useState({
         todo: { title: 'To Do', items: [] },
         inProgress: { title: 'In Progress', items: [] },
@@ -39,6 +51,7 @@ const SprintBoard = () => {
             });
             setColumns(newColumns);
         }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [tasks]);
 
     const onDragEnd = (result) => {
@@ -86,13 +99,13 @@ const SprintBoard = () => {
     const getPriorityColor = (priority) => {
         switch (priority.toLowerCase()) {
             case 'high':
-                return 'error';
+                return theme.palette.error.main;
             case 'medium':
-                return 'warning';
+                return theme.palette.warning.main;
             case 'low':
-                return 'success';
+                return theme.palette.success.main;
             default:
-                return 'default';
+                return theme.palette.text.secondary;
         }
     };
 
@@ -159,9 +172,12 @@ const SprintBoard = () => {
                                                                 <Chip
                                                                     label={task.priority}
                                                                     size="small"
-                                                                    color={getPriorityColor(
-                                                                        task.priority
-                                                                    )}
+                                                                    sx={{
+                                                                        bgcolor: getPriorityColor(
+                                                                            task.priority
+                                                                        ),
+                                                                        color: 'white'
+                                                                    }}
                                                                 />
                                                             </Box>
                                                             {task.assignedTo && (
@@ -188,12 +204,24 @@ const SprintBoard = () => {
             </DragDropContext>
             <Dialog open={!!selectedTask} onClose={handleCloseDialog} maxWidth="md" fullWidth>
                 <DialogTitle>Task Details</DialogTitle>
-                <DialogContent>
-                    {selectedTask && <TaskCard id={selectedTask.id} />}
-                </DialogContent>
+                <DialogContent>{selectedTask && <TaskCard id={selectedTask.id} />}</DialogContent>
             </Dialog>
         </Box>
     );
+};
+
+SprintBoard.propTypes = {
+    tasks: PropTypes.arrayOf(
+        PropTypes.shape({
+            id: PropTypes.string.isRequired,
+            title: PropTypes.string.isRequired,
+            description: PropTypes.string,
+            points: PropTypes.number.isRequired,
+            priority: PropTypes.string.isRequired,
+            status: PropTypes.string.isRequired,
+            assignedTo: PropTypes.string
+        })
+    )
 };
 
 export default SprintBoard;
