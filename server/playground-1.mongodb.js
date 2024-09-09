@@ -5,7 +5,7 @@
 // Use Ctrl+Space inside a snippet or a string literal to trigger completions.
 
 // Select the database to use.
-use('jira_clone');
+use('jira');
 
 // Create collections
 db.createCollection('users');
