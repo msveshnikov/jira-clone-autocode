@@ -77,7 +77,7 @@ const Header = ({ toggleDarkMode, darkMode }) => {
                         </>
                     )}
                     <Typography variant="h6" component="div" sx={{ flexGrow: 1 }}>
-                        JIRA Clone
+                        JIRA
                     </Typography>
                     {!isMobile && (
                         <>

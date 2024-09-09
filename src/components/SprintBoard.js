@@ -1,3 +1,4 @@
+/* eslint-disable react-hooks/exhaustive-deps */
 import React, { useState, useEffect } from 'react';
 import PropTypes from 'prop-types';
 import { DragDropContext, Droppable, Draggable } from 'react-beautiful-dnd';
@@ -52,8 +53,18 @@ const SprintBoard = () => {
             });
             setColumns(newColumns);
         }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [tasks]);
+
+    useEffect(() => {
+        const savedColumns = localStorage.getItem('sprintBoardColumns');
+        if (savedColumns) {
+            setColumns(JSON.parse(savedColumns));
+        }
+    }, []);
+
+    useEffect(() => {
+        localStorage.setItem('sprintBoardColumns', JSON.stringify(columns));
+    }, [columns]);
 
     const onDragEnd = (result) => {
         if (!result.destination) return;

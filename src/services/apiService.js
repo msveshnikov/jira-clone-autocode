@@ -91,19 +91,19 @@ const delay = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
 
 const ApiService = {
     fetchBacklogTasks: async () => {
-        await delay(500);
+        await delay(100);
         const data = loadData();
         return data.tasks.filter((task) => !task.sprintId).sort((a, b) => a.order - b.order);
     },
 
     fetchTasks: async () => {
-        await delay(500);
+        await delay(100);
         const data = loadData();
         return data.tasks;
     },
 
     fetchTask: async (taskId) => {
-        await delay(500);
+        await delay(100);
         const data = loadData();
         const task = data.tasks.find((t) => t.id === taskId);
         if (!task) throw new Error('Task not found');
@@ -111,7 +111,7 @@ const ApiService = {
     },
 
     createTask: async (taskData) => {
-        await delay(500);
+        await delay(100);
         const data = loadData();
         const newTask = {
             id: uuidv4(),
@@ -128,7 +128,7 @@ const ApiService = {
     },
 
     updateTask: async (taskId, updatedData) => {
-        await delay(500);
+        await delay(100);
         const data = loadData();
         const taskIndex = data.tasks.findIndex((task) => task.id === taskId);
         if (taskIndex !== -1) {
@@ -140,7 +140,7 @@ const ApiService = {
     },
 
     deleteTask: async (taskId) => {
-        await delay(500);
+        await delay(100);
         const data = loadData();
         const taskIndex = data.tasks.findIndex((task) => task.id === taskId);
         if (taskIndex !== -1) {
@@ -152,13 +152,13 @@ const ApiService = {
     },
 
     getSprints: async () => {
-        await delay(500);
+        await delay(100);
         const data = loadData();
         return data.sprints;
     },
 
     createSprint: async (sprintData) => {
-        await delay(500);
+        await delay(100);
         const data = loadData();
         const newSprint = {
             id: uuidv4(),
@@ -171,7 +171,7 @@ const ApiService = {
     },
 
     updateSprint: async (sprintId, updatedData) => {
-        await delay(500);
+        await delay(100);
         const data = loadData();
         const sprintIndex = data.sprints.findIndex((sprint) => sprint.id === sprintId);
         if (sprintIndex !== -1) {
@@ -183,7 +183,7 @@ const ApiService = {
     },
 
     deleteSprint: async (sprintId) => {
-        await delay(500);
+        await delay(100);
         const data = loadData();
         const sprintIndex = data.sprints.findIndex((sprint) => sprint.id === sprintId);
         if (sprintIndex !== -1) {
@@ -195,13 +195,13 @@ const ApiService = {
     },
 
     getStatuses: async () => {
-        await delay(500);
+        await delay(100);
         const data = loadData();
         return data.statuses;
     },
 
     updateStatuses: async (newStatuses) => {
-        await delay(500);
+        await delay(100);
         const data = loadData();
         data.statuses = newStatuses;
         saveData(data);
@@ -209,7 +209,7 @@ const ApiService = {
     },
 
     moveTask: async (taskId, newStatus) => {
-        await delay(500);
+        await delay(100);
         const data = loadData();
         const taskIndex = data.tasks.findIndex((task) => task.id === taskId);
         if (taskIndex !== -1) {
@@ -221,7 +221,7 @@ const ApiService = {
     },
 
     addTaskToSprint: async (taskId, sprintId) => {
-        await delay(500);
+        await delay(100);
         const data = loadData();
         const taskIndex = data.tasks.findIndex((task) => task.id === taskId);
         const sprintIndex = data.sprints.findIndex((sprint) => sprint.id === sprintId);
@@ -235,7 +235,7 @@ const ApiService = {
     },
 
     removeTaskFromSprint: async (taskId, sprintId) => {
-        await delay(500);
+        await delay(100);
         const data = loadData();
         const taskIndex = data.tasks.findIndex((task) => task.id === taskId);
         const sprintIndex = data.sprints.findIndex((sprint) => sprint.id === sprintId);
@@ -252,13 +252,13 @@ const ApiService = {
     },
 
     getWorkflows: async () => {
-        await delay(500);
+        await delay(100);
         const data = loadData();
         return data.workflows;
     },
 
     createWorkflow: async (workflowData) => {
-        await delay(500);
+        await delay(100);
         const data = loadData();
         const newWorkflow = {
             id: uuidv4(),
@@ -270,7 +270,7 @@ const ApiService = {
     },
 
     updateWorkflow: async (workflowId, updatedData) => {
-        await delay(500);
+        await delay(100);
         const data = loadData();
         const workflowIndex = data.workflows.findIndex((workflow) => workflow.id === workflowId);
         if (workflowIndex !== -1) {
@@ -282,7 +282,7 @@ const ApiService = {
     },
 
     deleteWorkflow: async (workflowId) => {
-        await delay(500);
+        await delay(100);
         const data = loadData();
         const workflowIndex = data.workflows.findIndex((workflow) => workflow.id === workflowId);
         if (workflowIndex !== -1) {
@@ -294,7 +294,7 @@ const ApiService = {
     },
 
     searchTasks: async (query) => {
-        await delay(500);
+        await delay(100);
         const data = loadData();
         const lowercaseQuery = query.toLowerCase();
         return data.tasks.filter(
@@ -305,7 +305,7 @@ const ApiService = {
     },
 
     logTime: async (taskId, timeSpent) => {
-        await delay(500);
+        await delay(100);
         const data = loadData();
         const taskIndex = data.tasks.findIndex((task) => task.id === taskId);
         if (taskIndex !== -1) {
@@ -317,7 +317,7 @@ const ApiService = {
     },
 
     addAttachment: async (taskId, attachment) => {
-        await delay(500);
+        await delay(100);
         const data = loadData();
         const taskIndex = data.tasks.findIndex((task) => task.id === taskId);
         if (taskIndex !== -1) {
@@ -329,7 +329,7 @@ const ApiService = {
     },
 
     removeAttachment: async (taskId, attachmentId) => {
-        await delay(500);
+        await delay(100);
         const data = loadData();
         const taskIndex = data.tasks.findIndex((task) => task.id === taskId);
         if (taskIndex !== -1) {
@@ -346,7 +346,7 @@ const ApiService = {
     },
 
     addComment: async (taskId, comment) => {
-        await delay(500);
+        await delay(100);
         const data = loadData();
         const taskIndex = data.tasks.findIndex((task) => task.id === taskId);
         if (taskIndex !== -1) {
@@ -363,7 +363,7 @@ const ApiService = {
     },
 
     removeComment: async (taskId, commentId) => {
-        await delay(500);
+        await delay(100);
         const data = loadData();
         const taskIndex = data.tasks.findIndex((task) => task.id === taskId);
         if (taskIndex !== -1) {
@@ -380,7 +380,7 @@ const ApiService = {
     },
 
     updateTaskOrder: async (taskId, newOrder) => {
-        await delay(500);
+        await delay(100);
         const data = loadData();
         const taskIndex = data.tasks.findIndex((task) => task.id === taskId);
         if (taskIndex !== -1) {

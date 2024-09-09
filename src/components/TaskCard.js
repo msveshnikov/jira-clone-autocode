@@ -59,6 +59,7 @@ const TaskCard = ({ id: propId }) => {
     const updateTaskMutation = useMutation(updateTask, {
         onSuccess: () => {
             queryClient.invalidateQueries(['task', id]);
+            navigate('/');
         }
     });
 
@@ -105,6 +106,17 @@ const TaskCard = ({ id: propId }) => {
             setTask(fetchedTask);
         }
     }, [fetchedTask]);
+
+    useEffect(() => {
+        const savedTask = JSON.parse(localStorage.getItem(`task_${id}`));
+        if (savedTask) {
+            setTask(savedTask);
+        }
+    }, [id]);
+
+    useEffect(() => {
+        localStorage.setItem(`task_${id}`, JSON.stringify(task));
+    }, [id, task]);
 
     const handleInputChange = (e) => {
         const { name, value } = e.target;
