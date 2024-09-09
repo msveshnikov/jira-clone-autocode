@@ -1,4 +1,4 @@
-import React, { useState, useContext } from 'react';
+import React, { useState } from 'react';
 import PropTypes from 'prop-types';
 import { Link } from 'react-router-dom';
 import {
@@ -11,16 +11,14 @@ import {
     useMediaQuery,
     Box,
     Menu,
-    MenuItem,
-    Avatar
+    MenuItem
 } from '@mui/material';
-import { Brightness4, Brightness7, Menu as MenuIcon, AccountCircle } from '@mui/icons-material';
+import { Brightness4, Brightness7, Menu as MenuIcon } from '@mui/icons-material';
 
 const Header = ({ toggleDarkMode, darkMode }) => {
     const theme = useTheme();
     const isMobile = useMediaQuery(theme.breakpoints.down('sm'));
     const [anchorEl, setAnchorEl] = useState(null);
-    const [userMenuAnchorEl, setUserMenuAnchorEl] = useState(null);
 
     const handleMenuOpen = (event) => {
         setAnchorEl(event.currentTarget);

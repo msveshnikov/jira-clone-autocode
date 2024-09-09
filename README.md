@@ -48,33 +48,3 @@ src/
 1. Clone the repository
 2. Install dependencies: `npm install`
 3. Start the development server: `npm start`
-
-## TODO
-
-
-### 1. Prioritized Features for Next Sprint
-
-1. **Implement Backlog Ordering**
-   - Allow users to reorder tasks in the backlog using drag-and-drop
-   - Add an 'order' property to tasks and persist the order
-   - Explanation: This is a core feature for any project management tool and will significantly improve usability
-
-2. **Persist Task Updates**
-   - Ensure that task updates (status, description, etc.) are saved and remembered
-   - Implement proper state management and API calls
-   - Explanation: Currently, changes aren't persisting, which is a critical bug affecting user experience
-
-3. **Add Comments to Tasks**
-   - Implement a comment system for tasks
-   - Allow users to view and add comments in the task view
-   - Explanation: This feature enhances collaboration and communication within the team
-
-4. **Improve Sprint Board Functionality**
-   - Update task status when dragged to different columns (e.g., QA)
-   - Persist these status changes
-   - Explanation: This will make the Sprint Board more interactive and useful for tracking progress
-
-5. **Enhance Task Update UX**
-   - Modify the update task flow to close the task window upon successful update
-   - Ensure the UI reflects the changes immediately
-   - Explanation: This will provide better feedback to users and improve the overall user experience
