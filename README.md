@@ -90,7 +90,7 @@ This project is licensed under the MIT License.
 
 # TODO
 
--   add Express JS Mongo backend in /server and use instead of mocks
+-   add Express JS Mongo backend in /server and use instead of mocks, ES6 imports, async/await
 -   deploy to jira.autocode.work via composer, etc
 -   add models
 -   -   User

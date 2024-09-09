@@ -1,0 +1,38 @@
+version: '3.8'
+
+services:
+    backend:
+        build:
+            context: ./server
+            dockerfile: Dockerfile
+        ports:
+            - '6005:5000'
+        environment:
+            - NODE_ENV=production
+            - MONGODB_URI=mongodb://mongodb:27017/jira
+            - JWT_SECRET=${JWT_SECRET}
+        restart: unless-stopped
+        depends_on:
+            - mongodb
+
+    frontend:
+        build:
+            context: .
+            dockerfile: Dockerfile
+        environment:
+            - NODE_ENV=production
+            - REACT_APP_API_BASE_URL=http://backend:5000
+        ports:
+            - '8787:80'
+        restart: unless-stopped
+        depends_on:
+            - backend
+
+    mongodb:
+        image: mongo:latest
+        volumes:
+            - mongo-data:/data/db
+        restart: unless-stopped
+
+volumes:
+    mongo-data:
