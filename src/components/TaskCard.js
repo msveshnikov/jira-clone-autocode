@@ -34,8 +34,9 @@ import {
     removeComment
 } from '../services/apiService';
 
-const TaskCard = () => {
-    const { id } = useParams();
+const TaskCard = ({ id: propId }) => {
+    const { id: paramId } = useParams();
+    const id = propId || paramId;
     const navigate = useNavigate();
     const queryClient = useQueryClient();
     const [task, setTask] = useState({

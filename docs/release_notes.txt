@@ -1,0 +1,25 @@
+JIRA Clone v1.0.0 Release Notes
+
+We're excited to introduce the first version of JIRA Clone, a lightweight project management tool inspired by JIRA!
+
+New Features:
+• Backlog Management: Easily manage and prioritize your project tasks
+• Sprint Board: Visualize and track progress during sprints
+• Task Cards: Create detailed task cards with title, description, points, and priority
+• Clean and Intuitive Interface: Navigate your projects with ease
+
+Known Issues:
+• Backlog ordering is not persistent
+• Task updates may not be remembered between sessions
+• Task status resets to default on page reload
+• Occasional "Task not found" error when fetching tasks
+
+Upcoming Improvements:
+• Persistent task ordering in the backlog
+• Local storage for task updates and status
+• Bug fixes for task fetching and status persistence
+• Enhanced mobile responsiveness
+• User authentication and authorization
+• Real-time collaboration features
+
+Thank you for choosing JIRA Clone for your project management needs. We're committed to continually improving your experience and welcome your feedback!

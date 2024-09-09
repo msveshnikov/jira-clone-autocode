@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import PropTypes from 'prop-types';
 import { useQuery, useMutation, useQueryClient } from 'react-query';
 import {
@@ -55,6 +55,19 @@ const Backlog = () => {
             queryClient.invalidateQueries('backlogTasks');
         }
     });
+
+    useEffect(() => {
+        const savedTasks = localStorage.getItem('backlogTasks');
+        if (savedTasks) {
+            queryClient.setQueryData('backlogTasks', JSON.parse(savedTasks));
+        }
+    }, [queryClient]);
+
+    useEffect(() => {
+        if (tasks) {
+            localStorage.setItem('backlogTasks', JSON.stringify(tasks));
+        }
+    }, [tasks]);
 
     const handleOpen = () => setOpen(true);
     const handleClose = () => {

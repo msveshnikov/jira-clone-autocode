@@ -9,7 +9,8 @@ import {
     Chip,
     Dialog,
     DialogTitle,
-    DialogContent
+    DialogContent,
+    CircularProgress
 } from '@mui/material';
 import { useQuery, useMutation, useQueryClient } from 'react-query';
 import { fetchTasks, updateTask } from '../services/apiService';
@@ -78,7 +79,7 @@ const SprintBoard = () => {
             });
 
             updateTaskMutation.mutate({
-                ...removed,
+                id: removed.id,
                 status: destColumn.title
             });
         } else {
@@ -117,7 +118,7 @@ const SprintBoard = () => {
         setSelectedTask(null);
     };
 
-    if (isLoading) return <Typography>Loading...</Typography>;
+    if (isLoading) return <CircularProgress />;
     if (isError) return <Typography>Error loading tasks</Typography>;
 
     return (
@@ -155,7 +156,6 @@ const SprintBoard = () => {
                                                                 p: 1,
                                                                 mb: 1,
                                                                 bgcolor: 'background.paper',
-                                                                width: '100%',
                                                                 cursor: 'pointer'
                                                             }}
                                                             onClick={() => handleTaskClick(task)}
@@ -180,15 +180,6 @@ const SprintBoard = () => {
                                                                     }}
                                                                 />
                                                             </Box>
-                                                            {task.assignedTo && (
-                                                                <Typography
-                                                                    variant="caption"
-                                                                    display="block"
-                                                                    sx={{ mt: 1 }}
-                                                                >
-                                                                    Assigned to: {task.assignedTo}
-                                                                </Typography>
-                                                            )}
                                                         </Paper>
                                                     )}
                                                 </Draggable>

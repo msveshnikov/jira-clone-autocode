@@ -112,6 +112,6 @@ src/
 -   allow backlog ordering (by mouse, keep position,  it always returns back, add order prop to ask)
 -   on Update task, remember changes!!
 -   Remember status of task in localStorage, it always reset to default
--   Fix query.js:317 Error: Task not found
-    at fetchTask (apiService.js:56:1)
-
+-   show comments in task view, allow add them!
+-   update status when dragging in Sprint view (for example to QA column)
+-   update task button should close task window and actually update it!

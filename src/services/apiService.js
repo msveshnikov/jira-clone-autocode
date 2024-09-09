@@ -15,7 +15,9 @@ const initialData = {
             status: 'To Do',
             timeSpent: 0,
             attachments: [],
-            comments: []
+            comments: [],
+            assignedTo: '',
+            order: 0
         },
         {
             id: uuidv4(),
@@ -26,7 +28,9 @@ const initialData = {
             status: 'In Progress',
             timeSpent: 0,
             attachments: [],
-            comments: []
+            comments: [],
+            assignedTo: '',
+            order: 1
         },
         {
             id: uuidv4(),
@@ -37,7 +41,9 @@ const initialData = {
             status: 'In Progress',
             timeSpent: 0,
             attachments: [],
-            comments: []
+            comments: [],
+            assignedTo: '',
+            order: 2
         },
         {
             id: uuidv4(),
@@ -48,7 +54,9 @@ const initialData = {
             status: 'Done',
             timeSpent: 0,
             attachments: [],
-            comments: []
+            comments: [],
+            assignedTo: '',
+            order: 3
         }
     ],
     sprints: [
@@ -85,7 +93,7 @@ const ApiService = {
     fetchBacklogTasks: async () => {
         await delay(500);
         const data = loadData();
-        return data.tasks.filter((task) => !task.sprintId);
+        return data.tasks.filter((task) => !task.sprintId).sort((a, b) => a.order - b.order);
     },
 
     fetchTasks: async () => {
@@ -111,7 +119,8 @@ const ApiService = {
             status: 'To Do',
             timeSpent: 0,
             attachments: [],
-            comments: []
+            comments: [],
+            order: data.tasks.length
         };
         data.tasks.push(newTask);
         saveData(data);
@@ -370,6 +379,18 @@ const ApiService = {
         throw new Error('Task or comment not found');
     },
 
+    updateTaskOrder: async (taskId, newOrder) => {
+        await delay(500);
+        const data = loadData();
+        const taskIndex = data.tasks.findIndex((task) => task.id === taskId);
+        if (taskIndex !== -1) {
+            data.tasks[taskIndex].order = newOrder;
+            saveData(data);
+            return data.tasks[taskIndex];
+        }
+        throw new Error('Task not found');
+    },
+
     clearToken: () => {
         localStorage.removeItem('jira_clone_token');
     }
@@ -401,6 +422,7 @@ export const {
     removeAttachment,
     addComment,
     removeComment,
+    updateTaskOrder,
     clearToken
 } = ApiService;
 
