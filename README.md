@@ -3,6 +3,8 @@
 A lightweight project management tool inspired by JIRA, built with React and featuring a mocked
 backend.
 
+![alt text](image.png)
+
 # DEMO
 
 https://jira-clone-autocode.netlify.app/
