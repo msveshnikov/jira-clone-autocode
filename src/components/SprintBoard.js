@@ -23,8 +23,8 @@ const SprintBoard = () => {
     const [columns, setColumns] = useState({
         todo: { title: 'To Do', items: [] },
         inProgress: { title: 'In Progress', items: [] },
-        readyToTest: { title: 'Ready to Test', items: [] },
         codeReview: { title: 'Code Review', items: [] },
+        readyToTest: { title: 'Ready to Test', items: [] },
         qa: { title: 'QA', items: [] },
         done: { title: 'Done', items: [] }
     });
@@ -80,7 +80,7 @@ const SprintBoard = () => {
 
             updateTaskMutation.mutate({
                 id: removed.id,
-                status: destColumn.title
+                status: destination.droppableId
             });
         } else {
             const column = columns[source.droppableId];

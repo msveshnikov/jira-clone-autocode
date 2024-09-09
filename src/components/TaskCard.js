@@ -221,6 +221,9 @@ const TaskCard = ({ id: propId }) => {
                                 >
                                     <MenuItem value="todo">To Do</MenuItem>
                                     <MenuItem value="inProgress">In Progress</MenuItem>
+                                    <MenuItem value="readyToTest">Ready to Test</MenuItem>
+                                    <MenuItem value="codeReview">Code Review</MenuItem>
+                                    <MenuItem value="qa">QA</MenuItem>
                                     <MenuItem value="done">Done</MenuItem>
                                 </Select>
                             </FormControl>
@@ -262,7 +265,7 @@ const TaskCard = ({ id: propId }) => {
                         <Grid item xs={12}>
                             <Typography variant="subtitle1">Attachments</Typography>
                             <List>
-                                {task?.attachments?.map((attachment) => (
+                                {task.attachments?.map((attachment) => (
                                     <ListItem key={attachment.id}>
                                         <ListItemText primary={attachment.url} />
                                         <ListItemSecondaryAction>

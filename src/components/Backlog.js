@@ -235,6 +235,21 @@ const Backlog = () => {
                             value={newTask.assignedTo}
                             onChange={handleInputChange}
                         />
+                        <FormControl fullWidth margin="dense">
+                            <InputLabel>Status</InputLabel>
+                            <Select
+                                name="status"
+                                value={newTask.status}
+                                onChange={handleInputChange}
+                            >
+                                <MenuItem value="todo">To Do</MenuItem>
+                                <MenuItem value="inProgress">In Progress</MenuItem>
+                                <MenuItem value="readyToTest">Ready to Test</MenuItem>
+                                <MenuItem value="codeReview">Code Review</MenuItem>
+                                <MenuItem value="qa">QA</MenuItem>
+                                <MenuItem value="done">Done</MenuItem>
+                            </Select>
+                        </FormControl>
                     </DialogContent>
                     <DialogActions>
                         <Button onClick={handleClose}>Cancel</Button>
@@ -257,7 +272,14 @@ Backlog.propTypes = {
             points: PropTypes.number.isRequired,
             priority: PropTypes.oneOf(['low', 'medium', 'high']).isRequired,
             assignedTo: PropTypes.string,
-            status: PropTypes.oneOf(['todo', 'inProgress', 'done']).isRequired
+            status: PropTypes.oneOf([
+                'todo',
+                'inProgress',
+                'readyToTest',
+                'codeReview',
+                'qa',
+                'done'
+            ]).isRequired
         })
     )
 };

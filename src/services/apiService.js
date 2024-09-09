@@ -11,8 +11,8 @@ const initialData = {
             title: 'Implement user authentication',
             description: 'Set up user registration and login functionality',
             points: 5,
-            priority: 'High',
-            status: 'To Do',
+            priority: 'high',
+            status: 'todo',
             timeSpent: 0,
             attachments: [],
             comments: [],
@@ -24,8 +24,8 @@ const initialData = {
             title: 'Design sprint board UI',
             description: 'Create wireframes and mockups for the sprint board interface',
             points: 3,
-            priority: 'Medium',
-            status: 'In Progress',
+            priority: 'medium',
+            status: 'inProgress',
             timeSpent: 0,
             attachments: [],
             comments: [],
@@ -37,8 +37,8 @@ const initialData = {
             title: 'Implement drag-and-drop functionality',
             description: 'Add the ability to drag and drop task cards between columns',
             points: 8,
-            priority: 'High',
-            status: 'In Progress',
+            priority: 'high',
+            status: 'inProgress',
             timeSpent: 0,
             attachments: [],
             comments: [],
@@ -50,8 +50,8 @@ const initialData = {
             title: 'Write unit tests for API endpoints',
             description: 'Create comprehensive unit tests for all backend API endpoints',
             points: 5,
-            priority: 'Medium',
-            status: 'Done',
+            priority: 'medium',
+            status: 'done',
             timeSpent: 0,
             attachments: [],
             comments: [],
@@ -68,12 +68,12 @@ const initialData = {
             tasks: []
         }
     ],
-    statuses: ['To Do', 'In Progress', 'Ready to Test', 'Code Review', 'QA', 'Done'],
+    statuses: ['todo', 'inProgress', 'codeReview', 'readyToTest', 'qa', 'done'],
     workflows: [
         {
             id: uuidv4(),
             name: 'Default',
-            statuses: ['To Do', 'In Progress', 'Ready to Test', 'Code Review', 'QA', 'Done']
+            statuses: ['todo', 'inProgress', 'codeReview', 'readyToTest', 'qa', 'done']
         }
     ]
 };
@@ -116,7 +116,7 @@ const ApiService = {
         const newTask = {
             id: uuidv4(),
             ...taskData,
-            status: 'To Do',
+            status: 'todo',
             timeSpent: 0,
             attachments: [],
             comments: [],
@@ -127,7 +127,9 @@ const ApiService = {
         return newTask;
     },
 
-    updateTask: async (taskId, updatedData) => {
+    updateTask: async (chunk) => {
+        const taskId = chunk.id;
+        const updatedData = chunk;
         await delay(100);
         const data = loadData();
         const taskIndex = data.tasks.findIndex((task) => task.id === taskId);
@@ -379,7 +381,10 @@ const ApiService = {
         throw new Error('Task or comment not found');
     },
 
-    updateTaskOrder: async (taskId, newOrder) => {
+    updateTaskOrder: async (chunk) => {
+        console.log(chunk);
+        const taskId = chunk.id;
+        const newOrder = chunk.order;
         await delay(100);
         const data = loadData();
         const taskIndex = data.tasks.findIndex((task) => task.id === taskId);
