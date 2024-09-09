@@ -1,0 +1,53 @@
+{
+    "name": "jira-clone",
+    "version": "1.0.0",
+    "private": true,
+    "dependencies": {
+        "@emotion/react": "^11.13.3",
+        "@emotion/styled": "^11.13.0",
+        "@mui/icons-material": "^6.0.2",
+        "@mui/material": "^6.0.2",
+        "@mui/x-date-pickers": "^7.16.0",
+        "axios": "^1.7.7",
+        "react": "^18.3.1",
+        "react-apexcharts": "^1.4.1",
+        "react-beautiful-dnd": "^13.1.1",
+        "react-dom": "^18.3.1",
+        "react-helmet": "^6.1.0",
+        "react-query": "^3.39.3",
+        "react-router-dom": "^6.26.1",
+        "react-scripts": "5.0.1"
+    },
+    "scripts": {
+        "start": "react-scripts start",
+        "build": "react-scripts build",
+        "lint": "eslint src/**/*.{js,jsx}",
+        "format": "prettier --write src/**/*.{js,jsx,json,css,md}",
+        "autocode": "npx autocode-ai"
+    },
+    "eslintConfig": {
+        "extends": [
+            "react-app",
+            "plugin:react/recommended"
+        ]
+    },
+    "browserslist": {
+        "production": [
+            ">0.2%",
+            "not dead",
+            "not op_mini all"
+        ],
+        "development": [
+            "last 1 chrome version",
+            "last 1 firefox version",
+            "last 1 safari version"
+        ]
+    },
+    "devDependencies": {
+        "@babel/plugin-proposal-private-property-in-object": "^7.21.11",
+        "eslint": "^8.45.0",
+        "eslint-config-prettier": "^8.8.0",
+        "eslint-plugin-react": "^7.32.2",
+        "prettier": "^2.8.8"
+    }
+}

@@ -1,0 +1,42 @@
+{
+  "short_name": "JIRA Clone",
+  "name": "JIRA Clone - Lightweight Project Management",
+  "icons": [
+    {
+      "src": "favicon.ico",
+      "sizes": "64x64 32x32 24x24 16x16",
+      "type": "image/x-icon"
+    },
+    {
+      "src": "logo192.png",
+      "type": "image/png",
+      "sizes": "192x192"
+    },
+    {
+      "src": "logo512.png",
+      "type": "image/png",
+      "sizes": "512x512"
+    }
+  ],
+  "start_url": ".",
+  "display": "standalone",
+  "theme_color": "#58CC02",
+  "background_color": "#ffffff",
+  "description": "A lightweight project management tool inspired by JIRA, built with React and featuring a mocked backend.",
+  "lang": "en",
+  "orientation": "any",
+  "categories": ["productivity", "project management"],
+  "related_applications": [],
+  "prefer_related_applications": false,
+  "features": [
+    "Backlog management",
+    "Sprint board",
+    "Task cards with details",
+    "Customizable workflows",
+    "Reporting and analytics",
+    "Mobile responsiveness",
+    "Advanced search and filtering",
+    "Time tracking",
+    "File attachments"
+  ]
+}
