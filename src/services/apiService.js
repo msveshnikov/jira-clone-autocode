@@ -14,7 +14,8 @@ const initialData = {
             priority: 'High',
             status: 'To Do',
             timeSpent: 0,
-            attachments: []
+            attachments: [],
+            comments: []
         },
         {
             id: uuidv4(),
@@ -24,7 +25,8 @@ const initialData = {
             priority: 'Medium',
             status: 'In Progress',
             timeSpent: 0,
-            attachments: []
+            attachments: [],
+            comments: []
         },
         {
             id: uuidv4(),
@@ -34,7 +36,8 @@ const initialData = {
             priority: 'High',
             status: 'In Progress',
             timeSpent: 0,
-            attachments: []
+            attachments: [],
+            comments: []
         },
         {
             id: uuidv4(),
@@ -44,7 +47,8 @@ const initialData = {
             priority: 'Medium',
             status: 'Done',
             timeSpent: 0,
-            attachments: []
+            attachments: [],
+            comments: []
         }
     ],
     sprints: [
@@ -106,7 +110,8 @@ const ApiService = {
             ...taskData,
             status: 'To Do',
             timeSpent: 0,
-            attachments: []
+            attachments: [],
+            comments: []
         };
         data.tasks.push(newTask);
         saveData(data);
@@ -331,6 +336,40 @@ const ApiService = {
         throw new Error('Task or attachment not found');
     },
 
+    addComment: async (taskId, comment) => {
+        await delay(500);
+        const data = loadData();
+        const taskIndex = data.tasks.findIndex((task) => task.id === taskId);
+        if (taskIndex !== -1) {
+            const newComment = {
+                id: uuidv4(),
+                ...comment,
+                createdAt: new Date().toISOString()
+            };
+            data.tasks[taskIndex].comments.push(newComment);
+            saveData(data);
+            return newComment;
+        }
+        throw new Error('Task not found');
+    },
+
+    removeComment: async (taskId, commentId) => {
+        await delay(500);
+        const data = loadData();
+        const taskIndex = data.tasks.findIndex((task) => task.id === taskId);
+        if (taskIndex !== -1) {
+            const commentIndex = data.tasks[taskIndex].comments.findIndex(
+                (comment) => comment.id === commentId
+            );
+            if (commentIndex !== -1) {
+                data.tasks[taskIndex].comments.splice(commentIndex, 1);
+                saveData(data);
+                return true;
+            }
+        }
+        throw new Error('Task or comment not found');
+    },
+
     clearToken: () => {
         localStorage.removeItem('jira_clone_token');
     }
@@ -360,6 +399,8 @@ export const {
     logTime,
     addAttachment,
     removeAttachment,
+    addComment,
+    removeComment,
     clearToken
 } = ApiService;
 

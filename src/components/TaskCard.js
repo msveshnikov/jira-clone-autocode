@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { useQuery, useMutation, useQueryClient } from 'react-query';
+import PropTypes from 'prop-types';
 import {
     Card,
     CardContent,
@@ -14,16 +15,23 @@ import {
     Grid,
     FormControl,
     InputLabel,
-    IconButton
+    IconButton,
+    List,
+    ListItem,
+    ListItemText,
+    ListItemSecondaryAction
 } from '@mui/material';
 import DeleteIcon from '@mui/icons-material/Delete';
+import AttachFileIcon from '@mui/icons-material/AttachFile';
 import {
     fetchTask,
     updateTask,
     deleteTask,
     logTime,
     addAttachment,
-    removeAttachment
+    removeAttachment,
+    addComment,
+    removeComment
 } from '../services/apiService';
 
 const TaskCard = () => {
@@ -38,10 +46,12 @@ const TaskCard = () => {
         status: 'todo',
         assignedTo: '',
         timeSpent: 0,
-        attachments: []
+        attachments: [],
+        comments: []
     });
     const [timeToLog, setTimeToLog] = useState(0);
     const [newAttachment, setNewAttachment] = useState('');
+    const [newComment, setNewComment] = useState('');
 
     const { data: fetchedTask, isLoading, isError } = useQuery(['task', id], () => fetchTask(id));
 
@@ -71,6 +81,19 @@ const TaskCard = () => {
     });
 
     const removeAttachmentMutation = useMutation(removeAttachment, {
+        onSuccess: () => {
+            queryClient.invalidateQueries(['task', id]);
+        }
+    });
+
+    const addCommentMutation = useMutation(addComment, {
+        onSuccess: () => {
+            queryClient.invalidateQueries(['task', id]);
+            setNewComment('');
+        }
+    });
+
+    const removeCommentMutation = useMutation(removeComment, {
         onSuccess: () => {
             queryClient.invalidateQueries(['task', id]);
         }
@@ -117,6 +140,17 @@ const TaskCard = () => {
         removeAttachmentMutation.mutate({ taskId: id, attachmentId });
     };
 
+    const handleAddComment = () => {
+        addCommentMutation.mutate({
+            taskId: id,
+            comment: { id: Date.now(), text: newComment, author: 'Current User' }
+        });
+    };
+
+    const handleRemoveComment = (commentId) => {
+        removeCommentMutation.mutate({ taskId: id, commentId });
+    };
+
     if (isLoading) return <Typography>Loading...</Typography>;
     if (isError) return <Typography>Error loading task</Typography>;
 
@@ -127,7 +161,7 @@ const TaskCard = () => {
     };
 
     return (
-        <Card sx={{ maxWidth: 600, margin: 'auto', mt: 4 }}>
+        <Card sx={{ maxWidth: 800, margin: 'auto', mt: 4 }}>
             <CardContent>
                 <form onSubmit={handleSubmit}>
                     <Grid container spacing={2}>
@@ -225,19 +259,24 @@ const TaskCard = () => {
                         </Grid>
                         <Grid item xs={12}>
                             <Typography variant="subtitle1">Attachments</Typography>
-                            {task.attachments.map((attachment) => (
-                                <Box
-                                    key={attachment.id}
-                                    sx={{ display: 'flex', alignItems: 'center', mt: 1 }}
-                                >
-                                    <Typography>{attachment.url}</Typography>
-                                    <IconButton
-                                        onClick={() => handleRemoveAttachment(attachment.id)}
-                                    >
-                                        <DeleteIcon />
-                                    </IconButton>
-                                </Box>
-                            ))}
+                            <List>
+                                {task?.attachments?.map((attachment) => (
+                                    <ListItem key={attachment.id}>
+                                        <ListItemText primary={attachment.url} />
+                                        <ListItemSecondaryAction>
+                                            <IconButton
+                                                edge="end"
+                                                aria-label="delete"
+                                                onClick={() =>
+                                                    handleRemoveAttachment(attachment.id)
+                                                }
+                                            >
+                                                <DeleteIcon />
+                                            </IconButton>
+                                        </ListItemSecondaryAction>
+                                    </ListItem>
+                                ))}
+                            </List>
                             <Box sx={{ display: 'flex', alignItems: 'center', mt: 1 }}>
                                 <TextField
                                     label="New Attachment URL"
@@ -245,8 +284,45 @@ const TaskCard = () => {
                                     onChange={(e) => setNewAttachment(e.target.value)}
                                     sx={{ mr: 2 }}
                                 />
-                                <Button variant="outlined" onClick={handleAddAttachment}>
+                                <Button
+                                    variant="outlined"
+                                    onClick={handleAddAttachment}
+                                    startIcon={<AttachFileIcon />}
+                                >
                                     Add Attachment
+                                </Button>
+                            </Box>
+                        </Grid>
+                        <Grid item xs={12}>
+                            <Typography variant="subtitle1">Comments</Typography>
+                            <List>
+                                {task.comments?.map((comment) => (
+                                    <ListItem key={comment.id}>
+                                        <ListItemText
+                                            primary={comment.text}
+                                            secondary={`By ${comment.author}`}
+                                        />
+                                        <ListItemSecondaryAction>
+                                            <IconButton
+                                                edge="end"
+                                                aria-label="delete"
+                                                onClick={() => handleRemoveComment(comment.id)}
+                                            >
+                                                <DeleteIcon />
+                                            </IconButton>
+                                        </ListItemSecondaryAction>
+                                    </ListItem>
+                                ))}
+                            </List>
+                            <Box sx={{ display: 'flex', alignItems: 'center', mt: 1 }}>
+                                <TextField
+                                    label="New Comment"
+                                    value={newComment}
+                                    onChange={(e) => setNewComment(e.target.value)}
+                                    sx={{ mr: 2 }}
+                                />
+                                <Button variant="outlined" onClick={handleAddComment}>
+                                    Add Comment
                                 </Button>
                             </Box>
                         </Grid>
@@ -265,6 +341,10 @@ const TaskCard = () => {
             </CardContent>
         </Card>
     );
+};
+
+TaskCard.propTypes = {
+    id: PropTypes.string
 };
 
 export default TaskCard;

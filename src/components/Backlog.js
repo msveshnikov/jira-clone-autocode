@@ -20,10 +20,12 @@ import {
     FormControl,
     InputLabel,
     Paper,
-    Box
+    Box,
+    Chip
 } from '@mui/material';
 import { DragDropContext, Droppable, Draggable } from 'react-beautiful-dnd';
 import { fetchBacklogTasks, createTask, updateTask } from '../services/apiService';
+import { useNavigate } from 'react-router-dom';
 
 const Backlog = () => {
     const [open, setOpen] = useState(false);
@@ -32,9 +34,11 @@ const Backlog = () => {
         description: '',
         points: 0,
         priority: 'low',
-        assignedTo: ''
+        assignedTo: '',
+        status: 'todo'
     });
     const queryClient = useQueryClient();
+    const navigate = useNavigate();
 
     const { data: tasks, isLoading, isError } = useQuery('backlogTasks', fetchBacklogTasks);
 
@@ -54,7 +58,14 @@ const Backlog = () => {
     const handleOpen = () => setOpen(true);
     const handleClose = () => {
         setOpen(false);
-        setNewTask({ title: '', description: '', points: 0, priority: 'low', assignedTo: '' });
+        setNewTask({
+            title: '',
+            description: '',
+            points: 0,
+            priority: 'low',
+            assignedTo: '',
+            status: 'todo'
+        });
     };
 
     const handleCreateTask = () => {
@@ -78,11 +89,21 @@ const Backlog = () => {
         });
     };
 
+    const handleTaskClick = (taskId) => {
+        navigate(`/task/${taskId}`);
+    };
+
+    const priorityColors = {
+        low: 'success',
+        medium: 'warning',
+        high: 'error'
+    };
+
     if (isLoading) return <Typography>Loading...</Typography>;
     if (isError) return <Typography>Error loading tasks</Typography>;
 
     return (
-        <Box sx={{ width: '100%', overflowX: 'auto' }}>
+        <Box sx={{ my:4, width: '100%', overflowX: 'auto' }}>
             <Container maxWidth={false}>
                 <Typography variant="h4" gutterBottom>
                     Backlog
@@ -105,6 +126,7 @@ const Backlog = () => {
                                             <TableCell>Points</TableCell>
                                             <TableCell>Priority</TableCell>
                                             <TableCell>Assigned To</TableCell>
+                                            <TableCell>Status</TableCell>
                                         </TableRow>
                                     </TableHead>
                                     <TableBody>
@@ -119,11 +141,21 @@ const Backlog = () => {
                                                         ref={provided.innerRef}
                                                         {...provided.draggableProps}
                                                         {...provided.dragHandleProps}
+                                                        onClick={() => handleTaskClick(task.id)}
+                                                        sx={{ cursor: 'pointer' }}
                                                     >
                                                         <TableCell>{task.title}</TableCell>
                                                         <TableCell>{task.points}</TableCell>
-                                                        <TableCell>{task.priority}</TableCell>
+                                                        <TableCell>
+                                                            <Chip
+                                                                label={task.priority.toUpperCase()}
+                                                                color={
+                                                                    priorityColors[task.priority]
+                                                                }
+                                                            />
+                                                        </TableCell>
                                                         <TableCell>{task.assignedTo}</TableCell>
+                                                        <TableCell>{task.status}</TableCell>
                                                     </TableRow>
                                                 )}
                                             </Draggable>
@@ -189,6 +221,18 @@ const Backlog = () => {
                             value={newTask.assignedTo}
                             onChange={handleInputChange}
                         />
+                        <FormControl fullWidth margin="dense">
+                            <InputLabel>Status</InputLabel>
+                            <Select
+                                name="status"
+                                value={newTask.status}
+                                onChange={handleInputChange}
+                            >
+                                <MenuItem value="todo">To Do</MenuItem>
+                                <MenuItem value="inProgress">In Progress</MenuItem>
+                                <MenuItem value="done">Done</MenuItem>
+                            </Select>
+                        </FormControl>
                     </DialogContent>
                     <DialogActions>
                         <Button onClick={handleClose}>Cancel</Button>

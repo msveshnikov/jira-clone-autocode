@@ -1,8 +1,9 @@
 import React, { useState, useEffect } from 'react';
 import { DragDropContext, Droppable, Draggable } from 'react-beautiful-dnd';
-import { Box, Typography, Paper, Grid, Chip } from '@mui/material';
+import { Box, Typography, Paper, Grid, Chip, Dialog, DialogTitle, DialogContent } from '@mui/material';
 import { useQuery, useMutation, useQueryClient } from 'react-query';
 import { fetchTasks, updateTask } from '../services/apiService';
+import TaskCard from './TaskCard';
 
 const SprintBoard = () => {
     const [columns, setColumns] = useState({
@@ -13,6 +14,7 @@ const SprintBoard = () => {
         qa: { title: 'QA', items: [] },
         done: { title: 'Done', items: [] }
     });
+    const [selectedTask, setSelectedTask] = useState(null);
 
     const queryClient = useQueryClient();
     const { data: tasks, isLoading, isError } = useQuery('tasks', fetchTasks);
@@ -37,7 +39,6 @@ const SprintBoard = () => {
             });
             setColumns(newColumns);
         }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [tasks]);
 
     const onDragEnd = (result) => {
@@ -95,6 +96,14 @@ const SprintBoard = () => {
         }
     };
 
+    const handleTaskClick = (task) => {
+        setSelectedTask(task);
+    };
+
+    const handleCloseDialog = () => {
+        setSelectedTask(null);
+    };
+
     if (isLoading) return <Typography>Loading...</Typography>;
     if (isError) return <Typography>Error loading tasks</Typography>;
 
@@ -133,8 +142,10 @@ const SprintBoard = () => {
                                                                 p: 1,
                                                                 mb: 1,
                                                                 bgcolor: 'background.paper',
-                                                                width: '100%'
+                                                                width: '100%',
+                                                                cursor: 'pointer'
                                                             }}
+                                                            onClick={() => handleTaskClick(task)}
                                                         >
                                                             <Typography variant="subtitle2">
                                                                 {task.title}
@@ -175,6 +186,12 @@ const SprintBoard = () => {
                     ))}
                 </Grid>
             </DragDropContext>
+            <Dialog open={!!selectedTask} onClose={handleCloseDialog} maxWidth="md" fullWidth>
+                <DialogTitle>Task Details</DialogTitle>
+                <DialogContent>
+                    {selectedTask && <TaskCard id={selectedTask.id} />}
+                </DialogContent>
+            </Dialog>
         </Box>
     );
 };

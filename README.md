@@ -13,6 +13,7 @@ https://jira-clone-autocode.netlify.app/
 
 -   Backlog: Manage and prioritize your project tasks
 -   Sprint Board: Visualize and track progress during sprints
+-   Generate prop types always
 -   Task Cards: Detailed view for individual tasks
     -   title
     -   description
@@ -106,14 +107,7 @@ src/
 2. Install dependencies: `npm install`
 3. Start the development server: `npm start`
 
-## Contributing
-
-We welcome contributions! Please see our [Contributing Guide](CONTRIBUTING.md) for more details.
-
-## License
-
-This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
-
 ## TODO
 
--   add more mocked cards to sprint
+-   allow backlog ordering (by mouse, keep position)
+
