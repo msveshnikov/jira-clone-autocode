@@ -1,4 +1,4 @@
-# JIRA Clone
+# JIRA Clone (built by [AutoCode](https://autocode.work) in 20 minutes)
 
 A lightweight project management tool inspired by JIRA, built with React and featuring a mocked
 backend.
@@ -15,42 +15,101 @@ backend.
 
 ## Planned Enhancements
 
-3. Customizable Workflows
+1. Customizable Workflows
 
     - Allow users to define custom statuses and transitions
-    - Drag-and-drop cards
+    - Drag-and-drop cards between columns
 
-4. Reporting and Analytics
+2. Reporting and Analytics
 
     - Sprint burndown charts
     - Velocity tracking
     - Custom report generation
 
-5. Mobile Responsiveness
+3. Mobile Responsiveness
 
     - Optimize UI for various screen sizes
     - Develop native mobile apps for iOS and Android
 
-6. Advanced Search and Filtering
+4. Advanced Search and Filtering
 
     - Implement full-text search across all project data
     - Save and share custom filters
 
-7. Time Tracking
+5. Time Tracking
 
     - Built-in time logging for tasks
     - Timesheet reports and export options
 
-8. File Attachments
+6. File Attachments
 
     - Allow file uploads for tasks
     - Integration with cloud storage services
 
-9. Performance Optimization
+7. Performance Optimization
+
     - Implement lazy loading for large datasets
     - Optimize React rendering with memoization techniques
 
+8. User Authentication and Authorization
 
-# TODO
+    - Implement secure login and registration
+    - Role-based access control
 
-apiService__WEBPACK_IMPORTED_MODULE_1__.default.clearToken is not a function
+9. Real-time Collaboration
+
+    - Implement WebSocket for live updates
+    - Add commenting system on task cards
+
+10. Integration with Version Control
+
+    - Link commits and pull requests to tasks
+    - Automatic status updates based on code changes
+
+11. Customizable Dashboard
+
+    - Personalized widgets and metrics
+    - Drag-and-drop layout customization
+
+12. Accessibility Improvements
+    - Implement ARIA attributes
+    - Ensure keyboard navigation support
+
+## Project Structure
+
+```
+src/
+├── components/
+│   ├── Backlog.js
+│   ├── Header.js
+│   ├── SprintBoard.js
+│   └── TaskCard.js
+├── context/
+│   └── AuthContext.js
+├── services/
+│   └── apiService.js
+├── utils/
+│   └── theme.js
+├── App.js
+└── index.js
+```
+
+## Getting Started
+
+1. Clone the repository
+2. Install dependencies: `npm install`
+3. Start the development server: `npm start`
+
+## Contributing
+
+We welcome contributions! Please see our [Contributing Guide](CONTRIBUTING.md) for more details.
+
+## License
+
+This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
+
+## TODO
+
+-   Make sprint board the default view
+-   Implement drag-and-drop functionality for task cards
+-   Set up CI/CD pipeline for automated testing and deployment

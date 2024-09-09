@@ -189,6 +189,19 @@ const createCustomTheme = (mode) => {
                         }
                     }
                 }
+            },
+            MuiListItem: {
+                styleOverrides: {
+                    root: {
+                        '&.MuiListItem-root': {
+                            height: '40px',
+                            width: '100%'
+                        }
+                    }
+                }
+            },
+            MuiPaper: {
+                styleOverrides: {}
             }
         },
         breakpoints: {

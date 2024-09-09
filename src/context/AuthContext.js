@@ -47,7 +47,7 @@ export const AuthProvider = ({ children }) => {
         }, 13 * 24 * 60 * 60 * 1000);
 
         return () => clearInterval(refreshTokenInterval);
-    // eslint-disable-next-line react-hooks/exhaustive-deps
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [isAuthenticated]);
 
     const login = async (credentials) => {

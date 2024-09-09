@@ -9,6 +9,7 @@ import Backlog from './components/Backlog';
 import SprintBoard from './components/SprintBoard';
 import TaskCard from './components/TaskCard';
 import Header from './components/Header';
+import { Container } from '@mui/material';
 
 const queryClient = new QueryClient();
 
@@ -26,13 +27,18 @@ function App() {
                 <AuthProvider>
                     <ThemeProvider theme={theme}>
                         <CssBaseline />
-                        <div className="App">
+                        <div
+                            className="App"
+                            style={{ display: 'flex', flexDirection: 'column', minHeight: '100vh' }}
+                        >
                             <Header toggleDarkMode={toggleDarkMode} darkMode={darkMode} />
-                            <Routes>
-                                <Route path="/" element={<Backlog />} />
-                                <Route path="/sprint-board" element={<SprintBoard />} />
-                                <Route path="/task/:id" element={<TaskCard />} />
-                            </Routes>
+                            <Container maxWidth={false} style={{ flexGrow: 1, padding: 0 }}>
+                                <Routes>
+                                    <Route path="/" element={<Backlog />} />
+                                    <Route path="/sprint-board" element={<SprintBoard />} />
+                                    <Route path="/task/:id" element={<TaskCard />} />
+                                </Routes>
+                            </Container>
                         </div>
                     </ThemeProvider>
                 </AuthProvider>
