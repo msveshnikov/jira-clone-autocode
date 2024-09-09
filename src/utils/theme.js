@@ -201,7 +201,11 @@ const createCustomTheme = (mode) => {
                 }
             },
             MuiPaper: {
-                styleOverrides: {}
+                styleOverrides: {
+                    root: {
+                        backgroundColor: palette.background.paper
+                    }
+                }
             }
         },
         breakpoints: {

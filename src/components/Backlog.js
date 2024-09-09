@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import PropTypes from 'prop-types';
 import { useQuery, useMutation, useQueryClient } from 'react-query';
 import {
@@ -28,6 +28,7 @@ import {
 import { DragDropContext, Droppable, Draggable } from 'react-beautiful-dnd';
 import { fetchBacklogTasks, createTask, updateTaskOrder } from '../services/apiService';
 import { useNavigate } from 'react-router-dom';
+import { useTheme } from '@mui/material/styles';
 
 const Backlog = () => {
     const [open, setOpen] = useState(false);
@@ -41,6 +42,7 @@ const Backlog = () => {
     });
     const queryClient = useQueryClient();
     const navigate = useNavigate();
+    const theme = useTheme();
 
     const { data: tasks, isLoading, isError } = useQuery('backlogTasks', fetchBacklogTasks);
 
@@ -56,19 +58,6 @@ const Backlog = () => {
             queryClient.invalidateQueries('backlogTasks');
         }
     });
-
-    useEffect(() => {
-        const savedTasks = localStorage.getItem('backlogTasks');
-        if (savedTasks) {
-            queryClient.setQueryData('backlogTasks', JSON.parse(savedTasks));
-        }
-    }, [queryClient]);
-
-    useEffect(() => {
-        if (tasks) {
-            localStorage.setItem('backlogTasks', JSON.stringify(tasks));
-        }
-    }, [tasks]);
 
     const handleOpen = () => setOpen(true);
     const handleClose = () => {
@@ -108,10 +97,17 @@ const Backlog = () => {
         navigate(`/task/${taskId}`);
     };
 
-    const priorityColors = {
-        low: 'success',
-        medium: 'warning',
-        high: 'error'
+    const getPriorityColor = (priority) => {
+        switch (priority.toLowerCase()) {
+            case 'high':
+                return theme.palette.error.main;
+            case 'medium':
+                return theme.palette.warning.main;
+            case 'low':
+                return theme.palette.success.main;
+            default:
+                return theme.palette.text.secondary;
+        }
     };
 
     if (isLoading) return <CircularProgress />;
@@ -164,9 +160,12 @@ const Backlog = () => {
                                                         <TableCell>
                                                             <Chip
                                                                 label={task.priority.toUpperCase()}
-                                                                color={
-                                                                    priorityColors[task.priority]
-                                                                }
+                                                                sx={{
+                                                                    bgcolor: getPriorityColor(
+                                                                        task.priority
+                                                                    ),
+                                                                    color: 'white'
+                                                                }}
                                                             />
                                                         </TableCell>
                                                         <TableCell>{task.assignedTo}</TableCell>
@@ -236,18 +235,6 @@ const Backlog = () => {
                             value={newTask.assignedTo}
                             onChange={handleInputChange}
                         />
-                        <FormControl fullWidth margin="dense">
-                            <InputLabel>Status</InputLabel>
-                            <Select
-                                name="status"
-                                value={newTask.status}
-                                onChange={handleInputChange}
-                            >
-                                <MenuItem value="todo">To Do</MenuItem>
-                                <MenuItem value="inProgress">In Progress</MenuItem>
-                                <MenuItem value="done">Done</MenuItem>
-                            </Select>
-                        </FormControl>
                     </DialogContent>
                     <DialogActions>
                         <Button onClick={handleClose}>Cancel</Button>
