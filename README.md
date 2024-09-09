@@ -3,7 +3,8 @@
 A lightweight project management tool inspired by JIRA, built with React and featuring a mocked
 backend.
 
-![alt text](image.png)
+![alt text](image-1.png)
+
 
 # DEMO
 
@@ -22,65 +23,6 @@ https://jira-clone-autocode.netlify.app/
 
 ## Planned Enhancements
 
-1. Customizable Workflows
-
-    - Allow users to define custom statuses and transitions
-    - Drag-and-drop cards between columns
-
-2. Reporting and Analytics
-
-    - Sprint burndown charts
-    - Velocity tracking
-    - Custom report generation
-
-3. Mobile Responsiveness
-
-    - Optimize UI for various screen sizes
-    - Develop native mobile apps for iOS and Android
-
-4. Advanced Search and Filtering
-
-    - Implement full-text search across all project data
-    - Save and share custom filters
-
-5. Time Tracking
-
-    - Built-in time logging for tasks
-    - Timesheet reports and export options
-
-6. File Attachments
-
-    - Allow file uploads for tasks
-    - Integration with cloud storage services
-
-7. Performance Optimization
-
-    - Implement lazy loading for large datasets
-    - Optimize React rendering with memoization techniques
-
-8. User Authentication and Authorization
-
-    - Implement secure login and registration
-    - Role-based access control
-
-9. Real-time Collaboration
-
-    - Implement WebSocket for live updates
-    - Add commenting system on task cards
-
-10. Integration with Version Control
-
-    - Link commits and pull requests to tasks
-    - Automatic status updates based on code changes
-
-11. Customizable Dashboard
-
-    - Personalized widgets and metrics
-    - Drag-and-drop layout customization
-
-12. Accessibility Improvements
-    - Implement ARIA attributes
-    - Ensure keyboard navigation support
 
 ## Project Structure
 
