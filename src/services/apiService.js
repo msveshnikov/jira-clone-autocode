@@ -8,9 +8,9 @@ const initialData = {
     tasks: [
         {
             id: uuidv4(),
-            title: 'Implement user authentication',
-            description: 'Set up user registration and login functionality',
-            points: 5,
+            title: 'Implement backlog ordering functionality',
+            description: 'Add the ability to reorder tasks in the backlog using drag-and-drop',
+            points: 8,
             priority: 'high',
             status: 'todo',
             timeSpent: 0,
@@ -21,11 +21,11 @@ const initialData = {
         },
         {
             id: uuidv4(),
-            title: 'Design sprint board UI',
-            description: 'Create wireframes and mockups for the sprint board interface',
-            points: 3,
-            priority: 'medium',
-            status: 'inprogress',
+            title: 'Fix task update functionality',
+            description: 'Resolve issues with updating task details',
+            points: 5,
+            priority: 'high',
+            status: 'todo',
             timeSpent: 0,
             attachments: [],
             comments: [],
@@ -34,11 +34,11 @@ const initialData = {
         },
         {
             id: uuidv4(),
-            title: 'Implement drag-and-drop functionality',
-            description: 'Add the ability to drag and drop task cards between columns',
-            points: 8,
+            title: 'Implement persistent task status',
+            description: 'Ensure task status is saved and persists across sessions',
+            points: 3,
             priority: 'high',
-            status: 'inprogress',
+            status: 'todo',
             timeSpent: 0,
             attachments: [],
             comments: [],
@@ -47,16 +47,56 @@ const initialData = {
         },
         {
             id: uuidv4(),
-            title: 'Write unit tests for API endpoints',
-            description: 'Create comprehensive unit tests for all backend API endpoints',
+            title: 'Add comments functionality to tasks',
+            description: 'Implement the ability to add and view comments on tasks',
             points: 5,
             priority: 'medium',
-            status: 'done',
+            status: 'todo',
             timeSpent: 0,
             attachments: [],
             comments: [],
             assignedTo: '',
             order: 3
+        },
+        {
+            id: uuidv4(),
+            title: 'Update task status when dragging in Sprint view',
+            description:
+                'Automatically update task status when moved between columns in Sprint Board',
+            points: 5,
+            priority: 'medium',
+            status: 'todo',
+            timeSpent: 0,
+            attachments: [],
+            comments: [],
+            assignedTo: '',
+            order: 4
+        },
+        {
+            id: uuidv4(),
+            title: 'Enhance TaskCard component with assignee functionality',
+            description: 'Add the ability to assign tasks to users in the TaskCard component',
+            points: 3,
+            priority: 'medium',
+            status: 'todo',
+            timeSpent: 0,
+            attachments: [],
+            comments: [],
+            assignedTo: '',
+            order: 5
+        },
+        {
+            id: uuidv4(),
+            title: 'Implement due date functionality for tasks',
+            description: 'Add the ability to set and display due dates for tasks',
+            points: 2,
+            priority: 'medium',
+            status: 'todo',
+            timeSpent: 0,
+            attachments: [],
+            comments: [],
+            assignedTo: '',
+            order: 6
         }
     ],
     sprints: [
@@ -394,6 +434,42 @@ const ApiService = {
             return data.tasks[taskIndex];
         }
         throw new Error('Task not found');
+    },
+
+    updateTaskStatus: async (taskId, newStatus) => {
+        await delay(100);
+        const data = loadData();
+        const taskIndex = data.tasks.findIndex((task) => task.id === taskId);
+        if (taskIndex !== -1) {
+            data.tasks[taskIndex].status = newStatus;
+            saveData(data);
+            return data.tasks[taskIndex];
+        }
+        throw new Error('Task not found');
+    },
+
+    assignTask: async (taskId, assigneeId) => {
+        await delay(100);
+        const data = loadData();
+        const taskIndex = data.tasks.findIndex((task) => task.id === taskId);
+        if (taskIndex !== -1) {
+            data.tasks[taskIndex].assignedTo = assigneeId;
+            saveData(data);
+            return data.tasks[taskIndex];
+        }
+        throw new Error('Task not found');
+    },
+
+    updateTaskDueDate: async (taskId, dueDate) => {
+        await delay(100);
+        const data = loadData();
+        const taskIndex = data.tasks.findIndex((task) => task.id === taskId);
+        if (taskIndex !== -1) {
+            data.tasks[taskIndex].dueDate = dueDate;
+            saveData(data);
+            return data.tasks[taskIndex];
+        }
+        throw new Error('Task not found');
     }
 };
 
@@ -423,7 +499,10 @@ export const {
     removeAttachment,
     addComment,
     removeComment,
-    updateTaskOrder
+    updateTaskOrder,
+    updateTaskStatus,
+    assignTask,
+    updateTaskDueDate
 } = ApiService;
 
 export default ApiService;

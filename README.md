@@ -87,3 +87,36 @@ We welcome contributions! Please refer to our contributing guidelines for more i
 ## License
 
 This project is licensed under the MIT License.
+
+# TODO
+
+-   add sample tasks from below:
+
+
+1. **Implement backlog ordering functionality**
+   - Effort: 8 story points
+   - Priority: High
+
+2. **Fix task update functionality**
+   - Effort: 5 story points
+   - Priority: High
+
+3. **Implement persistent task status**
+   - Effort: 3 story points
+   - Priority: High
+
+4. **Add comments functionality to tasks**
+   - Effort: 5 story points
+   - Priority: Medium
+
+5. **Update task status when dragging in Sprint view**
+   - Effort: 5 story points
+   - Priority: Medium
+
+6. **Enhance TaskCard component with assignee functionality**
+   - Effort: 3 story points
+   - Priority: Medium
+
+7. **Implement due date functionality for tasks**
+   - Effort: 2 story points
+   - Priority: Medium
