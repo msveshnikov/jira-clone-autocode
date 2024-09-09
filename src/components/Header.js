@@ -31,10 +31,10 @@ const Header = ({ toggleDarkMode, darkMode }) => {
                     </Typography>
                     {!isMobile && (
                         <>
-                            <Button color="inherit" component={Link} to="/">
+                            <Button color="inherit" component={Link} to="/backlog">
                                 Backlog
                             </Button>
-                            <Button color="inherit" component={Link} to="/sprint-board">
+                            <Button color="inherit" component={Link} to="/">
                                 Sprint Board
                             </Button>
                         </>

@@ -3,6 +3,10 @@
 A lightweight project management tool inspired by JIRA, built with React and featuring a mocked
 backend.
 
+# DEMO
+
+https://jira-clone-autocode.netlify.app/
+
 ## Features
 
 -   Backlog: Manage and prioritize your project tasks
@@ -110,6 +114,4 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 
 ## TODO
 
--   Make sprint board the default view
--   Implement drag-and-drop functionality for task cards
--   Set up CI/CD pipeline for automated testing and deployment
+-   add more mocked cards to sprint

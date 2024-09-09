@@ -56,12 +56,12 @@ const initialData = {
             tasks: []
         }
     ],
-    statuses: ['To Do', 'In Progress', 'Done'],
+    statuses: ['To Do', 'In Progress', 'Ready to Test', 'Code Review', 'QA', 'Done'],
     workflows: [
         {
             id: uuidv4(),
             name: 'Default',
-            statuses: ['To Do', 'In Progress', 'Done']
+            statuses: ['To Do', 'In Progress', 'Ready to Test', 'Code Review', 'QA', 'Done']
         }
     ]
 };

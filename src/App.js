@@ -34,8 +34,8 @@ function App() {
                             <Header toggleDarkMode={toggleDarkMode} darkMode={darkMode} />
                             <Container maxWidth={false} style={{ flexGrow: 1, padding: 0 }}>
                                 <Routes>
-                                    <Route path="/" element={<Backlog />} />
-                                    <Route path="/sprint-board" element={<SprintBoard />} />
+                                    <Route path="/" element={<SprintBoard />} />
+                                    <Route path="/backlog" element={<Backlog />} />
                                     <Route path="/task/:id" element={<TaskCard />} />
                                 </Routes>
                             </Container>
