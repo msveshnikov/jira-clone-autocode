@@ -22,10 +22,11 @@ import {
     InputLabel,
     Paper,
     Box,
-    Chip
+    Chip,
+    CircularProgress
 } from '@mui/material';
 import { DragDropContext, Droppable, Draggable } from 'react-beautiful-dnd';
-import { fetchBacklogTasks, createTask, updateTask } from '../services/apiService';
+import { fetchBacklogTasks, createTask, updateTaskOrder } from '../services/apiService';
 import { useNavigate } from 'react-router-dom';
 
 const Backlog = () => {
@@ -50,7 +51,7 @@ const Backlog = () => {
         }
     });
 
-    const updateTaskMutation = useMutation(updateTask, {
+    const updateTaskOrderMutation = useMutation(updateTaskOrder, {
         onSuccess: () => {
             queryClient.invalidateQueries('backlogTasks');
         }
@@ -99,7 +100,7 @@ const Backlog = () => {
         reorderedTasks.splice(result.destination.index, 0, reorderedItem);
 
         reorderedTasks.forEach((task, index) => {
-            updateTaskMutation.mutate({ ...task, order: index });
+            updateTaskOrderMutation.mutate({ id: task.id, order: index });
         });
     };
 
@@ -113,7 +114,7 @@ const Backlog = () => {
         high: 'error'
     };
 
-    if (isLoading) return <Typography>Loading...</Typography>;
+    if (isLoading) return <CircularProgress />;
     if (isError) return <Typography>Error loading tasks</Typography>;
 
     return (
@@ -263,7 +264,7 @@ const Backlog = () => {
 Backlog.propTypes = {
     tasks: PropTypes.arrayOf(
         PropTypes.shape({
-            id: PropTypes.number.isRequired,
+            id: PropTypes.string.isRequired,
             title: PropTypes.string.isRequired,
             description: PropTypes.string,
             points: PropTypes.number.isRequired,

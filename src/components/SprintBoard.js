@@ -55,17 +55,6 @@ const SprintBoard = () => {
         }
     }, [tasks]);
 
-    useEffect(() => {
-        const savedColumns = localStorage.getItem('sprintBoardColumns');
-        if (savedColumns) {
-            setColumns(JSON.parse(savedColumns));
-        }
-    }, []);
-
-    useEffect(() => {
-        localStorage.setItem('sprintBoardColumns', JSON.stringify(columns));
-    }, [columns]);
-
     const onDragEnd = (result) => {
         if (!result.destination) return;
         const { source, destination } = result;

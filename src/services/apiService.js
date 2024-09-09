@@ -389,10 +389,6 @@ const ApiService = {
             return data.tasks[taskIndex];
         }
         throw new Error('Task not found');
-    },
-
-    clearToken: () => {
-        localStorage.removeItem('jira_clone_token');
     }
 };
 
@@ -422,8 +418,7 @@ export const {
     removeAttachment,
     addComment,
     removeComment,
-    updateTaskOrder,
-    clearToken
+    updateTaskOrder
 } = ApiService;
 
 export default ApiService;

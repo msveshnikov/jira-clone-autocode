@@ -15,15 +15,12 @@ import {
     Avatar
 } from '@mui/material';
 import { Brightness4, Brightness7, Menu as MenuIcon, AccountCircle } from '@mui/icons-material';
-import { AuthContext } from '../context/AuthContext';
-import { clearToken } from '../services/apiService';
 
 const Header = ({ toggleDarkMode, darkMode }) => {
     const theme = useTheme();
     const isMobile = useMediaQuery(theme.breakpoints.down('sm'));
     const [anchorEl, setAnchorEl] = useState(null);
     const [userMenuAnchorEl, setUserMenuAnchorEl] = useState(null);
-    const { user, setUser } = useContext(AuthContext);
 
     const handleMenuOpen = (event) => {
         setAnchorEl(event.currentTarget);
@@ -31,20 +28,6 @@ const Header = ({ toggleDarkMode, darkMode }) => {
 
     const handleMenuClose = () => {
         setAnchorEl(null);
-    };
-
-    const handleUserMenuOpen = (event) => {
-        setUserMenuAnchorEl(event.currentTarget);
-    };
-
-    const handleUserMenuClose = () => {
-        setUserMenuAnchorEl(null);
-    };
-
-    const handleLogout = () => {
-        clearToken();
-        setUser(null);
-        handleUserMenuClose();
     };
 
     return (
@@ -96,29 +79,6 @@ const Header = ({ toggleDarkMode, darkMode }) => {
                     >
                         {darkMode ? <Brightness7 /> : <Brightness4 />}
                     </IconButton>
-                    {user ? (
-                        <>
-                            <IconButton
-                                color="inherit"
-                                onClick={handleUserMenuOpen}
-                                aria-label="user menu"
-                            >
-                                <Avatar alt={user.name} src={user.avatar} />
-                            </IconButton>
-                            <Menu
-                                anchorEl={userMenuAnchorEl}
-                                open={Boolean(userMenuAnchorEl)}
-                                onClose={handleUserMenuClose}
-                            >
-                                <MenuItem onClick={handleUserMenuClose}>Profile</MenuItem>
-                                <MenuItem onClick={handleLogout}>Logout</MenuItem>
-                            </Menu>
-                        </>
-                    ) : (
-                        <IconButton color="inherit" aria-label="login">
-                            <AccountCircle />
-                        </IconButton>
-                    )}
                 </Box>
             </Toolbar>
         </AppBar>

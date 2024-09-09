@@ -3,7 +3,6 @@ import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
 import { ThemeProvider } from '@mui/material/styles';
 import CssBaseline from '@mui/material/CssBaseline';
 import { QueryClient, QueryClientProvider } from 'react-query';
-import { AuthProvider } from './context/AuthContext';
 import createCustomTheme from './utils/theme';
 import Backlog from './components/Backlog';
 import SprintBoard from './components/SprintBoard';
@@ -24,24 +23,22 @@ function App() {
     return (
         <QueryClientProvider client={queryClient}>
             <Router>
-                <AuthProvider>
-                    <ThemeProvider theme={theme}>
-                        <CssBaseline />
-                        <div
-                            className="App"
-                            style={{ display: 'flex', flexDirection: 'column', minHeight: '100vh' }}
-                        >
-                            <Header toggleDarkMode={toggleDarkMode} darkMode={darkMode} />
-                            <Container maxWidth={false} style={{ flexGrow: 1, padding: 0 }}>
-                                <Routes>
-                                    <Route path="/" element={<SprintBoard />} />
-                                    <Route path="/backlog" element={<Backlog />} />
-                                    <Route path="/task/:id" element={<TaskCard />} />
-                                </Routes>
-                            </Container>
-                        </div>
-                    </ThemeProvider>
-                </AuthProvider>
+                <ThemeProvider theme={theme}>
+                    <CssBaseline />
+                    <div
+                        className="App"
+                        style={{ display: 'flex', flexDirection: 'column', minHeight: '100vh' }}
+                    >
+                        <Header toggleDarkMode={toggleDarkMode} darkMode={darkMode} />
+                        <Container maxWidth={false} style={{ flexGrow: 1, padding: 0 }}>
+                            <Routes>
+                                <Route path="/" element={<SprintBoard />} />
+                                <Route path="/backlog" element={<Backlog />} />
+                                <Route path="/task/:id" element={<TaskCard />} />
+                            </Routes>
+                        </Container>
+                    </div>
+                </ThemeProvider>
             </Router>
         </QueryClientProvider>
     );
