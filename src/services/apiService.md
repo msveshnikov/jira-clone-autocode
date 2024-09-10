@@ -2,9 +2,9 @@
 
 ## Overview
 
-The `apiService.js` file is a core component of the Jira project, providing a simulated API
-service for managing tasks, sprints, workflows, and other related data. It uses local storage to
-persist data, making it suitable for frontend development and testing without a backend server.
+The `apiService.js` file is a core component of the Jira project, providing a simulated API service
+for managing tasks, sprints, workflows, and other related data. It uses local storage to persist
+data, making it suitable for frontend development and testing without a backend server.
 
 This service includes methods for CRUD operations on tasks, sprints, and workflows, as well as
 utility functions for managing statuses, searching tasks, logging time, and handling attachments.
@@ -337,8 +337,8 @@ This object contains all the methods for interacting with the simulated API.
 ## Project Integration
 
 This `apiService.js` file is located in the `src/services` directory and serves as the main
-interface for data management in the Jira project. It is used by various components throughout
-the application to fetch, create, update, and delete data related to tasks, sprints, and workflows.
+interface for data management in the Jira project. It is used by various components throughout the
+application to fetch, create, update, and delete data related to tasks, sprints, and workflows.
 
 The service simulates a backend API by using local storage, which allows for easy frontend
 development and testing without the need for a real backend server. This approach makes the project

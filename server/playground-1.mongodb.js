@@ -6,6 +6,7 @@
 
 // Select the database to use.
 use('jira');
+db.tasks.deleteMany({});
 
 // Create collections
 db.createCollection('users');

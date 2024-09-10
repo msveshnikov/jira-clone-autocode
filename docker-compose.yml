@@ -2,9 +2,7 @@ version: '3.8'
 
 services:
     backend:
-        build:
-            context: ./server
-            dockerfile: Dockerfile
+        image: extender777/jira-backend
         ports:
             - '6005:5000'
         environment:
@@ -16,9 +14,7 @@ services:
             - mongodb
 
     frontend:
-        build:
-            context: .
-            dockerfile: Dockerfile
+        image: extender777/jira-frontend
         environment:
             - NODE_ENV=production
             - REACT_APP_API_BASE_URL=http://backend:5000

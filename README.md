@@ -25,7 +25,6 @@ https://jira-clone-autocode.onrender.com/
 -   Search and Filter: Add advanced search capabilities for tasks
 -   Reporting: Implement burndown charts and sprint velocity metrics
 -   Mobile Responsiveness: Optimize the application for various screen sizes
--   Backlog Ordering: Allow reordering of tasks using drag-and-drop
 -   Task Comments: Implement a comment system for tasks
 -   Custom Fields: Allow users to add custom fields to tasks
 -   Version Control Integration: Link tasks to Git commits or pull requests
@@ -54,12 +53,9 @@ src/
 -   Theming: Utilizes a centralized theme for consistent styling
 -   State Management: Consider implementing Redux or MobX for robust state handling
 -   Performance Optimization: Implement lazy loading and code splitting
--   Accessibility: Ensure WCAG 2.1 compliance
--   Internationalization: Prepare the application for multi-language support
 
 ## Technical Improvements
 
--   Implement comprehensive unit and integration tests
 -   Set up continuous integration and deployment pipeline
 -   Optimize API integration and data fetching strategies
 -   Implement proper error handling and logging
@@ -80,20 +76,7 @@ Comprehensive documentation is available in the `docs` folder, including:
 -   Privacy policy
 -   Social media content
 
-## Contributing
-
-We welcome contributions! Please refer to our contributing guidelines for more information.
-
-## License
-
-This project is licensed under the MIT License.
-
 # TODO
 
--   add Express JS Mongo backend in /server and use instead of mocks, ES6 imports, async/await
--   deploy to jira.autocode.work via composer, etc
--   add models
--   -   User
--   -   Project
--   -   Sprint
--   -   Task
+-   add Status and Workflow models
+-   load initial_data.json on first run

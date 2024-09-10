@@ -53,8 +53,8 @@ const taskSchema = new mongoose.Schema({
     },
     project: {
         type: mongoose.Schema.Types.ObjectId,
-        ref: 'Project',
-        required: true
+        ref: 'Project'
+        // required: true
     },
     sprint: {
         type: mongoose.Schema.Types.ObjectId,

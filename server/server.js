@@ -6,11 +6,14 @@ import helmet from 'helmet';
 import morgan from 'morgan';
 import { fileURLToPath } from 'url';
 import path from 'path';
+import fs from 'fs';
 
 import User from './model/User.js';
 import Project from './model/Project.js';
 import Sprint from './model/Sprint.js';
 import Task from './model/Task.js';
+import Status from './model/Status.js';
+import Workflow from './model/Workflow.js';
 
 dotenv.config();
 
@@ -19,18 +22,57 @@ const PORT = process.env.PORT || 5000;
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
+app.use(
+    cors({
+        origin: [
+            'https://jira.autocode.work',
+            'http://localhost:5000',
+            'http://localhost:3000',
+            '*'
+        ],
+        optionsSuccessStatus: 200
+    })
+);
 app.use(express.json());
-app.use(cors());
-app.use(helmet());
-app.use(morgan('combined'));
+app.use(helmet({ crossOriginEmbedderPolicy: false }));
+app.use(morgan('dev'));
 
 mongoose.connect(process.env.MONGODB_URI, {});
 
 app.use(express.static(path.join(__dirname, '../build')));
 
+const loadInitialData = async () => {
+    const initialData = JSON.parse(
+        fs.readFileSync(path.join(__dirname, 'initial_data.json'), 'utf8')
+    );
+
+    for (const task of initialData.tasks) {
+        await new Task(task).save();
+    }
+
+    for (const sprint of initialData.sprints) {
+        await new Sprint(sprint).save();
+    }
+
+    for (const status of initialData.statuses) {
+        await new Status({ status }).save();
+    }
+
+    for (const workflow of initialData.workflows) {
+        await new Workflow(workflow).save();
+    }
+};
+
+mongoose.connection.once('open', async () => {
+    const count = await Task.countDocuments();
+    if (count === 0) {
+        await loadInitialData();
+    }
+});
+
 app.get('/api/tasks', async (req, res) => {
     try {
-        const tasks = await Task.find();
+        const tasks = await Task.find().sort({ order: 1 });
         res.json(tasks);
     } catch (error) {
         res.status(500).json({ message: error.message });
@@ -175,6 +217,24 @@ app.delete('/api/users/:id', async (req, res) => {
     try {
         await User.findByIdAndDelete(req.params.id);
         res.json({ message: 'User deleted' });
+    } catch (error) {
+        res.status(500).json({ message: error.message });
+    }
+});
+
+app.get('/api/statuses', async (req, res) => {
+    try {
+        const statuses = await Status.find();
+        res.json(statuses);
+    } catch (error) {
+        res.status(500).json({ message: error.message });
+    }
+});
+
+app.get('/api/workflows', async (req, res) => {
+    try {
+        const workflows = await Workflow.find();
+        res.json(workflows);
     } catch (error) {
         res.status(500).json({ message: error.message });
     }

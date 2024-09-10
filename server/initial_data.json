@@ -1,0 +1,160 @@
+{
+    "tasks": [
+        {
+            "id": "1",
+            "title": "Implement backlog ordering functionality",
+            "description": "Add the ability to reorder tasks in the backlog using drag-and-drop",
+            "points": 8,
+            "priority": "high",
+            "status": "todo",
+            "timeSpent": 0,
+            "attachments": [],
+            "comments": [],
+            "order": 0
+        },
+        {
+            "id": "2",
+            "title": "Fix task update functionality",
+            "description": "Resolve issues with updating task details",
+            "points": 5,
+            "priority": "high",
+            "status": "todo",
+            "timeSpent": 0,
+            "attachments": [],
+            "comments": [],
+            "order": 1
+        },
+        {
+            "id": "3",
+            "title": "Implement persistent task status",
+            "description": "Ensure task status is saved and persists across sessions",
+            "points": 3,
+            "priority": "high",
+            "status": "todo",
+            "timeSpent": 0,
+            "attachments": [],
+            "comments": [],
+            "order": 2
+        },
+        {
+            "id": "4",
+            "title": "Add comments functionality to tasks",
+            "description": "Implement the ability to add and view comments on tasks",
+            "points": 5,
+            "priority": "medium",
+            "status": "todo",
+            "timeSpent": 0,
+            "attachments": [],
+            "comments": [],
+            "order": 3
+        },
+        {
+            "id": "5",
+            "title": "Update task status when dragging in Sprint view",
+            "description": "Automatically update task status when moved between columns in Sprint Board",
+            "points": 5,
+            "priority": "medium",
+            "status": "todo",
+            "timeSpent": 0,
+            "attachments": [],
+            "comments": [],
+            "order": 4
+        },
+        {
+            "id": "6",
+            "title": "Enhance TaskCard component with assignee functionality",
+            "description": "Add the ability to assign tasks to users in the TaskCard component",
+            "points": 3,
+            "priority": "medium",
+            "status": "todo",
+            "timeSpent": 0,
+            "attachments": [],
+            "comments": [],
+            "order": 5
+        },
+        {
+            "id": "7",
+            "title": "Implement due date functionality for tasks",
+            "description": "Add the ability to set and display due dates for tasks",
+            "points": 2,
+            "priority": "medium",
+            "status": "todo",
+            "timeSpent": 0,
+            "attachments": [],
+            "comments": [],
+            "order": 6
+        }
+    ],
+    "sprints": [
+        {
+            "id": "1",
+            "name": "Sprint 1",
+            "startDate": "2023-05-01",
+            "endDate": "2023-05-14",
+            "tasks": []
+        }
+    ],
+    "statuses": [
+        {
+            "id": "1",
+            "name": "todo",
+            "order": 0
+        },
+        {
+            "id": "2",
+            "name": "inprogress",
+            "order": 1
+        },
+        {
+            "id": "3",
+            "name": "codereview",
+            "order": 2
+        },
+        {
+            "id": "4",
+            "name": "readytotest",
+            "order": 3
+        },
+        {
+            "id": "5",
+            "name": "qa",
+            "order": 4
+        },
+        {
+            "id": "6",
+            "name": "done",
+            "order": 5
+        }
+    ],
+    "workflows": [
+        {
+            "id": "1",
+            "name": "Default",
+            "statuses": ["todo", "inprogress", "codereview", "readytotest", "qa", "done"]
+        }
+    ],
+    "users": [
+        {
+            "id": "1",
+            "name": "John Doe",
+            "email": "john@example.com",
+            "role": "developer"
+        },
+        {
+            "id": "2",
+            "name": "Jane Smith",
+            "email": "jane@example.com",
+            "role": "project_manager"
+        }
+    ],
+    "projects": [
+        {
+            "id": "1",
+            "name": "JIRA Clone",
+            "description": "A lightweight project management tool",
+            "tasks": ["1", "2", "3", "4", "5", "6", "7"],
+            "sprints": ["1"],
+            "workflow": "1"
+        }
+    ]
+}
