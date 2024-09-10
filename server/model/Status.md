@@ -2,33 +2,36 @@
 
 ## Overview
 
-This file (`server/model/Status.js`) defines the Mongoose schema and model for the Status entity in the project management application. The Status model represents different states or stages that tasks can be in within a workflow or project.
+This file (`server/model/Status.js`) defines the Mongoose schema and model for the Status entity in
+the project management application. The Status model represents different states or stages that
+tasks can be in within a workflow or project.
 
 ## Schema Definition
 
 The `statusSchema` is defined with the following fields:
 
-- `name`: String (required, unique, trimmed)
-- `description`: String (trimmed)
-- `color`: String (default: '#000000')
-- `order`: Number (default: 0)
-- `isDefault`: Boolean (default: false)
-- `createdAt`: Date (default: current date/time)
-- `updatedAt`: Date (default: current date/time)
+-   `name`: String (required, unique, trimmed)
+-   `description`: String (trimmed)
+-   `color`: String (default: '#000000')
+-   `order`: Number (default: 0)
+-   `isDefault`: Boolean (default: false)
+-   `createdAt`: Date (default: current date/time)
+-   `updatedAt`: Date (default: current date/time)
 
 ### Fields Description
 
-- `name`: The unique identifier for the status (e.g., "To Do", "In Progress", "Done").
-- `description`: An optional description of the status.
-- `color`: A hexadecimal color code to visually represent the status.
-- `order`: A number to determine the display order of statuses.
-- `isDefault`: Indicates if this status is the default one for new tasks.
-- `createdAt`: Timestamp of when the status was created.
-- `updatedAt`: Timestamp of when the status was last updated.
+-   `name`: The unique identifier for the status (e.g., "To Do", "In Progress", "Done").
+-   `description`: An optional description of the status.
+-   `color`: A hexadecimal color code to visually represent the status.
+-   `order`: A number to determine the display order of statuses.
+-   `isDefault`: Indicates if this status is the default one for new tasks.
+-   `createdAt`: Timestamp of when the status was created.
+-   `updatedAt`: Timestamp of when the status was last updated.
 
 ## Pre-save Hook
 
-A pre-save hook is defined to automatically update the `updatedAt` field with the current date/time before saving the document:
+A pre-save hook is defined to automatically update the `updatedAt` field with the current date/time
+before saving the document:
 
 ```javascript
 statusSchema.pre('save', function (next) {
@@ -89,13 +92,18 @@ await Status.deleteOne({ name: 'Obsolete Status' });
 
 ## Role in the Project
 
-The Status model is a crucial part of the project management system. It is used in conjunction with other models like `Task`, `Sprint`, and `Workflow` to define and manage the states of tasks throughout the project lifecycle. The Status entities created from this model will be used to categorize and visualize tasks in components like `SprintBoard` and `Backlog`.
+The Status model is a crucial part of the project management system. It is used in conjunction with
+other models like `Task`, `Sprint`, and `Workflow` to define and manage the states of tasks
+throughout the project lifecycle. The Status entities created from this model will be used to
+categorize and visualize tasks in components like `SprintBoard` and `Backlog`.
 
 ## Related Files
 
-- `server/model/Task.js`: Likely references the Status model to assign statuses to tasks.
-- `server/model/Workflow.js`: May use the Status model to define sequences of statuses in a workflow.
-- `src/components/SprintBoard.js`: Probably uses Status data to organize and display tasks.
-- `src/components/TaskCard.js`: Might display the status of a task using data from this model.
+-   `server/model/Task.js`: Likely references the Status model to assign statuses to tasks.
+-   `server/model/Workflow.js`: May use the Status model to define sequences of statuses in a
+    workflow.
+-   `src/components/SprintBoard.js`: Probably uses Status data to organize and display tasks.
+-   `src/components/TaskCard.js`: Might display the status of a task using data from this model.
 
-By providing a flexible and customizable Status model, the application allows for tailored project management workflows that can adapt to various team needs and methodologies.
+By providing a flexible and customizable Status model, the application allows for tailored project
+management workflows that can adapt to various team needs and methodologies.

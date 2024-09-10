@@ -12,11 +12,6 @@ https://jira.autocode.work/
 
 -   Backlog: Manage and prioritize your project tasks
 -   Sprint Board: Visualize and track progress during sprints
--   Task Cards: Detailed view for individual tasks
-    -   title
-    -   description
-    -   points
-    -   priority
 
 ## Planned Enhancements
 
@@ -113,4 +108,5 @@ Comprehensive documentation is available in the `docs` folder, including:
 -   User guides
 
 # TODO
--   show task edit in Dialog in Backlog (similar to SprintBoard)
+
+-   add Sprint Create/Start/Close functions to Backlog

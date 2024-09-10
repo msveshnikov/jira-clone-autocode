@@ -2,9 +2,12 @@
 
 ## Overview
 
-This file (`server/model/Workflow.js`) defines the Mongoose schema and model for the Workflow entity in the project. It's part of the server-side data model, likely used in a task management or project tracking application.
+This file (`server/model/Workflow.js`) defines the Mongoose schema and model for the Workflow entity
+in the project. It's part of the server-side data model, likely used in a task management or project
+tracking application.
 
-The Workflow model represents a series of statuses that tasks or projects can progress through. It's an essential component for organizing and tracking the progress of work items within the system.
+The Workflow model represents a series of statuses that tasks or projects can progress through. It's
+an essential component for organizing and tracking the progress of work items within the system.
 
 ## Schema Definition
 
@@ -34,10 +37,10 @@ const workflowSchema = new mongoose.Schema({
 
 ### Fields
 
-- `name`: A unique string identifier for the workflow.
-- `statuses`: An array of strings representing the different stages or states in the workflow.
-- `createdAt`: A timestamp of when the workflow was created.
-- `updatedAt`: A timestamp of when the workflow was last updated.
+-   `name`: A unique string identifier for the workflow.
+-   `statuses`: An array of strings representing the different stages or states in the workflow.
+-   `createdAt`: A timestamp of when the workflow was created.
+-   `updatedAt`: A timestamp of when the workflow was last updated.
 
 ## Middleware
 
@@ -61,7 +64,8 @@ workflowSchema.pre('findOneAndUpdate', function (next) {
 });
 ```
 
-This middleware updates the `updatedAt` field with the current timestamp when using the `findOneAndUpdate` method.
+This middleware updates the `updatedAt` field with the current timestamp when using the
+`findOneAndUpdate` method.
 
 ## Model Creation
 
@@ -99,11 +103,16 @@ await Workflow.findOneAndUpdate(
 
 ## Role in the Project
 
-This Workflow model is likely used in conjunction with other models like `Task`, `Sprint`, and `Project`. It provides a flexible way to define and manage different workflows that can be associated with tasks or projects in the system.
+This Workflow model is likely used in conjunction with other models like `Task`, `Sprint`, and
+`Project`. It provides a flexible way to define and manage different workflows that can be
+associated with tasks or projects in the system.
 
 The model allows the application to:
+
 1. Define custom workflows for different types of projects or teams.
 2. Track the progress of tasks through predefined stages.
 3. Maintain a history of workflow changes through the `createdAt` and `updatedAt` fields.
 
-It plays a crucial role in the server-side logic, potentially interacting with API endpoints that manage workflows and integrate with the front-end components like `SprintBoard.js` or `TaskCard.js` to display and update task statuses based on the defined workflows.
+It plays a crucial role in the server-side logic, potentially interacting with API endpoints that
+manage workflows and integrate with the front-end components like `SprintBoard.js` or `TaskCard.js`
+to display and update task statuses based on the defined workflows.

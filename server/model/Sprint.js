@@ -8,7 +8,7 @@ const sprintSchema = new mongoose.Schema({
     project: {
         type: mongoose.Schema.Types.ObjectId,
         ref: 'Project'
-        //  required: true
+        // required: true
     },
     status: {
         type: String,
@@ -85,6 +85,23 @@ sprintSchema.statics.getUpcomingSprints = function (projectId) {
 
 sprintSchema.statics.getCompletedSprints = function (projectId) {
     return this.find({ project: projectId, status: 'completed' }).sort('-endDate');
+};
+
+sprintSchema.statics.createSprint = async function (sprintData) {
+    const sprint = new this(sprintData);
+    return sprint.save();
+};
+
+sprintSchema.methods.updateSprint = async function (updateData) {
+    Object.assign(this, updateData);
+    return this.save();
+};
+
+sprintSchema.methods.deleteSprint = async function () {
+    if (this.status === 'active') {
+        throw new Error('Cannot delete an active sprint');
+    }
+    return this.remove();
 };
 
 const Sprint = mongoose.model('Sprint', sprintSchema);

@@ -5,7 +5,11 @@ const userSchema = new mongoose.Schema({
     email: { type: String, required: true, unique: true },
     password: { type: String, required: true },
     name: { type: String, unique: true },
-    role: { type: String, enum: ['user', 'admin', 'developer','project_manager'], default: 'user' },
+    role: {
+        type: String,
+        enum: ['user', 'admin', 'developer', 'project_manager'],
+        default: 'user'
+    },
     projects: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Project' }],
     tasks: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Task' }],
     createdAt: { type: Date, default: Date.now },

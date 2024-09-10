@@ -74,6 +74,10 @@ const taskSchema = new mongoose.Schema({
     updatedAt: {
         type: Date,
         default: Date.now
+    },
+    customFields: {
+        type: Map,
+        of: mongoose.Schema.Types.Mixed
     }
 });
 
@@ -112,6 +116,22 @@ taskSchema.methods.updateOrder = function (newOrder) {
     return this.save();
 };
 
+taskSchema.methods.addCustomField = function (key, value) {
+    if (!this.customFields) {
+        this.customFields = new Map();
+    }
+    this.customFields.set(key, value);
+    return this.save();
+};
+
+taskSchema.methods.removeCustomField = function (key) {
+    if (this.customFields) {
+        this.customFields.delete(key);
+        return this.save();
+    }
+    return this;
+};
+
 taskSchema.statics.findByProject = function (projectId) {
     return this.find({ project: projectId }).sort('order');
 };
@@ -126,6 +146,15 @@ taskSchema.statics.findByStatus = function (status) {
 
 taskSchema.statics.findByAssignee = function (userId) {
     return this.find({ assignedTo: userId }).sort('order');
+};
+
+taskSchema.statics.search = function (query) {
+    return this.find({
+        $or: [
+            { title: { $regex: query, $options: 'i' } },
+            { description: { $regex: query, $options: 'i' } }
+        ]
+    });
 };
 
 const Task = mongoose.model('Task', taskSchema);

@@ -162,6 +162,32 @@ app.delete('/sprints/:id', async (req, res) => {
     }
 });
 
+app.post('/sprints/:id/start', async (req, res) => {
+    try {
+        const sprint = await Sprint.findById(req.params.id);
+        if (!sprint) {
+            return res.status(404).json({ message: 'Sprint not found' });
+        }
+        await sprint.start();
+        res.json(sprint);
+    } catch (error) {
+        res.status(400).json({ message: error.message });
+    }
+});
+
+app.post('/sprints/:id/complete', async (req, res) => {
+    try {
+        const sprint = await Sprint.findById(req.params.id);
+        if (!sprint) {
+            return res.status(404).json({ message: 'Sprint not found' });
+        }
+        await sprint.complete();
+        res.json(sprint);
+    } catch (error) {
+        res.status(400).json({ message: error.message });
+    }
+});
+
 app.get('/projects', async (req, res) => {
     try {
         const projects = await Project.find();
@@ -251,6 +277,94 @@ app.get('/workflows', async (req, res) => {
     try {
         const workflows = await Workflow.find();
         res.json(workflows);
+    } catch (error) {
+        res.status(500).json({ message: error.message });
+    }
+});
+
+app.post('/tasks/:id/comments', async (req, res) => {
+    try {
+        const task = await Task.findById(req.params.id);
+        if (!task) {
+            return res.status(404).json({ message: 'Task not found' });
+        }
+        const comment = await task.addComment(req.body.text, req.body.author);
+        res.status(201).json(comment);
+    } catch (error) {
+        res.status(400).json({ message: error.message });
+    }
+});
+
+app.post('/tasks/:id/attachments', async (req, res) => {
+    try {
+        const task = await Task.findById(req.params.id);
+        if (!task) {
+            return res.status(404).json({ message: 'Task not found' });
+        }
+        const attachment = await task.addAttachment(req.body.name, req.body.url);
+        res.status(201).json(attachment);
+    } catch (error) {
+        res.status(400).json({ message: error.message });
+    }
+});
+
+app.put('/tasks/:id/status', async (req, res) => {
+    try {
+        const task = await Task.findById(req.params.id);
+        if (!task) {
+            return res.status(404).json({ message: 'Task not found' });
+        }
+        const updatedTask = await task.updateStatus(req.body.status);
+        res.json(updatedTask);
+    } catch (error) {
+        res.status(400).json({ message: error.message });
+    }
+});
+
+app.put('/tasks/:id/assign', async (req, res) => {
+    try {
+        const task = await Task.findById(req.params.id);
+        if (!task) {
+            return res.status(404).json({ message: 'Task not found' });
+        }
+        const updatedTask = await task.assignTo(req.body.userId);
+        res.json(updatedTask);
+    } catch (error) {
+        res.status(400).json({ message: error.message });
+    }
+});
+
+app.post('/tasks/:id/log-time', async (req, res) => {
+    try {
+        const task = await Task.findById(req.params.id);
+        if (!task) {
+            return res.status(404).json({ message: 'Task not found' });
+        }
+        const updatedTask = await task.logTime(req.body.time);
+        res.json(updatedTask);
+    } catch (error) {
+        res.status(400).json({ message: error.message });
+    }
+});
+
+app.put('/tasks/:id/order', async (req, res) => {
+    try {
+        const task = await Task.findById(req.params.id);
+        if (!task) {
+            return res.status(404).json({ message: 'Task not found' });
+        }
+        const updatedTask = await task.updateOrder(req.body.order);
+        res.json(updatedTask);
+    } catch (error) {
+        res.status(400).json({ message: error.message });
+    }
+});
+
+app.get('/tasks/search', async (req, res) => {
+    try {
+        const query = req.query.q;
+        const tasks = await Task.find({ $text: { $search: query } });
+        res.json(tasks);
     } catch (error) {
         res.status(500).json({ message: error.message });
     }

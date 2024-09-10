@@ -153,6 +153,10 @@ const TaskCard = ({ id: propId }) => {
         removeCommentMutation.mutate({ taskId: id, commentId });
     };
 
+    const handleCancel = () => {
+        navigate('/backlog');
+    };
+
     if (isLoading) return <Typography>Loading...</Typography>;
     if (isError) return <Typography>Error loading task</Typography>;
 
@@ -335,6 +339,9 @@ const TaskCard = ({ id: propId }) => {
                             <Box sx={{ display: 'flex', justifyContent: 'space-between', mt: 2 }}>
                                 <Button type="submit" variant="contained" color="primary">
                                     Update Task
+                                </Button>
+                                <Button variant="contained" color="primary" onClick={handleCancel}>
+                                    Cancel
                                 </Button>
                                 <Button variant="contained" color="error" onClick={handleDelete}>
                                     Delete Task

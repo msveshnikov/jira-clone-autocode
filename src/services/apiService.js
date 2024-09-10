@@ -299,4 +299,22 @@ export const updateTaskDueDate = async (taskId, dueDate) => {
     }
 };
 
+export const startSprint = async (sprintId) => {
+    try {
+        const response = await apiService.put(`/sprints/${sprintId}/start`);
+        return response.data;
+    } catch (error) {
+        handleApiError(error);
+    }
+};
+
+export const closeSprint = async (sprintId) => {
+    try {
+        const response = await apiService.put(`/sprints/${sprintId}/close`);
+        return response.data;
+    } catch (error) {
+        handleApiError(error);
+    }
+};
+
 export default apiService;
