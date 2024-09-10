@@ -23,10 +23,7 @@ import {
     Paper,
     Box,
     Chip,
-    CircularProgress,
-    Card,
-    CardContent,
-    CardActions
+    CircularProgress
 } from '@mui/material';
 import { DragDropContext, Droppable, Draggable } from 'react-beautiful-dnd';
 import {
@@ -394,8 +391,12 @@ const Backlog = () => {
                                         <TableRow key={sprint._id}>
                                             <TableCell>{sprint.name}</TableCell>
                                             <TableCell>{sprint.status}</TableCell>
-                                            <TableCell>{new Date(sprint.startDate).toLocaleDateString()}</TableCell>
-                                            <TableCell>{new Date(sprint.endDate).toLocaleDateString()}</TableCell>
+                                            <TableCell>
+                                                {new Date(sprint.startDate).toLocaleDateString()}
+                                            </TableCell>
+                                            <TableCell>
+                                                {new Date(sprint.endDate).toLocaleDateString()}
+                                            </TableCell>
                                             <TableCell>{sprint.goal}</TableCell>
                                             <TableCell>
                                                 {sprint.status === 'planning' && (
@@ -403,7 +404,9 @@ const Backlog = () => {
                                                         variant="contained"
                                                         color="primary"
                                                         size="small"
-                                                        onClick={() => handleStartSprint(sprint._id)}
+                                                        onClick={() =>
+                                                            handleStartSprint(sprint._id)
+                                                        }
                                                     >
                                                         Start Sprint
                                                     </Button>
@@ -413,7 +416,9 @@ const Backlog = () => {
                                                         variant="contained"
                                                         color="secondary"
                                                         size="small"
-                                                        onClick={() => handleCloseSprint(sprint._id)}
+                                                        onClick={() =>
+                                                            handleCloseSprint(sprint._id)
+                                                        }
                                                     >
                                                         Close Sprint
                                                     </Button>
