@@ -24,7 +24,9 @@ import {
     Box,
     Chip,
     CircularProgress,
-    IconButton
+    IconButton,
+    Tab,
+    Tabs
 } from '@mui/material';
 import { DragDropContext, Droppable, Draggable } from 'react-beautiful-dnd';
 import {
@@ -62,6 +64,7 @@ const Backlog = () => {
         goal: ''
     });
     const [searchQuery, setSearchQuery] = useState('');
+    const [view, setView] = useState('backlog');
     const queryClient = useQueryClient();
     const navigate = useNavigate();
     const theme = useTheme();
@@ -263,6 +266,10 @@ const Backlog = () => {
         setSearchQuery(e.target.value);
     };
 
+    const handleViewChange = (event, newView) => {
+        setView(newView);
+    };
+
     if (isLoading) return <CircularProgress />;
     if (isError) return <Typography>Error loading tasks</Typography>;
 
@@ -270,8 +277,12 @@ const Backlog = () => {
         <Box sx={{ my: 3, width: '100%', overflowX: 'auto' }}>
             <Container maxWidth={false}>
                 <Typography variant="h4" gutterBottom>
-                    Backlog
+                    Project Management
                 </Typography>
+                <Tabs value={view} onChange={handleViewChange} sx={{ mb: 2 }}>
+                    <Tab label="Backlog" value="backlog" />
+                    <Tab label="Sprint" value="sprint" />
+                </Tabs>
                 <Box sx={{ display: 'flex', mb: 2 }}>
                     <Button variant="contained" color="primary" onClick={handleOpen} sx={{ mr: 2 }}>
                         Add Task
@@ -295,110 +306,179 @@ const Backlog = () => {
                         }}
                     />
                 </Box>
-                <DragDropContext onDragEnd={onDragEnd}>
-                    <Droppable droppableId="backlog">
-                        {(provided) => (
-                            <TableContainer
-                                component={Paper}
-                                {...provided.droppableProps}
-                                ref={provided.innerRef}
-                            >
-                                <Table size="small">
-                                    <TableHead>
-                                        <TableRow>
-                                            <TableCell>Title</TableCell>
-                                            <TableCell>Points</TableCell>
-                                            <TableCell>Priority</TableCell>
-                                            <TableCell>Assigned To</TableCell>
-                                            <TableCell>Status</TableCell>
-                                            <TableCell>Actions</TableCell>
-                                        </TableRow>
-                                    </TableHead>
-                                    <TableBody>
-                                        {tasks.map((task, index) => (
-                                            <Draggable
-                                                key={task._id}
-                                                draggableId={task._id.toString()}
-                                                index={index}
-                                            >
-                                                {(provided) => (
-                                                    <TableRow
-                                                        ref={provided.innerRef}
-                                                        {...provided.draggableProps}
-                                                        {...provided.dragHandleProps}
-                                                        sx={{ cursor: 'pointer', height: '40px' }}
-                                                    >
-                                                        <TableCell
-                                                            onClick={() =>
-                                                                handleTaskClick(task._id)
-                                                            }
+                {view === 'backlog' && (
+                    <DragDropContext onDragEnd={onDragEnd}>
+                        <Droppable droppableId="backlog">
+                            {(provided) => (
+                                <TableContainer
+                                    component={Paper}
+                                    {...provided.droppableProps}
+                                    ref={provided.innerRef}
+                                >
+                                    <Table size="small">
+                                        <TableHead>
+                                            <TableRow>
+                                                <TableCell>Title</TableCell>
+                                                <TableCell>Points</TableCell>
+                                                <TableCell>Priority</TableCell>
+                                                <TableCell>Assigned To</TableCell>
+                                                <TableCell>Status</TableCell>
+                                                <TableCell>Actions</TableCell>
+                                            </TableRow>
+                                        </TableHead>
+                                        <TableBody>
+                                            {tasks.map((task, index) => (
+                                                <Draggable
+                                                    key={task._id}
+                                                    draggableId={task._id.toString()}
+                                                    index={index}
+                                                >
+                                                    {(provided) => (
+                                                        <TableRow
+                                                            ref={provided.innerRef}
+                                                            {...provided.draggableProps}
+                                                            {...provided.dragHandleProps}
+                                                            sx={{
+                                                                cursor: 'pointer',
+                                                                height: '40px'
+                                                            }}
                                                         >
-                                                            {task.title}
-                                                        </TableCell>
-                                                        <TableCell
-                                                            onClick={() =>
-                                                                handleTaskClick(task._id)
-                                                            }
-                                                        >
-                                                            {task.points}
-                                                        </TableCell>
-                                                        <TableCell
-                                                            onClick={() =>
-                                                                handleTaskClick(task._id)
-                                                            }
-                                                        >
-                                                            <Chip
-                                                                label={task.priority.toUpperCase()}
-                                                                size="small"
-                                                                sx={{
-                                                                    bgcolor: getPriorityColor(
-                                                                        task.priority
-                                                                    ),
-                                                                    color: 'white'
-                                                                }}
-                                                            />
-                                                        </TableCell>
-                                                        <TableCell
-                                                            onClick={() =>
-                                                                handleTaskClick(task._id)
-                                                            }
-                                                        >
-                                                            {task.assignedTo}
-                                                        </TableCell>
-                                                        <TableCell
-                                                            onClick={() =>
-                                                                handleTaskClick(task._id)
-                                                            }
-                                                        >
-                                                            {task.status}
-                                                        </TableCell>
-                                                        <TableCell>
-                                                            <IconButton
-                                                                onClick={() => handleEditTask(task)}
-                                                                size="small"
-                                                            >
-                                                                <Edit />
-                                                            </IconButton>
-                                                            <IconButton
+                                                            <TableCell
                                                                 onClick={() =>
-                                                                    handleDeleteTask(task._id)
+                                                                    handleTaskClick(task._id)
                                                                 }
-                                                                size="small"
                                                             >
-                                                                <Delete />
-                                                            </IconButton>
-                                                        </TableCell>
-                                                    </TableRow>
+                                                                {task.title}
+                                                            </TableCell>
+                                                            <TableCell
+                                                                onClick={() =>
+                                                                    handleTaskClick(task._id)
+                                                                }
+                                                            >
+                                                                {task.points}
+                                                            </TableCell>
+                                                            <TableCell
+                                                                onClick={() =>
+                                                                    handleTaskClick(task._id)
+                                                                }
+                                                            >
+                                                                <Chip
+                                                                    label={task.priority.toUpperCase()}
+                                                                    size="small"
+                                                                    sx={{
+                                                                        bgcolor: getPriorityColor(
+                                                                            task.priority
+                                                                        ),
+                                                                        color: 'white'
+                                                                    }}
+                                                                />
+                                                            </TableCell>
+                                                            <TableCell
+                                                                onClick={() =>
+                                                                    handleTaskClick(task._id)
+                                                                }
+                                                            >
+                                                                {task.assignedTo}
+                                                            </TableCell>
+                                                            <TableCell
+                                                                onClick={() =>
+                                                                    handleTaskClick(task._id)
+                                                                }
+                                                            >
+                                                                {task.status}
+                                                            </TableCell>
+                                                            <TableCell>
+                                                                <IconButton
+                                                                    onClick={() =>
+                                                                        handleEditTask(task)
+                                                                    }
+                                                                    size="small"
+                                                                >
+                                                                    <Edit />
+                                                                </IconButton>
+                                                                <IconButton
+                                                                    onClick={() =>
+                                                                        handleDeleteTask(task._id)
+                                                                    }
+                                                                    size="small"
+                                                                >
+                                                                    <Delete />
+                                                                </IconButton>
+                                                            </TableCell>
+                                                        </TableRow>
+                                                    )}
+                                                </Draggable>
+                                            ))}
+                                            {provided.placeholder}
+                                        </TableBody>
+                                    </Table>
+                                </TableContainer>
+                            )}
+                        </Droppable>
+                    </DragDropContext>
+                )}
+                {view === 'sprint' && (
+                    <Box sx={{ mt: 4 }}>
+                        <Typography variant="h5" gutterBottom>
+                            Sprints
+                        </Typography>
+                        <TableContainer component={Paper}>
+                            <Table size="small">
+                                <TableHead>
+                                    <TableRow>
+                                        <TableCell>Name</TableCell>
+                                        <TableCell>Status</TableCell>
+                                        <TableCell>Start Date</TableCell>
+                                        <TableCell>End Date</TableCell>
+                                        <TableCell>Goal</TableCell>
+                                        <TableCell>Actions</TableCell>
+                                    </TableRow>
+                                </TableHead>
+                                <TableBody>
+                                    {sprints?.map((sprint) => (
+                                        <TableRow key={sprint._id}>
+                                            <TableCell>{sprint.name}</TableCell>
+                                            <TableCell>{sprint.status}</TableCell>
+                                            <TableCell>
+                                                {new Date(sprint.startDate).toLocaleDateString()}
+                                            </TableCell>
+                                            <TableCell>
+                                                {new Date(sprint.endDate).toLocaleDateString()}
+                                            </TableCell>
+                                            <TableCell>{sprint.goal}</TableCell>
+                                            <TableCell>
+                                                {sprint.status === 'planning' && (
+                                                    <Button
+                                                        variant="contained"
+                                                        color="primary"
+                                                        size="small"
+                                                        onClick={() =>
+                                                            handleStartSprint(sprint._id)
+                                                        }
+                                                    >
+                                                        Start Sprint
+                                                    </Button>
                                                 )}
-                                            </Draggable>
-                                        ))}
-                                        {provided.placeholder}
-                                    </TableBody>
-                                </Table>
-                            </TableContainer>
-                        )}
-                    </Droppable>
-                </DragDropContext>
+                                                {sprint.status === 'active' && (
+                                                    <Button
+                                                        variant="contained"
+                                                        color="secondary"
+                                                        size="small"
+                                                        onClick={() =>
+                                                            handleCloseSprint(sprint._id)
+                                                        }
+                                                    >
+                                                        Close Sprint
+                                                    </Button>
+                                                )}
+                                            </TableCell>
+                                        </TableRow>
+                                    ))}
+                                </TableBody>
+                            </Table>
+                        </TableContainer>
+                    </Box>
+                )}
                 <Dialog open={open} onClose={handleClose}>
                     <DialogTitle>{editingTask ? 'Edit Task' : 'Add New Task'}</DialogTitle>
                     <DialogContent>
@@ -519,68 +599,6 @@ const Backlog = () => {
                         </Button>
                     </DialogActions>
                 </Dialog>
-                {sprints && (
-                    <Box sx={{ mt: 4 }}>
-                        <Typography variant="h5" gutterBottom>
-                            Sprints
-                        </Typography>
-                        <TableContainer component={Paper}>
-                            <Table size="small">
-                                <TableHead>
-                                    <TableRow>
-                                        <TableCell>Name</TableCell>
-                                        <TableCell>Status</TableCell>
-                                        <TableCell>Start Date</TableCell>
-                                        <TableCell>End Date</TableCell>
-                                        <TableCell>Goal</TableCell>
-                                        <TableCell>Actions</TableCell>
-                                    </TableRow>
-                                </TableHead>
-                                <TableBody>
-                                    {sprints.map((sprint) => (
-                                        <TableRow key={sprint._id}>
-                                            <TableCell>{sprint.name}</TableCell>
-                                            <TableCell>{sprint.status}</TableCell>
-                                            <TableCell>
-                                                {new Date(sprint.startDate).toLocaleDateString()}
-                                            </TableCell>
-                                            <TableCell>
-                                                {new Date(sprint.endDate).toLocaleDateString()}
-                                            </TableCell>
-                                            <TableCell>{sprint.goal}</TableCell>
-                                            <TableCell>
-                                                {sprint.status === 'planning' && (
-                                                    <Button
-                                                        variant="contained"
-                                                        color="primary"
-                                                        size="small"
-                                                        onClick={() =>
-                                                            handleStartSprint(sprint._id)
-                                                        }
-                                                    >
-                                                        Start Sprint
-                                                    </Button>
-                                                )}
-                                                {sprint.status === 'active' && (
-                                                    <Button
-                                                        variant="contained"
-                                                        color="secondary"
-                                                        size="small"
-                                                        onClick={() =>
-                                                            handleCloseSprint(sprint._id)
-                                                        }
-                                                    >
-                                                        Close Sprint
-                                                    </Button>
-                                                )}
-                                            </TableCell>
-                                        </TableRow>
-                                    ))}
-                                </TableBody>
-                            </Table>
-                        </TableContainer>
-                    </Box>
-                )}
             </Container>
         </Box>
     );

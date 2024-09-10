@@ -68,9 +68,9 @@ export const createTask = async (projectId, taskData) => {
 
 export const updateTask = async (data) => {
     try {
+        // kkep this logic!! it is needed for mutatetask
         const taskId = data.id;
-        const taskData = data;
-        const response = await apiService.put(`/tasks/${taskId}`, taskData);
+        const response = await apiService.put(`/tasks/${taskId}`, data);
         return response.data;
     } catch (error) {
         handleApiError(error);
@@ -104,9 +104,11 @@ export const createSprint = async (projectId, sprintData) => {
     }
 };
 
-export const updateSprint = async (sprintId, sprintData) => {
+export const updateSprint = async (data) => {
     try {
-        const response = await apiService.put(`/sprints/${sprintId}`, sprintData);
+        // keep this logic!! it is needed for mutatetask
+        const sprintId = data.id;
+        const response = await apiService.put(`/sprints/${sprintId}`, data);
         return response.data;
     } catch (error) {
         handleApiError(error);
@@ -185,9 +187,11 @@ export const createWorkflow = async (workflowData) => {
     }
 };
 
-export const updateWorkflow = async (workflowId, workflowData) => {
+export const updateWorkflow = async (data) => {
     try {
-        const response = await apiService.put(`/workflows/${workflowId}`, workflowData);
+        // keep this logic!! it is needed for mutatetask
+        const workflowId = data.id;
+        const response = await apiService.put(`/workflows/${workflowId}`, data);
         return response.data;
     } catch (error) {
         handleApiError(error);
@@ -263,9 +267,11 @@ export const removeComment = async (taskId, commentId) => {
     }
 };
 
-export const updateTaskOrder = async (taskId, newOrder) => {
+export const updateTaskOrder = async (data) => {
     try {
-        const response = await apiService.put(`/tasks/${taskId}/order`, { order: newOrder });
+        // keep this logic!! it is needed for mutatetask
+        const taskId = data.id;
+        const response = await apiService.put(`/tasks/${taskId}/order`, { order: data.order });
         return response.data;
     } catch (error) {
         handleApiError(error);
@@ -326,9 +332,10 @@ export const createProject = async (projectData) => {
     }
 };
 
-export const updateProject = async (projectId, projectData) => {
+export const updateProject = async (data) => {
     try {
-        const response = await apiService.put(`/projects/${projectId}`, projectData);
+        const projectId = data.id;
+        const response = await apiService.put(`/projects/${projectId}`, data);
         return response.data;
     } catch (error) {
         handleApiError(error);

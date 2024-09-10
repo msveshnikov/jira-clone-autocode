@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { useParams, useNavigate } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 import { useQuery, useMutation, useQueryClient } from 'react-query';
 import PropTypes from 'prop-types';
 import {
@@ -34,9 +34,7 @@ import {
     removeComment
 } from '../services/apiService';
 
-const TaskCard = ({ id: propId }) => {
-    const { id: paramId } = useParams();
-    const id = propId || paramId;
+const TaskCard = ({ id, projectId }) => {
     const navigate = useNavigate();
     const queryClient = useQueryClient();
     const [task, setTask] = useState({
@@ -59,13 +57,15 @@ const TaskCard = ({ id: propId }) => {
     const updateTaskMutation = useMutation(updateTask, {
         onSuccess: () => {
             queryClient.invalidateQueries(['task', id]);
-            navigate('/backlog');
+            queryClient.invalidateQueries(['tasks', projectId]);
+            navigate(`/project/${projectId}`);
         }
     });
 
     const deleteTaskMutation = useMutation(deleteTask, {
         onSuccess: () => {
-            navigate('/backlog');
+            queryClient.invalidateQueries(['tasks', projectId]);
+            navigate(`/project/${projectId}`);
         }
     });
 
@@ -154,20 +154,14 @@ const TaskCard = ({ id: propId }) => {
     };
 
     const handleCancel = () => {
-        navigate('/backlog');
+        navigate(`/project/${projectId}`);
     };
 
     if (isLoading) return <Typography>Loading...</Typography>;
     if (isError) return <Typography>Error loading task</Typography>;
 
-    const priorityColors = {
-        low: 'success',
-        medium: 'warning',
-        high: 'error'
-    };
-
     return (
-        <Card sx={{ maxWidth: 800, margin: 'auto', mt: 4 }}>
+        <Card>
             <CardContent>
                 <form onSubmit={handleSubmit}>
                     <Grid container spacing={2}>
@@ -243,10 +237,7 @@ const TaskCard = ({ id: propId }) => {
                         </Grid>
                         <Grid item xs={12}>
                             <Box sx={{ mt: 2, mb: 2 }}>
-                                <Chip
-                                    label={task.priority.toUpperCase()}
-                                    color={priorityColors[task.priority]}
-                                />
+                                <Chip label={task.priority.toUpperCase()} color="primary" />
                             </Box>
                         </Grid>
                         <Grid item xs={12}>
@@ -270,14 +261,14 @@ const TaskCard = ({ id: propId }) => {
                             <Typography variant="subtitle1">Attachments</Typography>
                             <List>
                                 {task.attachments?.map((attachment) => (
-                                    <ListItem key={attachment._id}>
+                                    <ListItem key={attachment.id}>
                                         <ListItemText primary={attachment.url} />
                                         <ListItemSecondaryAction>
                                             <IconButton
                                                 edge="end"
                                                 aria-label="delete"
                                                 onClick={() =>
-                                                    handleRemoveAttachment(attachment._id)
+                                                    handleRemoveAttachment(attachment.id)
                                                 }
                                             >
                                                 <DeleteIcon />
@@ -306,7 +297,7 @@ const TaskCard = ({ id: propId }) => {
                             <Typography variant="subtitle1">Comments</Typography>
                             <List>
                                 {task.comments?.map((comment) => (
-                                    <ListItem key={comment._id}>
+                                    <ListItem key={comment.id}>
                                         <ListItemText
                                             primary={comment.text}
                                             secondary={`By ${comment.author}`}
@@ -315,7 +306,7 @@ const TaskCard = ({ id: propId }) => {
                                             <IconButton
                                                 edge="end"
                                                 aria-label="delete"
-                                                onClick={() => handleRemoveComment(comment._id)}
+                                                onClick={() => handleRemoveComment(comment.id)}
                                             >
                                                 <DeleteIcon />
                                             </IconButton>
@@ -340,7 +331,11 @@ const TaskCard = ({ id: propId }) => {
                                 <Button type="submit" variant="contained" color="primary">
                                     Update Task
                                 </Button>
-                                <Button variant="contained" color="primary" onClick={handleCancel}>
+                                <Button
+                                    variant="contained"
+                                    color="secondary"
+                                    onClick={handleCancel}
+                                >
                                     Cancel
                                 </Button>
                                 <Button variant="contained" color="error" onClick={handleDelete}>
@@ -356,7 +351,8 @@ const TaskCard = ({ id: propId }) => {
 };
 
 TaskCard.propTypes = {
-    id: PropTypes.string
+    id: PropTypes.string.isRequired,
+    projectId: PropTypes.string.isRequired
 };
 
 export default TaskCard;

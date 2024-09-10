@@ -18,7 +18,8 @@ import {
     Brightness4,
     Brightness7,
     Menu as MenuIcon,
-    ExitToApp
+    ExitToApp,
+    Search
 } from '@mui/icons-material';
 import { AuthContext } from '../contexts/AuthContext';
 
@@ -169,6 +170,9 @@ const Header = ({ toggleDarkMode, darkMode }) => {
                             Login
                         </Button>
                     )}
+                    <IconButton color="inherit" aria-label="search">
+                        <Search />
+                    </IconButton>
                 </Box>
             </Toolbar>
         </AppBar>
