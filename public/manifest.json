@@ -1,12 +1,28 @@
 {
-    "short_name": "JIRA ",
-    "name": "JIRA  - Lightweight Project Management",
-
+    "short_name": "JIRA",
+    "name": "JIRA - Lightweight Project Management",
+    "icons": [
+        {
+            "src": "favicon.ico",
+            "sizes": "64x64 32x32 24x24 16x16",
+            "type": "image/x-icon"
+        },
+        {
+            "src": "logo192.png",
+            "type": "image/png",
+            "sizes": "192x192"
+        },
+        {
+            "src": "logo512.png",
+            "type": "image/png",
+            "sizes": "512x512"
+        }
+    ],
     "start_url": ".",
     "display": "standalone",
-    "theme_color": "#58CC02",
+    "theme_color": "#0052CC",
     "background_color": "#ffffff",
-    "description": "A lightweight project management tool inspired by JIRA, built with React and MongoDB",
+    "description": "A lightweight project management tool, built with React and MongoDB",
     "lang": "en",
     "orientation": "any",
     "categories": ["productivity", "project management"],
@@ -17,10 +33,15 @@
         "Sprint board",
         "Task cards with details",
         "Customizable workflows",
+        "User authentication",
+        "Drag-and-drop functionality",
+        "Search and filter",
         "Reporting and analytics",
         "Mobile responsiveness",
-        "Advanced search and filtering",
+        "Task comments",
+        "Custom fields",
+        "Version control integration",
         "Time tracking",
-        "File attachments"
+        "Integration with external tools"
     ]
 }
