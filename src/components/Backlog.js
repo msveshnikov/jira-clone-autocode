@@ -23,7 +23,10 @@ import {
     Paper,
     Box,
     Chip,
-    CircularProgress
+    CircularProgress,
+    Card,
+    CardContent,
+    CardActions
 } from '@mui/material';
 import { DragDropContext, Droppable, Draggable } from 'react-beautiful-dnd';
 import {
@@ -44,7 +47,6 @@ const Backlog = () => {
         description: '',
         points: 0,
         priority: 'low',
-        // assignedTo: '',
         status: 'todo'
     });
     const [sprintDialogOpen, setSprintDialogOpen] = useState(false);
@@ -95,7 +97,6 @@ const Backlog = () => {
             description: '',
             points: 0,
             priority: 'low',
-            // assignedTo: '',
             status: 'todo'
         });
     };
@@ -296,15 +297,6 @@ const Backlog = () => {
                                 <MenuItem value="high">High</MenuItem>
                             </Select>
                         </FormControl>
-                        {/* <TextField
-                            margin="dense"
-                            name="assignedTo"
-                            label="Assigned To"
-                            type="text"
-                            fullWidth
-                            value={newTask.assignedTo}
-                            onChange={handleInputChange}
-                        /> */}
                         <FormControl fullWidth margin="dense">
                             <InputLabel>Status</InputLabel>
                             <Select
@@ -385,38 +377,53 @@ const Backlog = () => {
                         <Typography variant="h5" gutterBottom>
                             Sprints
                         </Typography>
-                        {sprints.map((sprint) => (
-                            <Box key={sprint._id} sx={{ mb: 2 }}>
-                                <Typography variant="h6">{sprint.name}</Typography>
-                                <Typography>Status: {sprint.status}</Typography>
-                                <Typography>
-                                    Start Date: {new Date(sprint.startDate).toLocaleDateString()}
-                                </Typography>
-                                <Typography>
-                                    End Date: {new Date(sprint.endDate).toLocaleDateString()}
-                                </Typography>
-                                {sprint.status === 'planning' && (
-                                    <Button
-                                        variant="contained"
-                                        color="primary"
-                                        onClick={() => handleStartSprint(sprint._id)}
-                                        sx={{ mr: 2, mt: 1 }}
-                                    >
-                                        Start Sprint
-                                    </Button>
-                                )}
-                                {sprint.status === 'active' && (
-                                    <Button
-                                        variant="contained"
-                                        color="secondary"
-                                        onClick={() => handleCloseSprint(sprint._id)}
-                                        sx={{ mt: 1 }}
-                                    >
-                                        Close Sprint
-                                    </Button>
-                                )}
-                            </Box>
-                        ))}
+                        <TableContainer component={Paper}>
+                            <Table size="small">
+                                <TableHead>
+                                    <TableRow>
+                                        <TableCell>Name</TableCell>
+                                        <TableCell>Status</TableCell>
+                                        <TableCell>Start Date</TableCell>
+                                        <TableCell>End Date</TableCell>
+                                        <TableCell>Goal</TableCell>
+                                        <TableCell>Actions</TableCell>
+                                    </TableRow>
+                                </TableHead>
+                                <TableBody>
+                                    {sprints.map((sprint) => (
+                                        <TableRow key={sprint._id}>
+                                            <TableCell>{sprint.name}</TableCell>
+                                            <TableCell>{sprint.status}</TableCell>
+                                            <TableCell>{new Date(sprint.startDate).toLocaleDateString()}</TableCell>
+                                            <TableCell>{new Date(sprint.endDate).toLocaleDateString()}</TableCell>
+                                            <TableCell>{sprint.goal}</TableCell>
+                                            <TableCell>
+                                                {sprint.status === 'planning' && (
+                                                    <Button
+                                                        variant="contained"
+                                                        color="primary"
+                                                        size="small"
+                                                        onClick={() => handleStartSprint(sprint._id)}
+                                                    >
+                                                        Start Sprint
+                                                    </Button>
+                                                )}
+                                                {sprint.status === 'active' && (
+                                                    <Button
+                                                        variant="contained"
+                                                        color="secondary"
+                                                        size="small"
+                                                        onClick={() => handleCloseSprint(sprint._id)}
+                                                    >
+                                                        Close Sprint
+                                                    </Button>
+                                                )}
+                                            </TableCell>
+                                        </TableRow>
+                                    ))}
+                                </TableBody>
+                            </Table>
+                        </TableContainer>
                     </Box>
                 )}
             </Container>

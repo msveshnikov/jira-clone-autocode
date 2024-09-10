@@ -109,4 +109,4 @@ Comprehensive documentation is available in the `docs` folder, including:
 
 # TODO
 
--   add Sprint Create/Start/Close functions to Backlog
+-   add User auth
