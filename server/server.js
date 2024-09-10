@@ -8,6 +8,8 @@ import { fileURLToPath } from 'url';
 import path from 'path';
 import fs from 'fs';
 import jwt from 'jsonwebtoken';
+import rateLimit from 'express-rate-limit';
+import compression from 'compression';
 
 import User from './model/User.js';
 import Project from './model/Project.js';
@@ -23,6 +25,13 @@ const PORT = process.env.PORT || 5000;
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
+const limiter = rateLimit({
+    windowMs: 15 * 60 * 1000,
+    max: 100
+});
+
+app.use(limiter);
+app.use(compression());
 app.use(
     cors({
         origin: [
@@ -38,7 +47,9 @@ app.use(express.json());
 app.use(helmet({ crossOriginEmbedderPolicy: false }));
 app.use(morgan('dev'));
 
-mongoose.connect(process.env.MONGODB_URI, {});
+mongoose.connect(process.env.MONGODB_URI, {
+
+});
 
 const loadInitialData = async () => {
     const initialData = JSON.parse(
@@ -299,6 +310,18 @@ app.get('/users', authenticateToken, async (req, res) => {
     try {
         const users = await User.find();
         res.json(users);
+    } catch (error) {
+        res.status(500).json({ message: error.message });
+    }
+});
+
+app.get('/users/me', authenticateToken, async (req, res) => {
+    try {
+        const user = await User.findById(req.user.id);
+        if (!user) {
+            return res.status(404).json({ message: 'User not found' });
+        }
+        res.json(user);
     } catch (error) {
         res.status(500).json({ message: error.message });
     }

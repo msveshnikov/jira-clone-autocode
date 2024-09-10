@@ -45,7 +45,7 @@ const jiraPalette = {
 
 const darkPalette = {
     primary: {
-        main: '#4C9AFF',
+        main: '#4C6ACF',
         light: '#79B8FF',
         dark: '#0052CC'
     },

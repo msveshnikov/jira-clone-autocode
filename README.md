@@ -109,5 +109,5 @@ Comprehensive documentation is available in the `docs` folder, including:
 
 # TODO
 
--   add User auth/register
--   add Projects create/select (with users grants access) and tasks and sprints belongs to Projects
+-   always include PropTypes
+-   FIX! GET /users/me 404 3.726 ms - 147

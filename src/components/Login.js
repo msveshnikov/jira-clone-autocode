@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import PropTypes from 'prop-types';
 import { useNavigate, Link } from 'react-router-dom';
 import {
     TextField,
@@ -28,13 +29,8 @@ const Login = () => {
         setError('');
 
         try {
-            const success = await login(email, password);
+            const success = await login(email, password, rememberMe);
             if (success) {
-                if (rememberMe) {
-                    localStorage.setItem('rememberMe', 'true');
-                } else {
-                    localStorage.removeItem('rememberMe');
-                }
                 navigate('/');
             } else {
                 setError('Invalid email or password');
@@ -124,6 +120,11 @@ const Login = () => {
             </Paper>
         </Container>
     );
+};
+
+Login.propTypes = {
+    toggleDarkMode: PropTypes.func,
+    darkMode: PropTypes.bool
 };
 
 export default Login;

@@ -28,7 +28,7 @@ const Header = ({ toggleDarkMode, darkMode }) => {
     const isMobile = useMediaQuery(theme.breakpoints.down('sm'));
     const [anchorEl, setAnchorEl] = useState(null);
     const [userMenuAnchorEl, setUserMenuAnchorEl] = useState(null);
-    const { user, logout } = useContext(AuthContext);
+    const { user, logout, currentProject } = useContext(AuthContext);
     const navigate = useNavigate();
 
     const handleMenuOpen = (event) => {
@@ -73,15 +73,31 @@ const Header = ({ toggleDarkMode, darkMode }) => {
                                 open={Boolean(anchorEl)}
                                 onClose={handleMenuClose}
                             >
-                                <MenuItem component={Link} to="/backlog" onClick={handleMenuClose}>
-                                    Backlog
-                                </MenuItem>
-                                <MenuItem component={Link} to="/" onClick={handleMenuClose}>
-                                    Sprint Board
-                                </MenuItem>
-                                <MenuItem component={Link} to="/projects" onClick={handleMenuClose}>
+                                <MenuItem
+                                    component={Link}
+                                    to="/"
+                                    onClick={handleMenuClose}
+                                >
                                     Projects
                                 </MenuItem>
+                                {currentProject && (
+                                    <>
+                                        <MenuItem
+                                            component={Link}
+                                            to={`/project/${currentProject._id}/backlog`}
+                                            onClick={handleMenuClose}
+                                        >
+                                            Backlog
+                                        </MenuItem>
+                                        <MenuItem
+                                            component={Link}
+                                            to={`/project/${currentProject._id}`}
+                                            onClick={handleMenuClose}
+                                        >
+                                            Sprint Board
+                                        </MenuItem>
+                                    </>
+                                )}
                             </Menu>
                         </>
                     )}
@@ -90,15 +106,27 @@ const Header = ({ toggleDarkMode, darkMode }) => {
                     </Typography>
                     {!isMobile && (
                         <>
-                            <Button color="inherit" component={Link} to="/backlog">
-                                Backlog
-                            </Button>
                             <Button color="inherit" component={Link} to="/">
-                                Sprint Board
-                            </Button>
-                            <Button color="inherit" component={Link} to="/projects">
                                 Projects
                             </Button>
+                            {currentProject && (
+                                <>
+                                    <Button
+                                        color="inherit"
+                                        component={Link}
+                                        to={`/project/${currentProject._id}/backlog`}
+                                    >
+                                        Backlog
+                                    </Button>
+                                    <Button
+                                        color="inherit"
+                                        component={Link}
+                                        to={`/project/${currentProject._id}`}
+                                    >
+                                        Sprint Board
+                                    </Button>
+                                </>
+                            )}
                         </>
                     )}
                     <IconButton

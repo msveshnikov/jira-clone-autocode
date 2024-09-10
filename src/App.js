@@ -1,4 +1,3 @@
-/* eslint-disable react/prop-types */
 import React, { useState, useEffect } from 'react';
 import { BrowserRouter as Router, Route, Routes, Navigate } from 'react-router-dom';
 import { ThemeProvider } from '@mui/material/styles';
@@ -11,8 +10,10 @@ import TaskCard from './components/TaskCard';
 import Header from './components/Header';
 import Login from './components/Login';
 import Register from './components/Register';
+import Projects from './components/Projects';
 import { Container } from '@mui/material';
 import { AuthProvider, useAuth } from './contexts/AuthContext';
+import PropTypes from 'prop-types';
 
 const queryClient = new QueryClient();
 
@@ -21,6 +22,10 @@ function PrivateRoute({ children }) {
     if (loading) return null;
     return user ? children : <Navigate to="/login" />;
 }
+
+PrivateRoute.propTypes = {
+    children: PropTypes.node.isRequired,
+};
 
 function App() {
     const [darkMode, setDarkMode] = useState(() => {
@@ -54,12 +59,20 @@ function App() {
                                         path="/"
                                         element={
                                             <PrivateRoute>
+                                                <Projects />
+                                            </PrivateRoute>
+                                        }
+                                    />
+                                    <Route
+                                        path="/project/:projectId"
+                                        element={
+                                            <PrivateRoute>
                                                 <SprintBoard />
                                             </PrivateRoute>
                                         }
                                     />
                                     <Route
-                                        path="/backlog"
+                                        path="/project/:projectId/backlog"
                                         element={
                                             <PrivateRoute>
                                                 <Backlog />
@@ -67,7 +80,7 @@ function App() {
                                         }
                                     />
                                     <Route
-                                        path="/task/:id"
+                                        path="/project/:projectId/task/:taskId"
                                         element={
                                             <PrivateRoute>
                                                 <TaskCard />

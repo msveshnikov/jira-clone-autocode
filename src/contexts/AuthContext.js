@@ -1,7 +1,14 @@
-/* eslint-disable react/prop-types */
 import React, { createContext, useState, useContext, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import apiService from '../services/apiService';
+import PropTypes from 'prop-types';
+import apiService, {
+    loginUser,
+    logoutUser,
+    getCurrentUser,
+    registerUser,
+    createProject,
+    updateUserPreferences
+} from '../services/apiService';
 
 export const AuthContext = createContext();
 
@@ -11,6 +18,7 @@ export const AuthProvider = ({ children }) => {
     const [user, setUser] = useState(null);
     const [loading, setLoading] = useState(true);
     const [isAuthenticated, setIsAuthenticated] = useState(false);
+    const [currentProject, setCurrentProject] = useState(null);
     const navigate = useNavigate();
 
     useEffect(() => {
@@ -25,8 +33,8 @@ export const AuthProvider = ({ children }) => {
 
     const fetchUser = async () => {
         try {
-            const response = await apiService.get('/users/me');
-            setUser(response.data);
+            const userData = await getCurrentUser();
+            setUser(userData);
             setIsAuthenticated(true);
         } catch (error) {
             console.error('Error fetching user:', error);
@@ -38,16 +46,15 @@ export const AuthProvider = ({ children }) => {
 
     const login = async (email, password, rememberMe) => {
         try {
-            const response = await apiService.post('/auth/login', { email, password });
-            const { token, user } = response.data;
-            localStorage.setItem('token', token);
+            const data = await loginUser({ email, password });
+            localStorage.setItem('token', data.token);
             if (rememberMe) {
                 localStorage.setItem('rememberMe', 'true');
             } else {
                 localStorage.removeItem('rememberMe');
             }
-            apiService.defaults.headers.common['Authorization'] = `Bearer ${token}`;
-            setUser(user);
+            apiService.defaults.headers.common['Authorization'] = `Bearer ${data.token}`;
+            setUser(data.user);
             setIsAuthenticated(true);
             navigate('/');
             return true;
@@ -59,11 +66,10 @@ export const AuthProvider = ({ children }) => {
 
     const register = async (email, password, name) => {
         try {
-            const response = await apiService.post('/auth/register', { email, password, name });
-            const { token, user } = response.data;
-            localStorage.setItem('token', token);
-            apiService.defaults.headers.common['Authorization'] = `Bearer ${token}`;
-            setUser(user);
+            const data = await registerUser({ email, password, name });
+            localStorage.setItem('token', data.token);
+            apiService.defaults.headers.common['Authorization'] = `Bearer ${data.token}`;
+            setUser(data.user);
             setIsAuthenticated(true);
             navigate('/');
             return true;
@@ -74,12 +80,39 @@ export const AuthProvider = ({ children }) => {
     };
 
     const logout = () => {
+        logoutUser();
         localStorage.removeItem('token');
         localStorage.removeItem('rememberMe');
         delete apiService.defaults.headers.common['Authorization'];
         setUser(null);
         setIsAuthenticated(false);
+        setCurrentProject(null);
         navigate('/login');
+    };
+
+    const createNewProject = async (projectData) => {
+        try {
+            const newProject = await createProject(projectData);
+            return newProject;
+        } catch (error) {
+            console.error('Create project error:', error);
+            return null;
+        }
+    };
+
+    const selectProject = (project) => {
+        setCurrentProject(project);
+    };
+
+    const updatePreferences = async (preferences) => {
+        try {
+            const updatedPreferences = await updateUserPreferences(preferences);
+            setUser((prevUser) => ({ ...prevUser, preferences: updatedPreferences }));
+            return updatedPreferences;
+        } catch (error) {
+            console.error('Update user preferences error:', error);
+            return null;
+        }
     };
 
     const value = {
@@ -89,8 +122,18 @@ export const AuthProvider = ({ children }) => {
         logout,
         loading,
         isAuthenticated,
-        setIsAuthenticated
+        setIsAuthenticated,
+        createProject: createNewProject,
+        selectProject,
+        currentProject,
+        updateUserPreferences: updatePreferences
     };
 
     return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
 };
+
+AuthProvider.propTypes = {
+    children: PropTypes.node.isRequired
+};
+
+export default AuthProvider;
