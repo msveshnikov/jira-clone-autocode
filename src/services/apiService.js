@@ -68,7 +68,6 @@ export const createTask = async (projectId, taskData) => {
 
 export const updateTask = async (data) => {
     try {
-        // kkep this logic!! it is needed for mutatetask
         const taskId = data.id;
         const response = await apiService.put(`/tasks/${taskId}`, data);
         return response.data;
@@ -106,7 +105,6 @@ export const createSprint = async (projectId, sprintData) => {
 
 export const updateSprint = async (data) => {
     try {
-        // keep this logic!! it is needed for mutatetask
         const sprintId = data.id;
         const response = await apiService.put(`/sprints/${sprintId}`, data);
         return response.data;
@@ -189,7 +187,6 @@ export const createWorkflow = async (workflowData) => {
 
 export const updateWorkflow = async (data) => {
     try {
-        // keep this logic!! it is needed for mutatetask
         const workflowId = data.id;
         const response = await apiService.put(`/workflows/${workflowId}`, data);
         return response.data;
@@ -269,7 +266,6 @@ export const removeComment = async (taskId, commentId) => {
 
 export const updateTaskOrder = async (data) => {
     try {
-        // keep this logic!! it is needed for mutatetask
         const taskId = data.id;
         const response = await apiService.put(`/tasks/${taskId}/order`, { order: data.order });
         return response.data;

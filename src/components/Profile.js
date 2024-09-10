@@ -7,8 +7,16 @@ import {
     Grid,
     TextField,
     Button,
-    CircularProgress
+    CircularProgress,
+    Box,
+    Chip,
+    List,
+    ListItem,
+    ListItemText,
+    ListItemSecondaryAction,
+    IconButton
 } from '@mui/material';
+import { Edit, Delete } from '@mui/icons-material';
 import { useAuth } from '../contexts/AuthContext';
 import { getUser, updateUser } from '../services/apiService';
 import PropTypes from 'prop-types';
@@ -30,7 +38,7 @@ const Profile = () => {
     useEffect(() => {
         const fetchUser = async () => {
             try {
-                const userData = await getUser();
+                const userData = await getUser(userId);
                 setUser(userData);
                 setFormData({
                     name: userData.name,
@@ -46,7 +54,7 @@ const Profile = () => {
         };
 
         fetchUser();
-    }, [userId, currentUser]);
+    }, [userId]);
 
     const handleInputChange = (e) => {
         setFormData({ ...formData, [e.target.name]: e.target.value });
@@ -61,6 +69,10 @@ const Profile = () => {
         } catch (error) {
             setError('Error updating user data');
         }
+    };
+
+    const handleDeleteProject = (projectId) => {
+        // Implement project deletion logic here
     };
 
     if (loading) return <CircularProgress />;
@@ -142,6 +154,42 @@ const Profile = () => {
                     )}
                 </Grid>
             </Grid>
+            <Box sx={{ mt: 4 }}>
+                <Typography variant="h6">Projects</Typography>
+                <List>
+                    {user.projects?.map((project) => (
+                        <ListItem key={project.id}>
+                            <ListItemText primary={project.name} />
+                            <ListItemSecondaryAction>
+                                <IconButton
+                                    edge="end"
+                                    aria-label="edit"
+                                    onClick={() => {
+                                        /* Implement edit project logic */
+                                    }}
+                                >
+                                    <Edit />
+                                </IconButton>
+                                <IconButton
+                                    edge="end"
+                                    aria-label="delete"
+                                    onClick={() => handleDeleteProject(project.id)}
+                                >
+                                    <Delete />
+                                </IconButton>
+                            </ListItemSecondaryAction>
+                        </ListItem>
+                    ))}
+                </List>
+            </Box>
+            <Box sx={{ mt: 4 }}>
+                <Typography variant="h6">Skills</Typography>
+                <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 1, mt: 1 }}>
+                    {user.skills?.map((skill) => (
+                        <Chip key={skill} label={skill} />
+                    ))}
+                </Box>
+            </Box>
         </Paper>
     );
 };

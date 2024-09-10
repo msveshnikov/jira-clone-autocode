@@ -12,14 +12,15 @@ import {
     Box,
     Menu,
     MenuItem,
-    Avatar
+    Avatar,
+    InputBase
 } from '@mui/material';
 import {
     Brightness4,
     Brightness7,
     Menu as MenuIcon,
     ExitToApp,
-    Search
+    Search as SearchIcon
 } from '@mui/icons-material';
 import { AuthContext } from '../contexts/AuthContext';
 
@@ -28,6 +29,7 @@ const Header = ({ toggleDarkMode, darkMode }) => {
     const isMobile = useMediaQuery(theme.breakpoints.down('sm'));
     const [anchorEl, setAnchorEl] = useState(null);
     const [userMenuAnchorEl, setUserMenuAnchorEl] = useState(null);
+    const [searchQuery, setSearchQuery] = useState('');
     const { user, logout, currentProject } = useContext(AuthContext);
     const navigate = useNavigate();
 
@@ -51,6 +53,12 @@ const Header = ({ toggleDarkMode, darkMode }) => {
         logout();
         handleUserMenuClose();
         navigate('/login');
+    };
+
+    const handleSearch = (event) => {
+        if (event.key === 'Enter') {
+            navigate(`/search?q=${encodeURIComponent(searchQuery)}`);
+        }
     };
 
     const renderMenuItems = () => (
@@ -131,6 +139,16 @@ const Header = ({ toggleDarkMode, darkMode }) => {
                             )}
                         </>
                     )}
+                    <Box sx={{ display: 'flex', alignItems: 'center', ml: 2 }}>
+                        <SearchIcon sx={{ mr: 1 }} />
+                        <InputBase
+                            placeholder="Search..."
+                            value={searchQuery}
+                            onChange={(e) => setSearchQuery(e.target.value)}
+                            onKeyPress={handleSearch}
+                            sx={{ color: 'inherit' }}
+                        />
+                    </Box>
                     <IconButton
                         color="inherit"
                         onClick={toggleDarkMode}
@@ -170,9 +188,6 @@ const Header = ({ toggleDarkMode, darkMode }) => {
                             Login
                         </Button>
                     )}
-                    <IconButton color="inherit" aria-label="search">
-                        <Search />
-                    </IconButton>
                 </Box>
             </Toolbar>
         </AppBar>

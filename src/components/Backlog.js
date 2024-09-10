@@ -43,6 +43,7 @@ import {
 import { useNavigate, useParams } from 'react-router-dom';
 import { useTheme } from '@mui/material/styles';
 import { Delete, Edit, Search } from '@mui/icons-material';
+import { useAuth } from '../contexts/AuthContext';
 
 const Backlog = () => {
     const [open, setOpen] = useState(false);
@@ -67,6 +68,7 @@ const Backlog = () => {
     const navigate = useNavigate();
     const theme = useTheme();
     const { projectId } = useParams();
+    const { user } = useAuth();
 
     const {
         data: tasks,

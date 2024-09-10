@@ -1,4 +1,4 @@
-import React, { createContext, useState, useContext, useEffect } from 'react';
+import React, { createContext, useState, useEffect, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
 import PropTypes from 'prop-types';
 import apiService, {
@@ -7,32 +7,23 @@ import apiService, {
     getCurrentUser,
     registerUser,
     createProject,
-    updateUserPreferences
+    updateUserPreferences,
+    getProjects
 } from '../services/apiService';
 
 export const AuthContext = createContext();
 
-export const useAuth = () => useContext(AuthContext);
+export const useAuth = () => React.useContext(AuthContext);
 
 export const AuthProvider = ({ children }) => {
     const [user, setUser] = useState(null);
     const [loading, setLoading] = useState(true);
     const [isAuthenticated, setIsAuthenticated] = useState(false);
     const [currentProject, setCurrentProject] = useState(null);
+    const [projects, setProjects] = useState([]);
     const navigate = useNavigate();
 
-    useEffect(() => {
-        const token = localStorage.getItem('token');
-        if (token) {
-            apiService.defaults.headers.common['Authorization'] = `Bearer ${token}`;
-            fetchUser();
-        } else {
-            setLoading(false);
-        }
-        // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, []);
-
-    const fetchUser = async () => {
+    const fetchUser = useCallback(async () => {
         try {
             const userData = await getCurrentUser();
             setUser(userData);
@@ -43,7 +34,27 @@ export const AuthProvider = ({ children }) => {
         } finally {
             setLoading(false);
         }
-    };
+    }, []);
+
+    const fetchProjects = useCallback(async () => {
+        try {
+            const projectsData = await getProjects();
+            setProjects(projectsData);
+        } catch (error) {
+            console.error('Error fetching projects:', error);
+        }
+    }, []);
+
+    useEffect(() => {
+        const token = localStorage.getItem('token');
+        if (token) {
+            apiService.defaults.headers.common['Authorization'] = `Bearer ${token}`;
+            fetchUser();
+            fetchProjects();
+        } else {
+            setLoading(false);
+        }
+    }, [fetchUser, fetchProjects]);
 
     const login = async (email, password, rememberMe) => {
         try {
@@ -57,6 +68,7 @@ export const AuthProvider = ({ children }) => {
             apiService.defaults.headers.common['Authorization'] = `Bearer ${data.token}`;
             setUser(data.user);
             setIsAuthenticated(true);
+            fetchProjects();
             navigate('/');
             return true;
         } catch (error) {
@@ -88,12 +100,14 @@ export const AuthProvider = ({ children }) => {
         setUser(null);
         setIsAuthenticated(false);
         setCurrentProject(null);
+        setProjects([]);
         navigate('/login');
     };
 
     const createNewProject = async (projectData) => {
         try {
             const newProject = await createProject(projectData);
+            setProjects([...projects, newProject]);
             return newProject;
         } catch (error) {
             console.error('Create project error:', error);
@@ -127,7 +141,9 @@ export const AuthProvider = ({ children }) => {
         createProject: createNewProject,
         selectProject,
         currentProject,
-        updateUserPreferences: updatePreferences
+        updateUserPreferences: updatePreferences,
+        projects,
+        fetchProjects
     };
 
     return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;

@@ -11,17 +11,29 @@ import {
     DialogTitle,
     DialogContent,
     CircularProgress,
-    Button
+    Button,
+    TextField
 } from '@mui/material';
 import { useQuery, useMutation, useQueryClient } from 'react-query';
-import { fetchTasks, updateTask, getSprints, updateSprint } from '../services/apiService';
+import {
+    fetchTasks,
+    updateTask,
+    getSprints,
+    updateSprint,
+    closeSprint,
+    searchTasks,
+    assignTask,
+    updateTaskDueDate
+} from '../services/apiService';
 import TaskCard from './TaskCard';
 import { useTheme } from '@mui/material/styles';
+import { useAuth } from '../contexts/AuthContext';
 
 const SprintBoard = () => {
     const { projectId } = useParams();
     const theme = useTheme();
     const navigate = useNavigate();
+    const { user } = useAuth();
     const [columns, setColumns] = useState({
         todo: { title: 'To Do', items: [] },
         inprogress: { title: 'In Progress', items: [] },
@@ -32,6 +44,7 @@ const SprintBoard = () => {
     });
     const [selectedTask, setSelectedTask] = useState(null);
     const [activeSprint, setActiveSprint] = useState(null);
+    const [searchQuery, setSearchQuery] = useState('');
 
     const queryClient = useQueryClient();
     const {
@@ -56,6 +69,30 @@ const SprintBoard = () => {
         }
     });
 
+    const closeSprintMutation = useMutation(closeSprint, {
+        onSuccess: () => {
+            queryClient.invalidateQueries(['sprints', projectId]);
+        }
+    });
+
+    const searchTasksMutation = useMutation(searchTasks, {
+        onSuccess: (data) => {
+            queryClient.setQueryData(['tasks', projectId], data);
+        }
+    });
+
+    const assignTaskMutation = useMutation(assignTask, {
+        onSuccess: () => {
+            queryClient.invalidateQueries(['tasks', projectId]);
+        }
+    });
+
+    const updateTaskDueDateMutation = useMutation(updateTaskDueDate, {
+        onSuccess: () => {
+            queryClient.invalidateQueries(['tasks', projectId]);
+        }
+    });
+
     useEffect(() => {
         if (tasks && activeSprint) {
             const newColumns = { ...columns };
@@ -72,7 +109,6 @@ const SprintBoard = () => {
             });
             setColumns(newColumns);
         }
-        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [tasks, activeSprint]);
 
     useEffect(() => {
@@ -81,6 +117,14 @@ const SprintBoard = () => {
             setActiveSprint(active);
         }
     }, [sprints]);
+
+    useEffect(() => {
+        if (searchQuery) {
+            searchTasksMutation.mutate({ projectId, query: searchQuery });
+        } else {
+            queryClient.invalidateQueries(['tasks', projectId]);
+        }
+    }, [searchQuery, projectId, queryClient, searchTasksMutation]);
 
     const onDragEnd = (result) => {
         if (!result.destination) return;
@@ -147,12 +191,24 @@ const SprintBoard = () => {
 
     const handleCloseSprint = () => {
         if (activeSprint) {
-            updateSprintMutation.mutate({ id: activeSprint._id, status: 'completed' });
+            closeSprintMutation.mutate(activeSprint._id);
         }
     };
 
     const handleBackToBacklog = () => {
         navigate(`/project/${projectId}/backlog`);
+    };
+
+    const handleSearchChange = (e) => {
+        setSearchQuery(e.target.value);
+    };
+
+    const handleAssignTask = (taskId, userId) => {
+        assignTaskMutation.mutate({ taskId, userId });
+    };
+
+    const handleUpdateDueDate = (taskId, dueDate) => {
+        updateTaskDueDateMutation.mutate({ taskId, dueDate });
     };
 
     if (isTasksLoading || isSprintsLoading) return <CircularProgress />;
@@ -176,6 +232,13 @@ const SprintBoard = () => {
                             Back to Backlog
                         </Button>
                     </Box>
+                    <TextField
+                        label="Search tasks"
+                        variant="outlined"
+                        value={searchQuery}
+                        onChange={handleSearchChange}
+                        sx={{ mb: 2 }}
+                    />
                     <DragDropContext onDragEnd={onDragEnd}>
                         <Grid container spacing={2}>
                             {Object.entries(columns).map(([columnId, column]) => (
@@ -255,7 +318,15 @@ const SprintBoard = () => {
             <Dialog open={!!selectedTask} onClose={handleCloseDialog} maxWidth="md" fullWidth>
                 <DialogTitle>Task Details</DialogTitle>
                 <DialogContent>
-                    {selectedTask && <TaskCard id={selectedTask._id} projectId={projectId} />}
+                    {selectedTask && (
+                        <TaskCard
+                            id={selectedTask._id}
+                            projectId={projectId}
+                            onAssign={handleAssignTask}
+                            onUpdateDueDate={handleUpdateDueDate}
+                            currentUser={user}
+                        />
+                    )}
                 </DialogContent>
             </Dialog>
         </Box>
