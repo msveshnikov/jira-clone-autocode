@@ -79,7 +79,7 @@ const SprintBoard = () => {
             });
 
             updateTaskMutation.mutate({
-                id: removed.id,
+                id: removed._id,
                 status: destination.droppableId
             });
         } else {
@@ -143,8 +143,8 @@ const SprintBoard = () => {
                                         >
                                             {column.items.map((task, index) => (
                                                 <Draggable
-                                                    key={task.id}
-                                                    draggableId={task.id}
+                                                    key={task._id}
+                                                    draggableId={task._id}
                                                     index={index}
                                                 >
                                                     {(provided) => (
@@ -195,7 +195,7 @@ const SprintBoard = () => {
             </DragDropContext>
             <Dialog open={!!selectedTask} onClose={handleCloseDialog} maxWidth="md" fullWidth>
                 <DialogTitle>Task Details</DialogTitle>
-                <DialogContent>{selectedTask && <TaskCard id={selectedTask.id} />}</DialogContent>
+                <DialogContent>{selectedTask && <TaskCard id={selectedTask._id} />}</DialogContent>
             </Dialog>
         </Box>
     );

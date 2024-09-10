@@ -89,7 +89,7 @@ const Backlog = () => {
         reorderedTasks.splice(result.destination.index, 0, reorderedItem);
 
         reorderedTasks.forEach((task, index) => {
-            updateTaskOrderMutation.mutate({ id: task.id, order: index });
+            updateTaskOrderMutation.mutate({ id: task._id, order: index });
         });
     };
 
@@ -143,8 +143,8 @@ const Backlog = () => {
                                     <TableBody>
                                         {tasks.map((task, index) => (
                                             <Draggable
-                                                key={task.id}
-                                                draggableId={task.id.toString()}
+                                                key={task._id}
+                                                draggableId={task._id.toString()}
                                                 index={index}
                                             >
                                                 {(provided) => (
@@ -152,7 +152,7 @@ const Backlog = () => {
                                                         ref={provided.innerRef}
                                                         {...provided.draggableProps}
                                                         {...provided.dragHandleProps}
-                                                        onClick={() => handleTaskClick(task.id)}
+                                                        onClick={() => handleTaskClick(task._id)}
                                                         sx={{ cursor: 'pointer' }}
                                                     >
                                                         <TableCell>{task.title}</TableCell>

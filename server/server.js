@@ -39,8 +39,6 @@ app.use(morgan('dev'));
 
 mongoose.connect(process.env.MONGODB_URI, {});
 
-app.use(express.static(path.join(__dirname, '../build')));
-
 const loadInitialData = async () => {
     const initialData = JSON.parse(
         fs.readFileSync(path.join(__dirname, 'initial_data.json'), 'utf8')
@@ -67,7 +65,6 @@ const loadInitialData = async () => {
     for (const project of initialData.projects) {
         await new Project(project).save();
     }
-
 };
 
 mongoose.connection.once('open', async () => {
@@ -77,7 +74,7 @@ mongoose.connection.once('open', async () => {
     }
 });
 
-app.get('/api/tasks', async (req, res) => {
+app.get('/tasks', async (req, res) => {
     try {
         const tasks = await Task.find().sort({ order: 1 });
         res.json(tasks);
@@ -86,7 +83,7 @@ app.get('/api/tasks', async (req, res) => {
     }
 });
 
-app.post('/api/tasks', async (req, res) => {
+app.post('/tasks', async (req, res) => {
     const task = new Task(req.body);
     try {
         const newTask = await task.save();
@@ -96,7 +93,7 @@ app.post('/api/tasks', async (req, res) => {
     }
 });
 
-app.put('/api/tasks/:id', async (req, res) => {
+app.put('/tasks/:id', async (req, res) => {
     try {
         const updatedTask = await Task.findByIdAndUpdate(req.params.id, req.body, { new: true });
         res.json(updatedTask);
@@ -105,7 +102,7 @@ app.put('/api/tasks/:id', async (req, res) => {
     }
 });
 
-app.delete('/api/tasks/:id', async (req, res) => {
+app.delete('/tasks/:id', async (req, res) => {
     try {
         await Task.findByIdAndDelete(req.params.id);
         res.json({ message: 'Task deleted' });
@@ -114,7 +111,7 @@ app.delete('/api/tasks/:id', async (req, res) => {
     }
 });
 
-app.get('/api/sprints', async (req, res) => {
+app.get('/sprints', async (req, res) => {
     try {
         const sprints = await Sprint.find();
         res.json(sprints);
@@ -123,7 +120,7 @@ app.get('/api/sprints', async (req, res) => {
     }
 });
 
-app.post('/api/sprints', async (req, res) => {
+app.post('/sprints', async (req, res) => {
     const sprint = new Sprint(req.body);
     try {
         const newSprint = await sprint.save();
@@ -133,7 +130,7 @@ app.post('/api/sprints', async (req, res) => {
     }
 });
 
-app.put('/api/sprints/:id', async (req, res) => {
+app.put('/sprints/:id', async (req, res) => {
     try {
         const updatedSprint = await Sprint.findByIdAndUpdate(req.params.id, req.body, {
             new: true
@@ -144,7 +141,7 @@ app.put('/api/sprints/:id', async (req, res) => {
     }
 });
 
-app.delete('/api/sprints/:id', async (req, res) => {
+app.delete('/sprints/:id', async (req, res) => {
     try {
         await Sprint.findByIdAndDelete(req.params.id);
         res.json({ message: 'Sprint deleted' });
@@ -153,7 +150,7 @@ app.delete('/api/sprints/:id', async (req, res) => {
     }
 });
 
-app.get('/api/projects', async (req, res) => {
+app.get('/projects', async (req, res) => {
     try {
         const projects = await Project.find();
         res.json(projects);
@@ -162,7 +159,7 @@ app.get('/api/projects', async (req, res) => {
     }
 });
 
-app.post('/api/projects', async (req, res) => {
+app.post('/projects', async (req, res) => {
     const project = new Project(req.body);
     try {
         const newProject = await project.save();
@@ -172,7 +169,7 @@ app.post('/api/projects', async (req, res) => {
     }
 });
 
-app.put('/api/projects/:id', async (req, res) => {
+app.put('/projects/:id', async (req, res) => {
     try {
         const updatedProject = await Project.findByIdAndUpdate(req.params.id, req.body, {
             new: true
@@ -183,7 +180,7 @@ app.put('/api/projects/:id', async (req, res) => {
     }
 });
 
-app.delete('/api/projects/:id', async (req, res) => {
+app.delete('/projects/:id', async (req, res) => {
     try {
         await Project.findByIdAndDelete(req.params.id);
         res.json({ message: 'Project deleted' });
@@ -192,7 +189,7 @@ app.delete('/api/projects/:id', async (req, res) => {
     }
 });
 
-app.get('/api/users', async (req, res) => {
+app.get('/users', async (req, res) => {
     try {
         const users = await User.find();
         res.json(users);
@@ -201,7 +198,7 @@ app.get('/api/users', async (req, res) => {
     }
 });
 
-app.post('/api/users', async (req, res) => {
+app.post('/users', async (req, res) => {
     const user = new User(req.body);
     try {
         const newUser = await user.save();
@@ -211,7 +208,7 @@ app.post('/api/users', async (req, res) => {
     }
 });
 
-app.put('/api/users/:id', async (req, res) => {
+app.put('/users/:id', async (req, res) => {
     try {
         const updatedUser = await User.findByIdAndUpdate(req.params.id, req.body, { new: true });
         res.json(updatedUser);
@@ -220,7 +217,7 @@ app.put('/api/users/:id', async (req, res) => {
     }
 });
 
-app.delete('/api/users/:id', async (req, res) => {
+app.delete('/users/:id', async (req, res) => {
     try {
         await User.findByIdAndDelete(req.params.id);
         res.json({ message: 'User deleted' });
@@ -229,7 +226,7 @@ app.delete('/api/users/:id', async (req, res) => {
     }
 });
 
-app.get('/api/statuses', async (req, res) => {
+app.get('/statuses', async (req, res) => {
     try {
         const statuses = await Status.find().sort({ order: 1 });
         res.json(statuses);
@@ -238,17 +235,13 @@ app.get('/api/statuses', async (req, res) => {
     }
 });
 
-app.get('/api/workflows', async (req, res) => {
+app.get('/workflows', async (req, res) => {
     try {
         const workflows = await Workflow.find();
         res.json(workflows);
     } catch (error) {
         res.status(500).json({ message: error.message });
     }
-});
-
-app.get('*', (req, res) => {
-    res.sendFile(path.join(__dirname, '../build', 'index.html'));
 });
 
 app.listen(PORT, () => {

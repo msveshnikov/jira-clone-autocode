@@ -266,14 +266,14 @@ const TaskCard = ({ id: propId }) => {
                             <Typography variant="subtitle1">Attachments</Typography>
                             <List>
                                 {task.attachments?.map((attachment) => (
-                                    <ListItem key={attachment.id}>
+                                    <ListItem key={attachment._id}>
                                         <ListItemText primary={attachment.url} />
                                         <ListItemSecondaryAction>
                                             <IconButton
                                                 edge="end"
                                                 aria-label="delete"
                                                 onClick={() =>
-                                                    handleRemoveAttachment(attachment.id)
+                                                    handleRemoveAttachment(attachment._id)
                                                 }
                                             >
                                                 <DeleteIcon />
@@ -302,7 +302,7 @@ const TaskCard = ({ id: propId }) => {
                             <Typography variant="subtitle1">Comments</Typography>
                             <List>
                                 {task.comments?.map((comment) => (
-                                    <ListItem key={comment.id}>
+                                    <ListItem key={comment._id}>
                                         <ListItemText
                                             primary={comment.text}
                                             secondary={`By ${comment.author}`}
@@ -311,7 +311,7 @@ const TaskCard = ({ id: propId }) => {
                                             <IconButton
                                                 edge="end"
                                                 aria-label="delete"
-                                                onClick={() => handleRemoveComment(comment.id)}
+                                                onClick={() => handleRemoveComment(comment._id)}
                                             >
                                                 <DeleteIcon />
                                             </IconButton>

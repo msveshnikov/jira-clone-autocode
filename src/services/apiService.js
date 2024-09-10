@@ -1,508 +1,302 @@
 // src/services/apiService.js
 
-import { v4 as uuidv4 } from 'uuid';
+import axios from 'axios';
 
-const STORAGE_KEY = 'jira_clone_data';
+const API_BASE_URL = process.env.REACT_APP_API_BASE_URL || 'http://localhost:5000';
 
-const initialData = {
-    tasks: [
-        {
-            id: uuidv4(),
-            title: 'Implement backlog ordering functionality',
-            description: 'Add the ability to reorder tasks in the backlog using drag-and-drop',
-            points: 8,
-            priority: 'high',
-            status: 'todo',
-            timeSpent: 0,
-            attachments: [],
-            comments: [],
-            assignedTo: '',
-            order: 0
-        },
-        {
-            id: uuidv4(),
-            title: 'Fix task update functionality',
-            description: 'Resolve issues with updating task details',
-            points: 5,
-            priority: 'high',
-            status: 'todo',
-            timeSpent: 0,
-            attachments: [],
-            comments: [],
-            assignedTo: '',
-            order: 1
-        },
-        {
-            id: uuidv4(),
-            title: 'Implement persistent task status',
-            description: 'Ensure task status is saved and persists across sessions',
-            points: 3,
-            priority: 'high',
-            status: 'todo',
-            timeSpent: 0,
-            attachments: [],
-            comments: [],
-            assignedTo: '',
-            order: 2
-        },
-        {
-            id: uuidv4(),
-            title: 'Add comments functionality to tasks',
-            description: 'Implement the ability to add and view comments on tasks',
-            points: 5,
-            priority: 'medium',
-            status: 'todo',
-            timeSpent: 0,
-            attachments: [],
-            comments: [],
-            assignedTo: '',
-            order: 3
-        },
-        {
-            id: uuidv4(),
-            title: 'Update task status when dragging in Sprint view',
-            description:
-                'Automatically update task status when moved between columns in Sprint Board',
-            points: 5,
-            priority: 'medium',
-            status: 'todo',
-            timeSpent: 0,
-            attachments: [],
-            comments: [],
-            assignedTo: '',
-            order: 4
-        },
-        {
-            id: uuidv4(),
-            title: 'Enhance TaskCard component with assignee functionality',
-            description: 'Add the ability to assign tasks to users in the TaskCard component',
-            points: 3,
-            priority: 'medium',
-            status: 'todo',
-            timeSpent: 0,
-            attachments: [],
-            comments: [],
-            assignedTo: '',
-            order: 5
-        },
-        {
-            id: uuidv4(),
-            title: 'Implement due date functionality for tasks',
-            description: 'Add the ability to set and display due dates for tasks',
-            points: 2,
-            priority: 'medium',
-            status: 'todo',
-            timeSpent: 0,
-            attachments: [],
-            comments: [],
-            assignedTo: '',
-            order: 6
-        }
-    ],
-    sprints: [
-        {
-            id: uuidv4(),
-            name: 'Sprint 1',
-            startDate: '2023-05-01',
-            endDate: '2023-05-14',
-            tasks: []
-        }
-    ],
-    statuses: ['todo', 'inprogress', 'codereview', 'readytotest', 'qa', 'done'],
-    workflows: [
-        {
-            id: uuidv4(),
-            name: 'Default',
-            statuses: ['todo', 'inprogress', 'codereview', 'readytotest', 'qa', 'done']
-        }
-    ]
-};
+const apiService = axios.create({
+    baseURL: API_BASE_URL,
+    headers: {
+        'Content-Type': 'application/json'
+    }
+});
 
-const loadData = () => {
-    const storedData = localStorage.getItem(STORAGE_KEY);
-    return storedData ? JSON.parse(storedData) : initialData;
-};
+apiService.interceptors.request.use((config) => {
+    const token = localStorage.getItem('token');
+    if (token) {
+        config.headers.Authorization = `Bearer ${token}`;
+    }
+    return config;
+});
 
-const saveData = (data) => {
-    localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
-};
-
-const delay = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
-
-const ApiService = {
-    fetchBacklogTasks: async () => {
-        await delay(100);
-        const data = loadData();
-        return data.tasks.filter((task) => !task.sprintId).sort((a, b) => a.order - b.order);
-    },
-
-    fetchTasks: async () => {
-        await delay(100);
-        const data = loadData();
-        return data.tasks;
-    },
-
-    fetchTask: async (taskId) => {
-        await delay(100);
-        const data = loadData();
-        const task = data.tasks.find((t) => t.id === taskId);
-        if (!task) throw new Error('Task not found');
-        return task;
-    },
-
-    createTask: async (taskData) => {
-        await delay(100);
-        const data = loadData();
-        const newTask = {
-            id: uuidv4(),
-            ...taskData,
-            status: 'todo',
-            timeSpent: 0,
-            attachments: [],
-            comments: [],
-            order: data.tasks.length
-        };
-        data.tasks.push(newTask);
-        saveData(data);
-        return newTask;
-    },
-
-    updateTask: async (chunk) => {
-        const taskId = chunk.id;
-        const updatedData = chunk;
-        await delay(100);
-        const data = loadData();
-        const taskIndex = data.tasks.findIndex((task) => task.id === taskId);
-        if (taskIndex !== -1) {
-            data.tasks[taskIndex] = { ...data.tasks[taskIndex], ...updatedData };
-            saveData(data);
-            return data.tasks[taskIndex];
-        }
-        throw new Error('Task not found');
-    },
-
-    deleteTask: async (taskId) => {
-        await delay(100);
-        const data = loadData();
-        const taskIndex = data.tasks.findIndex((task) => task.id === taskId);
-        if (taskIndex !== -1) {
-            data.tasks.splice(taskIndex, 1);
-            saveData(data);
-            return true;
-        }
-        throw new Error('Task not found');
-    },
-
-    getSprints: async () => {
-        await delay(100);
-        const data = loadData();
-        return data.sprints;
-    },
-
-    createSprint: async (sprintData) => {
-        await delay(100);
-        const data = loadData();
-        const newSprint = {
-            id: uuidv4(),
-            ...sprintData,
-            tasks: []
-        };
-        data.sprints.push(newSprint);
-        saveData(data);
-        return newSprint;
-    },
-
-    updateSprint: async (sprintId, updatedData) => {
-        await delay(100);
-        const data = loadData();
-        const sprintIndex = data.sprints.findIndex((sprint) => sprint.id === sprintId);
-        if (sprintIndex !== -1) {
-            data.sprints[sprintIndex] = { ...data.sprints[sprintIndex], ...updatedData };
-            saveData(data);
-            return data.sprints[sprintIndex];
-        }
-        throw new Error('Sprint not found');
-    },
-
-    deleteSprint: async (sprintId) => {
-        await delay(100);
-        const data = loadData();
-        const sprintIndex = data.sprints.findIndex((sprint) => sprint.id === sprintId);
-        if (sprintIndex !== -1) {
-            data.sprints.splice(sprintIndex, 1);
-            saveData(data);
-            return true;
-        }
-        throw new Error('Sprint not found');
-    },
-
-    getStatuses: async () => {
-        await delay(100);
-        const data = loadData();
-        return data.statuses;
-    },
-
-    updateStatuses: async (newStatuses) => {
-        await delay(100);
-        const data = loadData();
-        data.statuses = newStatuses;
-        saveData(data);
-        return data.statuses;
-    },
-
-    moveTask: async (taskId, newStatus) => {
-        await delay(100);
-        const data = loadData();
-        const taskIndex = data.tasks.findIndex((task) => task.id === taskId);
-        if (taskIndex !== -1) {
-            data.tasks[taskIndex].status = newStatus;
-            saveData(data);
-            return data.tasks[taskIndex];
-        }
-        throw new Error('Task not found');
-    },
-
-    addTaskToSprint: async (taskId, sprintId) => {
-        await delay(100);
-        const data = loadData();
-        const taskIndex = data.tasks.findIndex((task) => task.id === taskId);
-        const sprintIndex = data.sprints.findIndex((sprint) => sprint.id === sprintId);
-        if (taskIndex !== -1 && sprintIndex !== -1) {
-            data.tasks[taskIndex].sprintId = sprintId;
-            data.sprints[sprintIndex].tasks.push(taskId);
-            saveData(data);
-            return data.sprints[sprintIndex];
-        }
-        throw new Error('Task or Sprint not found');
-    },
-
-    removeTaskFromSprint: async (taskId, sprintId) => {
-        await delay(100);
-        const data = loadData();
-        const taskIndex = data.tasks.findIndex((task) => task.id === taskId);
-        const sprintIndex = data.sprints.findIndex((sprint) => sprint.id === sprintId);
-        if (taskIndex !== -1 && sprintIndex !== -1) {
-            delete data.tasks[taskIndex].sprintId;
-            const taskIndexInSprint = data.sprints[sprintIndex].tasks.indexOf(taskId);
-            if (taskIndexInSprint !== -1) {
-                data.sprints[sprintIndex].tasks.splice(taskIndexInSprint, 1);
-            }
-            saveData(data);
-            return data.sprints[sprintIndex];
-        }
-        throw new Error('Task or Sprint not found');
-    },
-
-    getWorkflows: async () => {
-        await delay(100);
-        const data = loadData();
-        return data.workflows;
-    },
-
-    createWorkflow: async (workflowData) => {
-        await delay(100);
-        const data = loadData();
-        const newWorkflow = {
-            id: uuidv4(),
-            ...workflowData
-        };
-        data.workflows.push(newWorkflow);
-        saveData(data);
-        return newWorkflow;
-    },
-
-    updateWorkflow: async (workflowId, updatedData) => {
-        await delay(100);
-        const data = loadData();
-        const workflowIndex = data.workflows.findIndex((workflow) => workflow.id === workflowId);
-        if (workflowIndex !== -1) {
-            data.workflows[workflowIndex] = { ...data.workflows[workflowIndex], ...updatedData };
-            saveData(data);
-            return data.workflows[workflowIndex];
-        }
-        throw new Error('Workflow not found');
-    },
-
-    deleteWorkflow: async (workflowId) => {
-        await delay(100);
-        const data = loadData();
-        const workflowIndex = data.workflows.findIndex((workflow) => workflow.id === workflowId);
-        if (workflowIndex !== -1) {
-            data.workflows.splice(workflowIndex, 1);
-            saveData(data);
-            return true;
-        }
-        throw new Error('Workflow not found');
-    },
-
-    searchTasks: async (query) => {
-        await delay(100);
-        const data = loadData();
-        const lowercaseQuery = query.toLowerCase();
-        return data.tasks.filter(
-            (task) =>
-                task.title.toLowerCase().includes(lowercaseQuery) ||
-                task.description.toLowerCase().includes(lowercaseQuery)
-        );
-    },
-
-    logTime: async (taskId, timeSpent) => {
-        await delay(100);
-        const data = loadData();
-        const taskIndex = data.tasks.findIndex((task) => task.id === taskId);
-        if (taskIndex !== -1) {
-            data.tasks[taskIndex].timeSpent += timeSpent;
-            saveData(data);
-            return data.tasks[taskIndex];
-        }
-        throw new Error('Task not found');
-    },
-
-    addAttachment: async (taskId, attachment) => {
-        await delay(100);
-        const data = loadData();
-        const taskIndex = data.tasks.findIndex((task) => task.id === taskId);
-        if (taskIndex !== -1) {
-            data.tasks[taskIndex].attachments.push(attachment);
-            saveData(data);
-            return data.tasks[taskIndex];
-        }
-        throw new Error('Task not found');
-    },
-
-    removeAttachment: async (taskId, attachmentId) => {
-        await delay(100);
-        const data = loadData();
-        const taskIndex = data.tasks.findIndex((task) => task.id === taskId);
-        if (taskIndex !== -1) {
-            const attachmentIndex = data.tasks[taskIndex].attachments.findIndex(
-                (att) => att.id === attachmentId
-            );
-            if (attachmentIndex !== -1) {
-                data.tasks[taskIndex].attachments.splice(attachmentIndex, 1);
-                saveData(data);
-                return data.tasks[taskIndex];
-            }
-        }
-        throw new Error('Task or attachment not found');
-    },
-
-    addComment: async (taskId, comment) => {
-        await delay(100);
-        const data = loadData();
-        const taskIndex = data.tasks.findIndex((task) => task.id === taskId);
-        if (taskIndex !== -1) {
-            const newComment = {
-                id: uuidv4(),
-                ...comment,
-                createdAt: new Date().toISOString()
-            };
-            data.tasks[taskIndex].comments.push(newComment);
-            saveData(data);
-            return newComment;
-        }
-        throw new Error('Task not found');
-    },
-
-    removeComment: async (taskId, commentId) => {
-        await delay(100);
-        const data = loadData();
-        const taskIndex = data.tasks.findIndex((task) => task.id === taskId);
-        if (taskIndex !== -1) {
-            const commentIndex = data.tasks[taskIndex].comments.findIndex(
-                (comment) => comment.id === commentId
-            );
-            if (commentIndex !== -1) {
-                data.tasks[taskIndex].comments.splice(commentIndex, 1);
-                saveData(data);
-                return true;
-            }
-        }
-        throw new Error('Task or comment not found');
-    },
-
-    updateTaskOrder: async (chunk) => {
-        console.log(chunk);
-        const taskId = chunk.id;
-        const newOrder = chunk.order;
-        await delay(100);
-        const data = loadData();
-        const taskIndex = data.tasks.findIndex((task) => task.id === taskId);
-        if (taskIndex !== -1) {
-            data.tasks[taskIndex].order = newOrder;
-            saveData(data);
-            return data.tasks[taskIndex];
-        }
-        throw new Error('Task not found');
-    },
-
-    updateTaskStatus: async (taskId, newStatus) => {
-        await delay(100);
-        const data = loadData();
-        const taskIndex = data.tasks.findIndex((task) => task.id === taskId);
-        if (taskIndex !== -1) {
-            data.tasks[taskIndex].status = newStatus;
-            saveData(data);
-            return data.tasks[taskIndex];
-        }
-        throw new Error('Task not found');
-    },
-
-    assignTask: async (taskId, assigneeId) => {
-        await delay(100);
-        const data = loadData();
-        const taskIndex = data.tasks.findIndex((task) => task.id === taskId);
-        if (taskIndex !== -1) {
-            data.tasks[taskIndex].assignedTo = assigneeId;
-            saveData(data);
-            return data.tasks[taskIndex];
-        }
-        throw new Error('Task not found');
-    },
-
-    updateTaskDueDate: async (taskId, dueDate) => {
-        await delay(100);
-        const data = loadData();
-        const taskIndex = data.tasks.findIndex((task) => task.id === taskId);
-        if (taskIndex !== -1) {
-            data.tasks[taskIndex].dueDate = dueDate;
-            saveData(data);
-            return data.tasks[taskIndex];
-        }
-        throw new Error('Task not found');
+const handleApiError = (error) => {
+    if (error.response) {
+        console.error('API Error:', error.response.data);
+        throw error.response.data;
+    } else if (error.request) {
+        console.error('Network Error:', error.request);
+        throw new Error('Network error. Please try again.');
+    } else {
+        console.error('Error:', error.message);
+        throw error;
     }
 };
 
-export const {
-    fetchBacklogTasks,
-    fetchTasks,
-    fetchTask,
-    createTask,
-    updateTask,
-    deleteTask,
-    getSprints,
-    createSprint,
-    updateSprint,
-    deleteSprint,
-    getStatuses,
-    updateStatuses,
-    moveTask,
-    addTaskToSprint,
-    removeTaskFromSprint,
-    getWorkflows,
-    createWorkflow,
-    updateWorkflow,
-    deleteWorkflow,
-    searchTasks,
-    logTime,
-    addAttachment,
-    removeAttachment,
-    addComment,
-    removeComment,
-    updateTaskOrder,
-    updateTaskStatus,
-    assignTask,
-    updateTaskDueDate
-} = ApiService;
+export const fetchBacklogTasks = async () => {
+    try {
+        const response = await apiService.get('/tasks');
+        return response.data;
+    } catch (error) {
+        handleApiError(error);
+    }
+};
 
-export default ApiService;
+export const fetchTasks = async () => {
+    try {
+        const response = await apiService.get('/tasks');
+        return response.data;
+    } catch (error) {
+        handleApiError(error);
+    }
+};
+
+export const fetchTask = async (taskId) => {
+    try {
+        const response = await apiService.get(`/tasks/${taskId}`);
+        return response.data;
+    } catch (error) {
+        handleApiError(error);
+    }
+};
+
+export const createTask = async (taskData) => {
+    try {
+        const response = await apiService.post('/tasks', taskData);
+        return response.data;
+    } catch (error) {
+        handleApiError(error);
+    }
+};
+
+export const updateTask = async (data) => {
+    try {
+        const taskId = data.id;
+        const taskData = data;
+        const response = await apiService.put(`/tasks/${taskId}`, taskData);
+        return response.data;
+    } catch (error) {
+        handleApiError(error);
+    }
+};
+
+export const deleteTask = async (taskId) => {
+    try {
+        await apiService.delete(`/tasks/${taskId}`);
+        return true;
+    } catch (error) {
+        handleApiError(error);
+    }
+};
+
+export const getSprints = async () => {
+    try {
+        const response = await apiService.get('/sprints');
+        return response.data;
+    } catch (error) {
+        handleApiError(error);
+    }
+};
+
+export const createSprint = async (sprintData) => {
+    try {
+        const response = await apiService.post('/sprints', sprintData);
+        return response.data;
+    } catch (error) {
+        handleApiError(error);
+    }
+};
+
+export const updateSprint = async (sprintId, sprintData) => {
+    try {
+        const response = await apiService.put(`/sprints/${sprintId}`, sprintData);
+        return response.data;
+    } catch (error) {
+        handleApiError(error);
+    }
+};
+
+export const deleteSprint = async (sprintId) => {
+    try {
+        await apiService.delete(`/sprints/${sprintId}`);
+        return true;
+    } catch (error) {
+        handleApiError(error);
+    }
+};
+
+export const getStatuses = async () => {
+    try {
+        const response = await apiService.get('/statuses');
+        return response.data;
+    } catch (error) {
+        handleApiError(error);
+    }
+};
+
+export const updateStatuses = async (statusesData) => {
+    try {
+        const response = await apiService.put('/statuses', statusesData);
+        return response.data;
+    } catch (error) {
+        handleApiError(error);
+    }
+};
+
+export const moveTask = async (taskId, newStatus) => {
+    try {
+        const response = await apiService.put(`/tasks/${taskId}/move`, { status: newStatus });
+        return response.data;
+    } catch (error) {
+        handleApiError(error);
+    }
+};
+
+export const addTaskToSprint = async (taskId, sprintId) => {
+    try {
+        const response = await apiService.put(`/tasks/${taskId}/sprint/${sprintId}`);
+        return response.data;
+    } catch (error) {
+        handleApiError(error);
+    }
+};
+
+export const removeTaskFromSprint = async (taskId, sprintId) => {
+    try {
+        const response = await apiService.delete(`/tasks/${taskId}/sprint/${sprintId}`);
+        return response.data;
+    } catch (error) {
+        handleApiError(error);
+    }
+};
+
+export const getWorkflows = async () => {
+    try {
+        const response = await apiService.get('/workflows');
+        return response.data;
+    } catch (error) {
+        handleApiError(error);
+    }
+};
+
+export const createWorkflow = async (workflowData) => {
+    try {
+        const response = await apiService.post('/workflows', workflowData);
+        return response.data;
+    } catch (error) {
+        handleApiError(error);
+    }
+};
+
+export const updateWorkflow = async (workflowId, workflowData) => {
+    try {
+        const response = await apiService.put(`/workflows/${workflowId}`, workflowData);
+        return response.data;
+    } catch (error) {
+        handleApiError(error);
+    }
+};
+
+export const deleteWorkflow = async (workflowId) => {
+    try {
+        await apiService.delete(`/workflows/${workflowId}`);
+        return true;
+    } catch (error) {
+        handleApiError(error);
+    }
+};
+
+export const searchTasks = async (query) => {
+    try {
+        const response = await apiService.get(`/tasks/search?q=${encodeURIComponent(query)}`);
+        return response.data;
+    } catch (error) {
+        handleApiError(error);
+    }
+};
+
+export const logTime = async (taskId, timeSpent) => {
+    try {
+        const response = await apiService.post(`/tasks/${taskId}/log-time`, { timeSpent });
+        return response.data;
+    } catch (error) {
+        handleApiError(error);
+    }
+};
+
+export const addAttachment = async (taskId, attachment) => {
+    try {
+        const formData = new FormData();
+        formData.append('attachment', attachment);
+        const response = await apiService.post(`/tasks/${taskId}/attachments`, formData, {
+            headers: { 'Content-Type': 'multipart/form-data' }
+        });
+        return response.data;
+    } catch (error) {
+        handleApiError(error);
+    }
+};
+
+export const removeAttachment = async (taskId, attachmentId) => {
+    try {
+        await apiService.delete(`/tasks/${taskId}/attachments/${attachmentId}`);
+        return true;
+    } catch (error) {
+        handleApiError(error);
+    }
+};
+
+export const addComment = async (taskId, comment) => {
+    try {
+        const response = await apiService.post(`/tasks/${taskId}/comments`, { comment });
+        return response.data;
+    } catch (error) {
+        handleApiError(error);
+    }
+};
+
+export const removeComment = async (taskId, commentId) => {
+    try {
+        await apiService.delete(`/tasks/${taskId}/comments/${commentId}`);
+        return true;
+    } catch (error) {
+        handleApiError(error);
+    }
+};
+
+export const updateTaskOrder = async (taskId, newOrder) => {
+    try {
+        const response = await apiService.put(`/tasks/${taskId}/order`, { order: newOrder });
+        return response.data;
+    } catch (error) {
+        handleApiError(error);
+    }
+};
+
+export const updateTaskStatus = async (taskId, newStatus) => {
+    try {
+        const response = await apiService.put(`/tasks/${taskId}/status`, { status: newStatus });
+        return response.data;
+    } catch (error) {
+        handleApiError(error);
+    }
+};
+
+export const assignTask = async (taskId, assigneeId) => {
+    try {
+        const response = await apiService.put(`/tasks/${taskId}/assign`, { assigneeId });
+        return response.data;
+    } catch (error) {
+        handleApiError(error);
+    }
+};
+
+export const updateTaskDueDate = async (taskId, dueDate) => {
+    try {
+        const response = await apiService.put(`/tasks/${taskId}/due-date`, { dueDate });
+        return response.data;
+    } catch (error) {
+        handleApiError(error);
+    }
+};
+
+export default apiService;
