@@ -11,7 +11,7 @@ Here's a series of 3 emails for an email marketing campaign for the JIRA  projec
 
 Dear [Name],
 
-We're excited to introduce you to JIRA , a lightweight yet powerful project management tool inspired by JIRA. Built with React and featuring a mocked backend, JIRA  offers a seamless experience for managing your projects.
+We're excited to introduce you to JIRA , a lightweight yet powerful project management tool inspired by JIRA. Built with React, JIRA  offers a seamless experience for managing your projects.
 
 Key features include:
 - Backlog management

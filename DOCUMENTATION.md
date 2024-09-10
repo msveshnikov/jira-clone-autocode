@@ -1,87 +1,75 @@
-# JIRA  Project Documentation
-
-## Table of Contents
-
-1. [Project Overview](#project-overview)
-2. [Architecture](#architecture)
-3. [Module Interactions](#module-interactions)
-4. [Features](#features)
-5. [Installation and Setup](#installation-and-setup)
-6. [Usage Instructions](#usage-instructions)
-7. [Development Guidelines](#development-guidelines)
-8. [Future Enhancements](#future-enhancements)
+# JIRA Clone Project Documentation
 
 ## Project Overview
 
-The JIRA  is a lightweight project management tool inspired by Atlassian's JIRA, built with React and featuring a mocked backend. It aims to provide essential project management functionalities in a user-friendly interface.
+This project is a lightweight JIRA-inspired project management tool built with React and MongoDB. It aims to provide essential project management features in a user-friendly interface.
 
-### Key Objectives
+### Key Features
 
-- Provide a simplified alternative to JIRA for small to medium-sized teams
-- Offer core project management features with a focus on ease of use
-- Demonstrate modern React development practices and architecture
+- Backlog management
+- Sprint board
+- Task cards with detailed information
+- Customizable workflows
 
 ## Architecture
 
-The project follows a modern React application architecture, leveraging functional components and hooks. It's built on top of Create React App for simplified setup and configuration.
+The project follows a client-server architecture:
 
-### Tech Stack
+### Frontend
+- Built with React
+- Uses Material-UI for styling
+- Implements React Router for navigation
+- Utilizes React Query for state management and API interactions
 
-- **Frontend**: React 18
-- **UI Library**: Material-UI (MUI) 6
-- **State Management**: React Context API
-- **Routing**: React Router 6
-- **API Calls**: Axios
-- **Data Fetching**: React Query
-- **Drag and Drop**: react-beautiful-dnd
-- **Charts**: react-apexcharts
-- **Code Formatting**: Prettier
-- **Linting**: ESLint
+### Backend
+- Node.js with Express.js
+- MongoDB database
+- RESTful API design
 
-### Project Structure
-
-```
-src/
-├── components/      # Reusable UI components
-├── context/         # React Context for global state
-├── services/        # API and external service integrations
-├── utils/           # Utility functions and helpers
-├── App.js           # Main application component
-└── index.js         # Application entry point
-```
+### Docker
+- Containerized application for easy deployment
+- Separate containers for frontend, backend, and MongoDB
 
 ## Module Interactions
 
-1. **App.js**: Serves as the main container, handling routing and layout.
-2. **components/**:
-   - `Backlog.js`: Manages the project backlog view
-   - `Header.js`: Renders the application header and navigation
-   - `SprintBoard.js`: Displays the current sprint board
-   - `TaskCard.js`: Represents individual task items
-3. **context/AuthContext.js**: Manages user authentication state
-4. **services/apiService.js**: Handles API calls to the backend
-5. **utils/theme.js**: Defines the application's theme and styling constants
+1. **Frontend Components**:
+   - `Backlog.js`: Manages the project backlog
+   - `SprintBoard.js`: Handles the sprint board view
+   - `TaskCard.js`: Renders individual task details
+   - `Header.js`: Provides navigation and app-wide controls
 
-## Features
+2. **API Service**:
+   - `apiService.js`: Centralizes API calls to the backend
 
-1. **Backlog Management**: Prioritize and manage project tasks
-2. **Sprint Board**: Visualize and track progress during active sprints
-3. **Task Management**: Create, update, and delete tasks with detailed information
-4. **User Authentication**: Secure login and role-based access control (planned)
-5. **Customizable Workflows**: Define custom statuses and transitions (planned)
-6. **Reporting and Analytics**: Generate sprint burndown charts and velocity tracking (planned)
+3. **Backend Models**:
+   - `Project.js`: Defines project schema
+   - `Sprint.js`: Manages sprint information
+   - `Task.js`: Handles task data
+   - `User.js`: User management
+   - `Workflow.js`: Customizable workflow definitions
+   - `Status.js`: Task status definitions
+
+4. **Server**:
+   - `server.js`: Main entry point for the backend, sets up Express and MongoDB connection
 
 ## Installation and Setup
 
+### Prerequisites
+- Node.js (v14+)
+- Docker and Docker Compose
+
+### Local Development
+
 1. Clone the repository:
    ```
-   git clone https://github.com/your-repo/jira-clone.git
+   git clone [repository-url]
    cd jira-clone
    ```
 
 2. Install dependencies:
    ```
    npm install
+   cd server && npm install
    ```
 
 3. Start the development server:
@@ -89,61 +77,74 @@ src/
    npm start
    ```
 
-4. Open `http://localhost:3000` in your browser to view the application.
+4. In a separate terminal, start the backend:
+   ```
+   cd server && npm start
+   ```
+
+### Docker Deployment
+
+1. Build and run the Docker containers:
+   ```
+   docker-compose up --build
+   ```
+
+2. Access the application at `http://localhost:8787`
 
 ## Usage Instructions
 
-1. **Navigating the Application**:
-   - Use the header navigation to switch between Backlog and Sprint Board views
-   - Click on individual tasks to view and edit details
+1. **Backlog Management**:
+   - Add new tasks to the backlog
+   - Prioritize tasks by dragging and dropping
 
-2. **Managing Tasks**:
-   - Create new tasks using the "Add Task" button
-   - Drag and drop tasks between columns to update their status
+2. **Sprint Planning**:
+   - Create a new sprint
+   - Move tasks from backlog to sprint
+
+3. **Task Management**:
+   - Update task status on the sprint board
    - Edit task details by clicking on a task card
 
-3. **Sprint Planning**:
-   - Move tasks from the Backlog to the Sprint Board to plan your sprint
-   - Adjust task priorities and estimates as needed
+4. **Workflow Customization**:
+   - Modify workflow stages in the settings (to be implemented)
 
-## Development Guidelines
+## API Documentation
 
-1. **Code Style**: 
-   - Follow the ESLint configuration for consistent code style
-   - Run `npm run lint` to check for linting errors
-   - Use `npm run format` to automatically format code using Prettier
+The backend provides the following main endpoints:
 
-2. **Component Structure**:
-   - Create functional components using hooks
-   - Keep components small and focused on a single responsibility
-   - Use prop-types for type checking
+- `GET /api/tasks`: Retrieve all tasks
+- `POST /api/tasks`: Create a new task
+- `GET /api/tasks/:id`: Get a specific task
+- `PUT /api/tasks/:id`: Update a task
+- `DELETE /api/tasks/:id`: Delete a task
 
-3. **State Management**:
-   - Use local state (useState) for component-specific state
-   - Leverage Context API for global state management
-   - Consider using React Query for server state management
-
-4. **Testing**:
-   - Write unit tests for utility functions and components
-   - Aim for high test coverage, especially for critical business logic
+(Note: Implement proper authentication and authorization for these endpoints in a production environment)
 
 ## Future Enhancements
 
-1. Implement drag-and-drop functionality for task cards
-2. Add unit tests for components and services
-3. Set up CI/CD pipeline for automated testing and deployment
-4. Develop native mobile apps for iOS and Android
-5. Implement full-text search and advanced filtering
-6. Add time tracking features
-7. Enable file attachments for tasks
-8. Optimize performance for large datasets
-9. Implement real-time collaboration features
-10. Integrate with version control systems
-11. Create a customizable dashboard
-12. Improve accessibility features
+- User authentication and authorization
+- Drag-and-drop functionality for task management
+- Advanced search and filtering capabilities
+- Reporting features (burndown charts, velocity metrics)
+- Mobile responsiveness
+- Task commenting system
+- Custom fields for tasks
+- Integration with version control systems
 
-For a complete list of planned enhancements, refer to the [README.md](README.md) file.
+## Contributing
+
+Contributions are welcome! Please follow these steps:
+
+1. Fork the repository
+2. Create a new branch: `git checkout -b feature-branch-name`
+3. Make your changes and commit them: `git commit -m 'Add some feature'`
+4. Push to the branch: `git push origin feature-branch-name`
+5. Submit a pull request
+
+## License
+
+This project is licensed under the MIT License.
 
 ---
 
-This documentation provides a comprehensive overview of the JIRA Clone project. For more detailed information on contributing, please refer to the [Contributing Guide](CONTRIBUTING.md). The project is licensed under the MIT License, as detailed in the [LICENSE](LICENSE) file.
+This documentation provides a comprehensive overview of the JIRA Clone project, including its architecture, setup instructions, and usage guidelines. It serves as a starting point for developers to understand and contribute to the project.

@@ -2,355 +2,199 @@
 
 ## Overview
 
-The `apiService.js` file is a core component of the Jira project, providing a simulated API service
-for managing tasks, sprints, workflows, and other related data. It uses local storage to persist
-data, making it suitable for frontend development and testing without a backend server.
+The `apiService.js` file is a crucial part of the project's frontend, located in the `src/services` directory. It provides a centralized service for making HTTP requests to the backend API. This service utilizes Axios for HTTP communication and includes error handling, authentication token management, and various API endpoint functions.
 
-This service includes methods for CRUD operations on tasks, sprints, and workflows, as well as
-utility functions for managing statuses, searching tasks, logging time, and handling attachments.
+## Key Features
 
-## Key Components
+- Axios instance configuration with base URL and default headers
+- Automatic token inclusion in request headers
+- Centralized error handling
+- API functions for tasks, sprints, statuses, workflows, and more
 
-### Constants
+## Configuration
 
--   `STORAGE_KEY`: The key used for storing data in local storage.
--   `initialData`: Default data structure with sample tasks, sprints, statuses, and workflows.
+```javascript
+const API_BASE_URL = process.env.REACT_APP_API_BASE_URL || 'http://localhost:5000';
 
-### Helper Functions
+const apiService = axios.create({
+    baseURL: API_BASE_URL,
+    headers: {
+        'Content-Type': 'application/json'
+    }
+});
+```
 
--   `loadData()`: Retrieves data from local storage or returns initial data if not found.
--   `saveData(data)`: Saves the current data state to local storage.
--   `delay(ms)`: Simulates API latency by introducing a delay.
+The `apiService` is configured with a base URL (defaulting to `http://localhost:5000` if not specified in environment variables) and default headers.
 
-### ApiService Object
+## Authentication
 
-This object contains all the methods for interacting with the simulated API.
+```javascript
+apiService.interceptors.request.use((config) => {
+    const token = localStorage.getItem('token');
+    if (token) {
+        config.headers.Authorization = `Bearer ${token}`;
+    }
+    return config;
+});
+```
 
-## Methods
+This interceptor automatically includes the authentication token in the request headers if available in local storage.
 
-### Task Management
+## Error Handling
+
+```javascript
+const handleApiError = (error) => {
+    // ... error handling logic
+};
+```
+
+The `handleApiError` function provides centralized error handling for all API requests, logging errors and throwing appropriate exceptions.
+
+## API Functions
+
+### Tasks
 
 #### `fetchBacklogTasks()`
-
--   **Description**: Retrieves all tasks that are not assigned to any sprint.
--   **Returns**: Promise<Array> - An array of task objects.
--   **Usage**:
-    ```javascript
-    const backlogTasks = await ApiService.fetchBacklogTasks();
-    ```
+- **Description**: Fetches all backlog tasks
+- **Returns**: Array of task objects
+- **Usage**: `const backlogTasks = await fetchBacklogTasks();`
 
 #### `fetchTasks()`
-
--   **Description**: Retrieves all tasks.
--   **Returns**: Promise<Array> - An array of all task objects.
--   **Usage**:
-    ```javascript
-    const allTasks = await ApiService.fetchTasks();
-    ```
+- **Description**: Fetches all tasks
+- **Returns**: Array of task objects
+- **Usage**: `const tasks = await fetchTasks();`
 
 #### `fetchTask(taskId)`
-
--   **Description**: Retrieves a specific task by its ID.
--   **Parameters**:
-    -   `taskId` (string): The ID of the task to fetch.
--   **Returns**: Promise<Object> - The task object.
--   **Throws**: Error if the task is not found.
--   **Usage**:
-    ```javascript
-    const task = await ApiService.fetchTask('task-id-123');
-    ```
+- **Description**: Fetches a specific task by ID
+- **Parameters**: `taskId` (string/number) - The ID of the task
+- **Returns**: Task object
+- **Usage**: `const task = await fetchTask('123');`
 
 #### `createTask(taskData)`
+- **Description**: Creates a new task
+- **Parameters**: `taskData` (object) - The task data
+- **Returns**: Created task object
+- **Usage**: `const newTask = await createTask({ title: 'New Task', description: 'Task description' });`
 
--   **Description**: Creates a new task.
--   **Parameters**:
-    -   `taskData` (Object): The data for the new task.
--   **Returns**: Promise<Object> - The newly created task object.
--   **Usage**:
-    ```javascript
-    const newTask = await ApiService.createTask({
-        title: 'New Task',
-        description: 'Task description'
-    });
-    ```
-
-#### `updateTask(taskId, updatedData)`
-
--   **Description**: Updates an existing task.
--   **Parameters**:
-    -   `taskId` (string): The ID of the task to update.
-    -   `updatedData` (Object): The updated task data.
--   **Returns**: Promise<Object> - The updated task object.
--   **Throws**: Error if the task is not found.
--   **Usage**:
-    ```javascript
-    const updatedTask = await ApiService.updateTask('task-id-123', { status: 'In Progress' });
-    ```
+#### `updateTask(data)`
+- **Description**: Updates an existing task
+- **Parameters**: `data` (object) - The task data including `id`
+- **Returns**: Updated task object
+- **Usage**: `const updatedTask = await updateTask({ id: '123', title: 'Updated Task' });`
 
 #### `deleteTask(taskId)`
+- **Description**: Deletes a task
+- **Parameters**: `taskId` (string/number) - The ID of the task to delete
+- **Returns**: `true` if successful
+- **Usage**: `await deleteTask('123');`
 
--   **Description**: Deletes a task.
--   **Parameters**:
-    -   `taskId` (string): The ID of the task to delete.
--   **Returns**: Promise<boolean> - True if the task was successfully deleted.
--   **Throws**: Error if the task is not found.
--   **Usage**:
-    ```javascript
-    const isDeleted = await ApiService.deleteTask('task-id-123');
-    ```
-
-### Sprint Management
+### Sprints
 
 #### `getSprints()`
-
--   **Description**: Retrieves all sprints.
--   **Returns**: Promise<Array> - An array of sprint objects.
--   **Usage**:
-    ```javascript
-    const sprints = await ApiService.getSprints();
-    ```
+- **Description**: Fetches all sprints
+- **Returns**: Array of sprint objects
+- **Usage**: `const sprints = await getSprints();`
 
 #### `createSprint(sprintData)`
+- **Description**: Creates a new sprint
+- **Parameters**: `sprintData` (object) - The sprint data
+- **Returns**: Created sprint object
+- **Usage**: `const newSprint = await createSprint({ name: 'Sprint 1', startDate: '2023-05-01' });`
 
--   **Description**: Creates a new sprint.
--   **Parameters**:
-    -   `sprintData` (Object): The data for the new sprint.
--   **Returns**: Promise<Object> - The newly created sprint object.
--   **Usage**:
-    ```javascript
-    const newSprint = await ApiService.createSprint({
-        name: 'Sprint 2',
-        startDate: '2023-05-15',
-        endDate: '2023-05-28'
-    });
-    ```
-
-#### `updateSprint(sprintId, updatedData)`
-
--   **Description**: Updates an existing sprint.
--   **Parameters**:
-    -   `sprintId` (string): The ID of the sprint to update.
-    -   `updatedData` (Object): The updated sprint data.
--   **Returns**: Promise<Object> - The updated sprint object.
--   **Throws**: Error if the sprint is not found.
--   **Usage**:
-    ```javascript
-    const updatedSprint = await ApiService.updateSprint('sprint-id-123', { endDate: '2023-05-30' });
-    ```
+#### `updateSprint(sprintId, sprintData)`
+- **Description**: Updates an existing sprint
+- **Parameters**: 
+  - `sprintId` (string/number) - The ID of the sprint
+  - `sprintData` (object) - The updated sprint data
+- **Returns**: Updated sprint object
+- **Usage**: `const updatedSprint = await updateSprint('123', { name: 'Updated Sprint 1' });`
 
 #### `deleteSprint(sprintId)`
+- **Description**: Deletes a sprint
+- **Parameters**: `sprintId` (string/number) - The ID of the sprint to delete
+- **Returns**: `true` if successful
+- **Usage**: `await deleteSprint('123');`
 
--   **Description**: Deletes a sprint.
--   **Parameters**:
-    -   `sprintId` (string): The ID of the sprint to delete.
--   **Returns**: Promise<boolean> - True if the sprint was successfully deleted.
--   **Throws**: Error if the sprint is not found.
--   **Usage**:
-    ```javascript
-    const isDeleted = await ApiService.deleteSprint('sprint-id-123');
-    ```
-
-### Status Management
+### Statuses
 
 #### `getStatuses()`
+- **Description**: Fetches all statuses
+- **Returns**: Array of status objects
+- **Usage**: `const statuses = await getStatuses();`
 
--   **Description**: Retrieves all available statuses.
--   **Returns**: Promise<Array> - An array of status strings.
--   **Usage**:
-    ```javascript
-    const statuses = await ApiService.getStatuses();
-    ```
+#### `updateStatuses(statusesData)`
+- **Description**: Updates statuses
+- **Parameters**: `statusesData` (object) - The updated statuses data
+- **Returns**: Updated statuses object
+- **Usage**: `const updatedStatuses = await updateStatuses({ todo: 'To Do', inProgress: 'In Progress' });`
 
-#### `updateStatuses(newStatuses)`
-
--   **Description**: Updates the list of available statuses.
--   **Parameters**:
-    -   `newStatuses` (Array): The new list of status strings.
--   **Returns**: Promise<Array> - The updated list of statuses.
--   **Usage**:
-    ```javascript
-    const updatedStatuses = await ApiService.updateStatuses([
-        'To Do',
-        'In Progress',
-        'Review',
-        'Done'
-    ]);
-    ```
-
-### Task and Sprint Interactions
-
-#### `moveTask(taskId, newStatus)`
-
--   **Description**: Moves a task to a new status.
--   **Parameters**:
-    -   `taskId` (string): The ID of the task to move.
-    -   `newStatus` (string): The new status for the task.
--   **Returns**: Promise<Object> - The updated task object.
--   **Throws**: Error if the task is not found.
--   **Usage**:
-    ```javascript
-    const movedTask = await ApiService.moveTask('task-id-123', 'In Progress');
-    ```
-
-#### `addTaskToSprint(taskId, sprintId)`
-
--   **Description**: Adds a task to a sprint.
--   **Parameters**:
-    -   `taskId` (string): The ID of the task to add.
-    -   `sprintId` (string): The ID of the sprint to add the task to.
--   **Returns**: Promise<Object> - The updated sprint object.
--   **Throws**: Error if the task or sprint is not found.
--   **Usage**:
-    ```javascript
-    const updatedSprint = await ApiService.addTaskToSprint('task-id-123', 'sprint-id-456');
-    ```
-
-#### `removeTaskFromSprint(taskId, sprintId)`
-
--   **Description**: Removes a task from a sprint.
--   **Parameters**:
-    -   `taskId` (string): The ID of the task to remove.
-    -   `sprintId` (string): The ID of the sprint to remove the task from.
--   **Returns**: Promise<Object> - The updated sprint object.
--   **Throws**: Error if the task or sprint is not found.
--   **Usage**:
-    ```javascript
-    const updatedSprint = await ApiService.removeTaskFromSprint('task-id-123', 'sprint-id-456');
-    ```
-
-### Workflow Management
+### Workflows
 
 #### `getWorkflows()`
-
--   **Description**: Retrieves all workflows.
--   **Returns**: Promise<Array> - An array of workflow objects.
--   **Usage**:
-    ```javascript
-    const workflows = await ApiService.getWorkflows();
-    ```
+- **Description**: Fetches all workflows
+- **Returns**: Array of workflow objects
+- **Usage**: `const workflows = await getWorkflows();`
 
 #### `createWorkflow(workflowData)`
+- **Description**: Creates a new workflow
+- **Parameters**: `workflowData` (object) - The workflow data
+- **Returns**: Created workflow object
+- **Usage**: `const newWorkflow = await createWorkflow({ name: 'New Workflow', steps: ['Todo', 'In Progress', 'Done'] });`
 
--   **Description**: Creates a new workflow.
--   **Parameters**:
-    -   `workflowData` (Object): The data for the new workflow.
--   **Returns**: Promise<Object> - The newly created workflow object.
--   **Usage**:
-    ```javascript
-    const newWorkflow = await ApiService.createWorkflow({
-        name: 'Custom Workflow',
-        statuses: ['New', 'Active', 'Resolved', 'Closed']
-    });
-    ```
-
-#### `updateWorkflow(workflowId, updatedData)`
-
--   **Description**: Updates an existing workflow.
--   **Parameters**:
-    -   `workflowId` (string): The ID of the workflow to update.
-    -   `updatedData` (Object): The updated workflow data.
--   **Returns**: Promise<Object> - The updated workflow object.
--   **Throws**: Error if the workflow is not found.
--   **Usage**:
-    ```javascript
-    const updatedWorkflow = await ApiService.updateWorkflow('workflow-id-123', {
-        name: 'Updated Workflow'
-    });
-    ```
+#### `updateWorkflow(workflowId, workflowData)`
+- **Description**: Updates an existing workflow
+- **Parameters**: 
+  - `workflowId` (string/number) - The ID of the workflow
+  - `workflowData` (object) - The updated workflow data
+- **Returns**: Updated workflow object
+- **Usage**: `const updatedWorkflow = await updateWorkflow('123', { name: 'Updated Workflow' });`
 
 #### `deleteWorkflow(workflowId)`
+- **Description**: Deletes a workflow
+- **Parameters**: `workflowId` (string/number) - The ID of the workflow to delete
+- **Returns**: `true` if successful
+- **Usage**: `await deleteWorkflow('123');`
 
--   **Description**: Deletes a workflow.
--   **Parameters**:
-    -   `workflowId` (string): The ID of the workflow to delete.
--   **Returns**: Promise<boolean> - True if the workflow was successfully deleted.
--   **Throws**: Error if the workflow is not found.
--   **Usage**:
-    ```javascript
-    const isDeleted = await ApiService.deleteWorkflow('workflow-id-123');
-    ```
+### Other Functions
 
-### Utility Functions
+The file includes additional functions for various operations such as:
+- Moving tasks between statuses
+- Adding/removing tasks to/from sprints
+- Searching tasks
+- Logging time
+- Managing attachments and comments
+- Updating task order, status, and assignment
+- Updating task due dates
 
-#### `searchTasks(query)`
+Each of these functions follows a similar pattern of making an API request and handling errors using the `handleApiError` function.
 
--   **Description**: Searches for tasks based on a query string.
--   **Parameters**:
-    -   `query` (string): The search query.
--   **Returns**: Promise<Array> - An array of matching task objects.
--   **Usage**:
-    ```javascript
-    const searchResults = await ApiService.searchTasks('user authentication');
-    ```
+## Usage in the Project
 
-#### `logTime(taskId, timeSpent)`
+This `apiService.js` file serves as the central point for all API communications in the frontend application. Components and other parts of the application can import and use these functions to interact with the backend, ensuring consistent error handling and authentication across all API calls.
 
--   **Description**: Logs time spent on a task.
--   **Parameters**:
-    -   `taskId` (string): The ID of the task.
-    -   `timeSpent` (number): The amount of time spent in hours.
--   **Returns**: Promise<Object> - The updated task object.
--   **Throws**: Error if the task is not found.
--   **Usage**:
-    ```javascript
-    const updatedTask = await ApiService.logTime('task-id-123', 2.5);
-    ```
+For example, in a React component:
 
-#### `addAttachment(taskId, attachment)`
+```javascript
+import { fetchTasks, createTask } from '../services/apiService';
 
--   **Description**: Adds an attachment to a task.
--   **Parameters**:
-    -   `taskId` (string): The ID of the task.
-    -   `attachment` (Object): The attachment object to add.
--   **Returns**: Promise<Object> - The updated task object.
--   **Throws**: Error if the task is not found.
--   **Usage**:
-    ```javascript
-    const updatedTask = await ApiService.addAttachment('task-id-123', {
-        id: 'att-1',
-        name: 'document.pdf',
-        url: 'https://example.com/document.pdf'
-    });
-    ```
+function TaskList() {
+  const [tasks, setTasks] = useState([]);
 
-#### `removeAttachment(taskId, attachmentId)`
+  useEffect(() => {
+    async function loadTasks() {
+      const fetchedTasks = await fetchTasks();
+      setTasks(fetchedTasks);
+    }
+    loadTasks();
+  }, []);
 
--   **Description**: Removes an attachment from a task.
--   **Parameters**:
-    -   `taskId` (string): The ID of the task.
-    -   `attachmentId` (string): The ID of the attachment to remove.
--   **Returns**: Promise<Object> - The updated task object.
--   **Throws**: Error if the task or attachment is not found.
--   **Usage**:
-    ```javascript
-    const updatedTask = await ApiService.removeAttachment('task-id-123', 'att-1');
-    ```
+  const handleAddTask = async (newTaskData) => {
+    const createdTask = await createTask(newTaskData);
+    setTasks([...tasks, createdTask]);
+  };
 
-#### `clearToken()`
+  // ... rest of the component
+}
+```
 
--   **Description**: Clears the authentication token from local storage.
--   **Usage**:
-    ```javascript
-    ApiService.clearToken();
-    ```
-
-## Project Integration
-
-This `apiService.js` file is located in the `src/services` directory and serves as the main
-interface for data management in the Jira project. It is used by various components throughout the
-application to fetch, create, update, and delete data related to tasks, sprints, and workflows.
-
-The service simulates a backend API by using local storage, which allows for easy frontend
-development and testing without the need for a real backend server. This approach makes the project
-more portable and easier to set up for development purposes.
-
-When integrating this service into the project, components can import and use the specific methods
-they need. For example, the `Backlog.js` component might use `fetchBacklogTasks()` to display tasks
-not assigned to any sprint, while the `SprintBoard.js` component could use `getSprints()` and
-`fetchTasks()` to populate the sprint board with relevant tasks.
-
-The `AuthContext.js` file in the `src/context` directory might use the `clearToken()` method when
-handling user logout functionality.
-
-By centralizing all API calls in this service, the project maintains a clean separation of concerns
-and makes it easier to switch to a real backend API in the future by updating only this file.
+This structure allows for easy maintenance and updates to API interactions across the entire application.

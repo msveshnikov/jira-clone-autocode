@@ -6,7 +6,7 @@
     "display": "standalone",
     "theme_color": "#58CC02",
     "background_color": "#ffffff",
-    "description": "A lightweight project management tool inspired by JIRA, built with React and featuring a mocked backend.",
+    "description": "A lightweight project management tool inspired by JIRA, built with React and MongoDB",
     "lang": "en",
     "orientation": "any",
     "categories": ["productivity", "project management"],
