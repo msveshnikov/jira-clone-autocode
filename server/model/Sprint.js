@@ -5,7 +5,11 @@ const sprintSchema = new mongoose.Schema({
     startDate: { type: Date, required: true },
     endDate: { type: Date, required: true },
     tasks: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Task' }],
-    project: { type: mongoose.Schema.Types.ObjectId, ref: 'Project', required: true },
+    project: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'Project'
+        //  required: true
+    },
     status: {
         type: String,
         enum: ['planning', 'active', 'completed'],

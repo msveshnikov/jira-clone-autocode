@@ -46,6 +46,17 @@ const loadInitialData = async () => {
         fs.readFileSync(path.join(__dirname, 'initial_data.json'), 'utf8')
     );
 
+    for (const status of initialData.statuses) {
+        await new Status(status).save();
+    }
+
+    for (const workflow of initialData.workflows) {
+        await new Workflow(workflow).save();
+    }
+
+    for (const user of initialData.users) {
+        await new User(user).save();
+    }
     for (const task of initialData.tasks) {
         await new Task(task).save();
     }
@@ -53,14 +64,10 @@ const loadInitialData = async () => {
     for (const sprint of initialData.sprints) {
         await new Sprint(sprint).save();
     }
-
-    for (const status of initialData.statuses) {
-        await new Status({ status }).save();
+    for (const project of initialData.projects) {
+        await new Project(project).save();
     }
 
-    for (const workflow of initialData.workflows) {
-        await new Workflow(workflow).save();
-    }
 };
 
 mongoose.connection.once('open', async () => {
@@ -224,7 +231,7 @@ app.delete('/api/users/:id', async (req, res) => {
 
 app.get('/api/statuses', async (req, res) => {
     try {
-        const statuses = await Status.find();
+        const statuses = await Status.find().sort({ order: 1 });
         res.json(statuses);
     } catch (error) {
         res.status(500).json({ message: error.message });

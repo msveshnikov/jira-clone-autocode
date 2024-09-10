@@ -78,5 +78,3 @@ Comprehensive documentation is available in the `docs` folder, including:
 
 # TODO
 
--   add Status and Workflow models
--   load initial_data.json on first run

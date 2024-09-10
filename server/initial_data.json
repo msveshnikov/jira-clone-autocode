@@ -10,7 +10,9 @@
             "timeSpent": 0,
             "attachments": [],
             "comments": [],
-            "order": 0
+            "order": 0,
+            "assignee": "1",
+            "dueDate": "2023-06-01"
         },
         {
             "id": "2",
@@ -22,7 +24,9 @@
             "timeSpent": 0,
             "attachments": [],
             "comments": [],
-            "order": 1
+            "order": 1,
+            "assignee": "1",
+            "dueDate": "2023-05-25"
         },
         {
             "id": "3",
@@ -34,7 +38,9 @@
             "timeSpent": 0,
             "attachments": [],
             "comments": [],
-            "order": 2
+            "order": 2,
+            "assignee": "2",
+            "dueDate": "2023-05-28"
         },
         {
             "id": "4",
@@ -46,7 +52,9 @@
             "timeSpent": 0,
             "attachments": [],
             "comments": [],
-            "order": 3
+            "order": 3,
+            "assignee": "1",
+            "dueDate": "2023-06-05"
         },
         {
             "id": "5",
@@ -58,7 +66,9 @@
             "timeSpent": 0,
             "attachments": [],
             "comments": [],
-            "order": 4
+            "order": 4,
+            "assignee": "2",
+            "dueDate": "2023-06-10"
         },
         {
             "id": "6",
@@ -70,7 +80,9 @@
             "timeSpent": 0,
             "attachments": [],
             "comments": [],
-            "order": 5
+            "order": 5,
+            "assignee": "1",
+            "dueDate": "2023-06-15"
         },
         {
             "id": "7",
@@ -82,7 +94,9 @@
             "timeSpent": 0,
             "attachments": [],
             "comments": [],
-            "order": 6
+            "order": 6,
+            "assignee": "2",
+            "dueDate": "2023-06-20"
         }
     ],
     "sprints": [
@@ -90,8 +104,19 @@
             "id": "1",
             "name": "Sprint 1",
             "startDate": "2023-05-01",
-            "endDate": "2023-05-14",
-            "tasks": []
+            "endDate": "2023-05-14"
+        },
+        {
+            "id": "2",
+            "name": "Sprint 2",
+            "startDate": "2023-05-15",
+            "endDate": "2023-05-28"
+        },
+        {
+            "id": "3",
+            "name": "Sprint 3",
+            "startDate": "2023-05-29",
+            "endDate": "2023-06-11"
         }
     ],
     "statuses": [
@@ -138,23 +163,22 @@
             "id": "1",
             "name": "John Doe",
             "email": "john@example.com",
-            "role": "developer"
+            "role": "developer",
+            "password": "123"
         },
         {
             "id": "2",
             "name": "Jane Smith",
             "email": "jane@example.com",
-            "role": "project_manager"
+            "role": "project_manager",
+            "password": "123"
         }
     ],
     "projects": [
         {
             "id": "1",
             "name": "JIRA Clone",
-            "description": "A lightweight project management tool",
-            "tasks": ["1", "2", "3", "4", "5", "6", "7"],
-            "sprints": ["1"],
-            "workflow": "1"
+            "description": "A lightweight project management tool"
         }
     ]
 }
