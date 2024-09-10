@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import PropTypes from 'prop-types';
 import { useQuery, useMutation, useQueryClient } from 'react-query';
 import {
@@ -37,11 +37,12 @@ import {
     updateTask,
     deleteTask,
     addTaskToSprint,
-    removeTaskFromSprint
+    removeTaskFromSprint,
+    searchTasks
 } from '../services/apiService';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useParams } from 'react-router-dom';
 import { useTheme } from '@mui/material/styles';
-import { Delete, Edit } from '@mui/icons-material';
+import { Delete, Edit, Search } from '@mui/icons-material';
 
 const Backlog = () => {
     const [open, setOpen] = useState(false);
@@ -60,65 +61,85 @@ const Backlog = () => {
         endDate: '',
         goal: ''
     });
+    const [searchQuery, setSearchQuery] = useState('');
     const queryClient = useQueryClient();
     const navigate = useNavigate();
     const theme = useTheme();
+    const { projectId } = useParams();
 
-    const { data: tasks, isLoading, isError } = useQuery('backlogTasks', fetchBacklogTasks);
-    const { data: sprints } = useQuery('sprints', getSprints);
+    const {
+        data: tasks,
+        isLoading,
+        isError
+    } = useQuery(['backlogTasks', projectId], () => fetchBacklogTasks(projectId));
+    const { data: sprints } = useQuery(['sprints', projectId], () => getSprints(projectId));
 
-    const createTaskMutation = useMutation(createTask, {
+    const createTaskMutation = useMutation((newTask) => createTask(projectId, newTask), {
         onSuccess: () => {
-            queryClient.invalidateQueries('backlogTasks');
+            queryClient.invalidateQueries(['backlogTasks', projectId]);
             handleClose();
         }
     });
 
     const updateTaskMutation = useMutation(updateTask, {
         onSuccess: () => {
-            queryClient.invalidateQueries('backlogTasks');
+            queryClient.invalidateQueries(['backlogTasks', projectId]);
             handleClose();
         }
     });
 
     const deleteTaskMutation = useMutation(deleteTask, {
         onSuccess: () => {
-            queryClient.invalidateQueries('backlogTasks');
+            queryClient.invalidateQueries(['backlogTasks', projectId]);
         }
     });
 
     const updateTaskOrderMutation = useMutation(updateTaskOrder, {
         onSuccess: () => {
-            queryClient.invalidateQueries('backlogTasks');
+            queryClient.invalidateQueries(['backlogTasks', projectId]);
         }
     });
 
-    const createSprintMutation = useMutation(createSprint, {
+    const createSprintMutation = useMutation((newSprint) => createSprint(projectId, newSprint), {
         onSuccess: () => {
-            queryClient.invalidateQueries('sprints');
+            queryClient.invalidateQueries(['sprints', projectId]);
             handleSprintDialogClose();
         }
     });
 
     const updateSprintMutation = useMutation(updateSprint, {
         onSuccess: () => {
-            queryClient.invalidateQueries('sprints');
+            queryClient.invalidateQueries(['sprints', projectId]);
         }
     });
 
     const addTaskToSprintMutation = useMutation(addTaskToSprint, {
         onSuccess: () => {
-            queryClient.invalidateQueries('backlogTasks');
-            queryClient.invalidateQueries('sprints');
+            queryClient.invalidateQueries(['backlogTasks', projectId]);
+            queryClient.invalidateQueries(['sprints', projectId]);
         }
     });
 
     const removeTaskFromSprintMutation = useMutation(removeTaskFromSprint, {
         onSuccess: () => {
-            queryClient.invalidateQueries('backlogTasks');
-            queryClient.invalidateQueries('sprints');
+            queryClient.invalidateQueries(['backlogTasks', projectId]);
+            queryClient.invalidateQueries(['sprints', projectId]);
         }
     });
+
+    const searchTasksMutation = useMutation((query) => searchTasks(projectId, query), {
+        onSuccess: (data) => {
+            queryClient.setQueryData(['backlogTasks', projectId], data);
+        }
+    });
+
+    useEffect(() => {
+        if (searchQuery) {
+            searchTasksMutation.mutate(searchQuery);
+        } else {
+            queryClient.invalidateQueries(['backlogTasks', projectId]);
+        }
+    }, [searchQuery]);
 
     const handleOpen = () => {
         setEditingTask(null);
@@ -170,7 +191,7 @@ const Backlog = () => {
     };
 
     const handleTaskClick = (taskId) => {
-        navigate(`/task/${taskId}`);
+        navigate(`/project/${projectId}/task/${taskId}`);
     };
 
     const handleEditTask = (task) => {
@@ -238,6 +259,10 @@ const Backlog = () => {
         removeTaskFromSprintMutation.mutate({ taskId, sprintId });
     };
 
+    const handleSearchChange = (e) => {
+        setSearchQuery(e.target.value);
+    };
+
     if (isLoading) return <CircularProgress />;
     if (isError) return <Typography>Error loading tasks</Typography>;
 
@@ -247,22 +272,29 @@ const Backlog = () => {
                 <Typography variant="h4" gutterBottom>
                     Backlog
                 </Typography>
-                <Button
-                    variant="contained"
-                    color="primary"
-                    onClick={handleOpen}
-                    sx={{ mr: 2, mb: 2 }}
-                >
-                    Add Task
-                </Button>
-                <Button
-                    variant="contained"
-                    color="secondary"
-                    onClick={handleSprintDialogOpen}
-                    sx={{ mb: 2 }}
-                >
-                    Create Sprint
-                </Button>
+                <Box sx={{ display: 'flex', mb: 2 }}>
+                    <Button variant="contained" color="primary" onClick={handleOpen} sx={{ mr: 2 }}>
+                        Add Task
+                    </Button>
+                    <Button
+                        variant="contained"
+                        color="secondary"
+                        onClick={handleSprintDialogOpen}
+                        sx={{ mr: 2 }}
+                    >
+                        Create Sprint
+                    </Button>
+                    <TextField
+                        variant="outlined"
+                        size="small"
+                        placeholder="Search tasks..."
+                        value={searchQuery}
+                        onChange={handleSearchChange}
+                        InputProps={{
+                            startAdornment: <Search />
+                        }}
+                    />
+                </Box>
                 <DragDropContext onDragEnd={onDragEnd}>
                     <Droppable droppableId="backlog">
                         {(provided) => (

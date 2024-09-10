@@ -25,7 +25,7 @@ function PrivateRoute({ children }) {
 }
 
 PrivateRoute.propTypes = {
-    children: PropTypes.node.isRequired,
+    children: PropTypes.node.isRequired
 };
 
 function App() {

@@ -1,6 +1,5 @@
-/* eslint-disable react-hooks/exhaustive-deps */
 import React, { useState, useEffect } from 'react';
-import PropTypes from 'prop-types';
+import { useParams } from 'react-router-dom';
 import { DragDropContext, Droppable, Draggable } from 'react-beautiful-dnd';
 import {
     Box,
@@ -19,6 +18,7 @@ import TaskCard from './TaskCard';
 import { useTheme } from '@mui/material/styles';
 
 const SprintBoard = () => {
+    const { projectId } = useParams();
     const theme = useTheme();
     const [columns, setColumns] = useState({
         todo: { title: 'To Do', items: [] },
@@ -31,11 +31,15 @@ const SprintBoard = () => {
     const [selectedTask, setSelectedTask] = useState(null);
 
     const queryClient = useQueryClient();
-    const { data: tasks, isLoading, isError } = useQuery('tasks', fetchTasks);
+    const {
+        data: tasks,
+        isLoading,
+        isError
+    } = useQuery(['tasks', projectId], () => fetchTasks(projectId));
 
     const updateTaskMutation = useMutation(updateTask, {
         onSuccess: () => {
-            queryClient.invalidateQueries('tasks');
+            queryClient.invalidateQueries(['tasks', projectId]);
         }
     });
 
@@ -53,6 +57,7 @@ const SprintBoard = () => {
             });
             setColumns(newColumns);
         }
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [tasks]);
 
     const onDragEnd = (result) => {
@@ -195,24 +200,12 @@ const SprintBoard = () => {
             </DragDropContext>
             <Dialog open={!!selectedTask} onClose={handleCloseDialog} maxWidth="md" fullWidth>
                 <DialogTitle>Task Details</DialogTitle>
-                <DialogContent>{selectedTask && <TaskCard id={selectedTask._id} />}</DialogContent>
+                <DialogContent>
+                    {selectedTask && <TaskCard id={selectedTask._id} projectId={projectId} />}
+                </DialogContent>
             </Dialog>
         </Box>
     );
-};
-
-SprintBoard.propTypes = {
-    tasks: PropTypes.arrayOf(
-        PropTypes.shape({
-            id: PropTypes.string.isRequired,
-            title: PropTypes.string.isRequired,
-            description: PropTypes.string,
-            points: PropTypes.number.isRequired,
-            priority: PropTypes.string.isRequired,
-            status: PropTypes.string.isRequired,
-            assignedTo: PropTypes.string
-        })
-    )
 };
 
 export default SprintBoard;

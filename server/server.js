@@ -47,9 +47,7 @@ app.use(express.json());
 app.use(helmet({ crossOriginEmbedderPolicy: false }));
 app.use(morgan('dev'));
 
-mongoose.connect(process.env.MONGODB_URI, {
-
-});
+mongoose.connect(process.env.MONGODB_URI, {});
 
 const loadInitialData = async () => {
     const initialData = JSON.parse(
@@ -439,6 +437,15 @@ app.get('/tasks/search', authenticateToken, async (req, res) => {
     try {
         const query = req.query.q;
         const tasks = await Task.find({ $text: { $search: query } });
+        res.json(tasks);
+    } catch (error) {
+        res.status(500).json({ message: error.message });
+    }
+});
+
+app.get('/projects/:id/tasks', authenticateToken, async (req, res) => {
+    try {
+        const tasks = await Task.findByProject(req.params.id);
         res.json(tasks);
     } catch (error) {
         res.status(500).json({ message: error.message });
