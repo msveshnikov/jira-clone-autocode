@@ -53,8 +53,8 @@ const taskSchema = new mongoose.Schema({
     },
     project: {
         type: mongoose.Schema.Types.ObjectId,
-        ref: 'Project'
-        // required: true
+        ref: 'Project',
+        required: true
     },
     sprint: {
         type: mongoose.Schema.Types.ObjectId,
@@ -80,6 +80,8 @@ const taskSchema = new mongoose.Schema({
         of: mongoose.Schema.Types.Mixed
     }
 });
+
+taskSchema.index({ title: 'text', description: 'text' });
 
 taskSchema.pre('save', function (next) {
     this.updatedAt = Date.now();
@@ -149,12 +151,7 @@ taskSchema.statics.findByAssignee = function (userId) {
 };
 
 taskSchema.statics.search = function (query) {
-    return this.find({
-        $or: [
-            { title: { $regex: query, $options: 'i' } },
-            { description: { $regex: query, $options: 'i' } }
-        ]
-    });
+    return this.find({ $text: { $search: query } });
 };
 
 const Task = mongoose.model('Task', taskSchema);

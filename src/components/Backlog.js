@@ -23,7 +23,8 @@ import {
     Paper,
     Box,
     Chip,
-    CircularProgress
+    CircularProgress,
+    IconButton
 } from '@mui/material';
 import { DragDropContext, Droppable, Draggable } from 'react-beautiful-dnd';
 import {
@@ -32,13 +33,19 @@ import {
     updateTaskOrder,
     createSprint,
     updateSprint,
-    getSprints
+    getSprints,
+    updateTask,
+    deleteTask,
+    addTaskToSprint,
+    removeTaskFromSprint
 } from '../services/apiService';
 import { useNavigate } from 'react-router-dom';
 import { useTheme } from '@mui/material/styles';
+import { Delete, Edit } from '@mui/icons-material';
 
 const Backlog = () => {
     const [open, setOpen] = useState(false);
+    const [editingTask, setEditingTask] = useState(null);
     const [newTask, setNewTask] = useState({
         title: '',
         description: '',
@@ -67,6 +74,19 @@ const Backlog = () => {
         }
     });
 
+    const updateTaskMutation = useMutation(updateTask, {
+        onSuccess: () => {
+            queryClient.invalidateQueries('backlogTasks');
+            handleClose();
+        }
+    });
+
+    const deleteTaskMutation = useMutation(deleteTask, {
+        onSuccess: () => {
+            queryClient.invalidateQueries('backlogTasks');
+        }
+    });
+
     const updateTaskOrderMutation = useMutation(updateTaskOrder, {
         onSuccess: () => {
             queryClient.invalidateQueries('backlogTasks');
@@ -86,9 +106,35 @@ const Backlog = () => {
         }
     });
 
-    const handleOpen = () => setOpen(true);
+    const addTaskToSprintMutation = useMutation(addTaskToSprint, {
+        onSuccess: () => {
+            queryClient.invalidateQueries('backlogTasks');
+            queryClient.invalidateQueries('sprints');
+        }
+    });
+
+    const removeTaskFromSprintMutation = useMutation(removeTaskFromSprint, {
+        onSuccess: () => {
+            queryClient.invalidateQueries('backlogTasks');
+            queryClient.invalidateQueries('sprints');
+        }
+    });
+
+    const handleOpen = () => {
+        setEditingTask(null);
+        setNewTask({
+            title: '',
+            description: '',
+            points: 0,
+            priority: 'low',
+            status: 'todo'
+        });
+        setOpen(true);
+    };
+
     const handleClose = () => {
         setOpen(false);
+        setEditingTask(null);
         setNewTask({
             title: '',
             description: '',
@@ -99,7 +145,11 @@ const Backlog = () => {
     };
 
     const handleCreateTask = () => {
-        createTaskMutation.mutate(newTask);
+        if (editingTask) {
+            updateTaskMutation.mutate({ id: editingTask._id, ...newTask });
+        } else {
+            createTaskMutation.mutate(newTask);
+        }
     };
 
     const handleInputChange = (e) => {
@@ -121,6 +171,22 @@ const Backlog = () => {
 
     const handleTaskClick = (taskId) => {
         navigate(`/task/${taskId}`);
+    };
+
+    const handleEditTask = (task) => {
+        setEditingTask(task);
+        setNewTask({
+            title: task.title,
+            description: task.description,
+            points: task.points,
+            priority: task.priority,
+            status: task.status
+        });
+        setOpen(true);
+    };
+
+    const handleDeleteTask = (taskId) => {
+        deleteTaskMutation.mutate(taskId);
     };
 
     const getPriorityColor = (priority) => {
@@ -164,6 +230,14 @@ const Backlog = () => {
         updateSprintMutation.mutate({ id: sprintId, status: 'completed' });
     };
 
+    const handleAddTaskToSprint = (taskId, sprintId) => {
+        addTaskToSprintMutation.mutate({ taskId, sprintId });
+    };
+
+    const handleRemoveTaskFromSprint = (taskId, sprintId) => {
+        removeTaskFromSprintMutation.mutate({ taskId, sprintId });
+    };
+
     if (isLoading) return <CircularProgress />;
     if (isError) return <Typography>Error loading tasks</Typography>;
 
@@ -205,6 +279,7 @@ const Backlog = () => {
                                             <TableCell>Priority</TableCell>
                                             <TableCell>Assigned To</TableCell>
                                             <TableCell>Status</TableCell>
+                                            <TableCell>Actions</TableCell>
                                         </TableRow>
                                     </TableHead>
                                     <TableBody>
@@ -219,12 +294,27 @@ const Backlog = () => {
                                                         ref={provided.innerRef}
                                                         {...provided.draggableProps}
                                                         {...provided.dragHandleProps}
-                                                        onClick={() => handleTaskClick(task._id)}
                                                         sx={{ cursor: 'pointer', height: '40px' }}
                                                     >
-                                                        <TableCell>{task.title}</TableCell>
-                                                        <TableCell>{task.points}</TableCell>
-                                                        <TableCell>
+                                                        <TableCell
+                                                            onClick={() =>
+                                                                handleTaskClick(task._id)
+                                                            }
+                                                        >
+                                                            {task.title}
+                                                        </TableCell>
+                                                        <TableCell
+                                                            onClick={() =>
+                                                                handleTaskClick(task._id)
+                                                            }
+                                                        >
+                                                            {task.points}
+                                                        </TableCell>
+                                                        <TableCell
+                                                            onClick={() =>
+                                                                handleTaskClick(task._id)
+                                                            }
+                                                        >
                                                             <Chip
                                                                 label={task.priority.toUpperCase()}
                                                                 size="small"
@@ -236,8 +326,36 @@ const Backlog = () => {
                                                                 }}
                                                             />
                                                         </TableCell>
-                                                        <TableCell>{task.assignedTo}</TableCell>
-                                                        <TableCell>{task.status}</TableCell>
+                                                        <TableCell
+                                                            onClick={() =>
+                                                                handleTaskClick(task._id)
+                                                            }
+                                                        >
+                                                            {task.assignedTo}
+                                                        </TableCell>
+                                                        <TableCell
+                                                            onClick={() =>
+                                                                handleTaskClick(task._id)
+                                                            }
+                                                        >
+                                                            {task.status}
+                                                        </TableCell>
+                                                        <TableCell>
+                                                            <IconButton
+                                                                onClick={() => handleEditTask(task)}
+                                                                size="small"
+                                                            >
+                                                                <Edit />
+                                                            </IconButton>
+                                                            <IconButton
+                                                                onClick={() =>
+                                                                    handleDeleteTask(task._id)
+                                                                }
+                                                                size="small"
+                                                            >
+                                                                <Delete />
+                                                            </IconButton>
+                                                        </TableCell>
                                                     </TableRow>
                                                 )}
                                             </Draggable>
@@ -250,7 +368,7 @@ const Backlog = () => {
                     </Droppable>
                 </DragDropContext>
                 <Dialog open={open} onClose={handleClose}>
-                    <DialogTitle>Add New Task</DialogTitle>
+                    <DialogTitle>{editingTask ? 'Edit Task' : 'Add New Task'}</DialogTitle>
                     <DialogContent>
                         <TextField
                             autoFocus
@@ -313,7 +431,7 @@ const Backlog = () => {
                     <DialogActions>
                         <Button onClick={handleClose}>Cancel</Button>
                         <Button onClick={handleCreateTask} color="primary">
-                            Create
+                            {editingTask ? 'Update' : 'Create'}
                         </Button>
                     </DialogActions>
                 </Dialog>

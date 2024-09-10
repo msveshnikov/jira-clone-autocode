@@ -1,5 +1,3 @@
-// src/services/apiService.js
-
 import axios from 'axios';
 
 const API_BASE_URL = process.env.REACT_APP_API_BASE_URL || 'http://localhost:5000';
@@ -144,7 +142,7 @@ export const updateStatuses = async (statusesData) => {
 
 export const moveTask = async (taskId, newStatus) => {
     try {
-        const response = await apiService.put(`/tasks/${taskId}/move`, { status: newStatus });
+        const response = await apiService.put(`/tasks/${taskId}/status`, { status: newStatus });
         return response.data;
     } catch (error) {
         handleApiError(error);
@@ -272,15 +270,6 @@ export const updateTaskOrder = async (taskId, newOrder) => {
     }
 };
 
-export const updateTaskStatus = async (taskId, newStatus) => {
-    try {
-        const response = await apiService.put(`/tasks/${taskId}/status`, { status: newStatus });
-        return response.data;
-    } catch (error) {
-        handleApiError(error);
-    }
-};
-
 export const assignTask = async (taskId, assigneeId) => {
     try {
         const response = await apiService.put(`/tasks/${taskId}/assign`, { assigneeId });
@@ -301,7 +290,7 @@ export const updateTaskDueDate = async (taskId, dueDate) => {
 
 export const startSprint = async (sprintId) => {
     try {
-        const response = await apiService.put(`/sprints/${sprintId}/start`);
+        const response = await apiService.post(`/sprints/${sprintId}/start`);
         return response.data;
     } catch (error) {
         handleApiError(error);
@@ -310,7 +299,84 @@ export const startSprint = async (sprintId) => {
 
 export const closeSprint = async (sprintId) => {
     try {
-        const response = await apiService.put(`/sprints/${sprintId}/close`);
+        const response = await apiService.post(`/sprints/${sprintId}/complete`);
+        return response.data;
+    } catch (error) {
+        handleApiError(error);
+    }
+};
+
+export const getProjects = async () => {
+    try {
+        const response = await apiService.get('/projects');
+        return response.data;
+    } catch (error) {
+        handleApiError(error);
+    }
+};
+
+export const createProject = async (projectData) => {
+    try {
+        const response = await apiService.post('/projects', projectData);
+        return response.data;
+    } catch (error) {
+        handleApiError(error);
+    }
+};
+
+export const updateProject = async (projectId, projectData) => {
+    try {
+        const response = await apiService.put(`/projects/${projectId}`, projectData);
+        return response.data;
+    } catch (error) {
+        handleApiError(error);
+    }
+};
+
+export const deleteProject = async (projectId) => {
+    try {
+        await apiService.delete(`/projects/${projectId}`);
+        return true;
+    } catch (error) {
+        handleApiError(error);
+    }
+};
+
+export const registerUser = async (userData) => {
+    try {
+        const response = await apiService.post('/users', userData);
+        return response.data;
+    } catch (error) {
+        handleApiError(error);
+    }
+};
+
+export const loginUser = async (credentials) => {
+    try {
+        const response = await apiService.post('/users/login', credentials);
+        localStorage.setItem('token', response.data.token);
+        return response.data;
+    } catch (error) {
+        handleApiError(error);
+    }
+};
+
+export const logoutUser = () => {
+    localStorage.removeItem('token');
+};
+
+export const getCurrentUser = async () => {
+    try {
+        const response = await apiService.get('/users/me');
+        return response.data;
+    } catch (error) {
+        handleApiError(error);
+    }
+};
+
+export const updateUserPreferences = async (preferences) => {
+    try {
+        const response = await apiService.put('/users/preferences', preferences);
         return response.data;
     } catch (error) {
         handleApiError(error);

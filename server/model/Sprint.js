@@ -7,8 +7,8 @@ const sprintSchema = new mongoose.Schema({
     tasks: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Task' }],
     project: {
         type: mongoose.Schema.Types.ObjectId,
-        ref: 'Project'
-        // required: true
+        ref: 'Project',
+        required: true
     },
     status: {
         type: String,

@@ -1,6 +1,6 @@
-import React, { useState } from 'react';
+import React, { useState, useContext } from 'react';
 import PropTypes from 'prop-types';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import {
     AppBar,
     Toolbar,
@@ -11,14 +11,25 @@ import {
     useMediaQuery,
     Box,
     Menu,
-    MenuItem
+    MenuItem,
+    Avatar
 } from '@mui/material';
-import { Brightness4, Brightness7, Menu as MenuIcon } from '@mui/icons-material';
+import {
+    Brightness4,
+    Brightness7,
+    Menu as MenuIcon,
+    AccountCircle,
+    ExitToApp
+} from '@mui/icons-material';
+import { AuthContext } from '../contexts/AuthContext';
 
 const Header = ({ toggleDarkMode, darkMode }) => {
     const theme = useTheme();
     const isMobile = useMediaQuery(theme.breakpoints.down('sm'));
     const [anchorEl, setAnchorEl] = useState(null);
+    const [userMenuAnchorEl, setUserMenuAnchorEl] = useState(null);
+    const { user, logout } = useContext(AuthContext);
+    const navigate = useNavigate();
 
     const handleMenuOpen = (event) => {
         setAnchorEl(event.currentTarget);
@@ -26,6 +37,20 @@ const Header = ({ toggleDarkMode, darkMode }) => {
 
     const handleMenuClose = () => {
         setAnchorEl(null);
+    };
+
+    const handleUserMenuOpen = (event) => {
+        setUserMenuAnchorEl(event.currentTarget);
+    };
+
+    const handleUserMenuClose = () => {
+        setUserMenuAnchorEl(null);
+    };
+
+    const handleLogout = () => {
+        logout();
+        handleUserMenuClose();
+        navigate('/login');
     };
 
     return (
@@ -54,6 +79,9 @@ const Header = ({ toggleDarkMode, darkMode }) => {
                                 <MenuItem component={Link} to="/" onClick={handleMenuClose}>
                                     Sprint Board
                                 </MenuItem>
+                                <MenuItem component={Link} to="/projects" onClick={handleMenuClose}>
+                                    Projects
+                                </MenuItem>
                             </Menu>
                         </>
                     )}
@@ -68,6 +96,9 @@ const Header = ({ toggleDarkMode, darkMode }) => {
                             <Button color="inherit" component={Link} to="/">
                                 Sprint Board
                             </Button>
+                            <Button color="inherit" component={Link} to="/projects">
+                                Projects
+                            </Button>
                         </>
                     )}
                     <IconButton
@@ -77,6 +108,38 @@ const Header = ({ toggleDarkMode, darkMode }) => {
                     >
                         {darkMode ? <Brightness7 /> : <Brightness4 />}
                     </IconButton>
+                    {user ? (
+                        <>
+                            <IconButton
+                                color="inherit"
+                                onClick={handleUserMenuOpen}
+                                aria-label="user menu"
+                            >
+                                <Avatar alt={user.name} src={user.avatar} />
+                            </IconButton>
+                            <Menu
+                                anchorEl={userMenuAnchorEl}
+                                open={Boolean(userMenuAnchorEl)}
+                                onClose={handleUserMenuClose}
+                            >
+                                <MenuItem
+                                    component={Link}
+                                    to="/profile"
+                                    onClick={handleUserMenuClose}
+                                >
+                                    Profile
+                                </MenuItem>
+                                <MenuItem onClick={handleLogout}>
+                                    <ExitToApp fontSize="small" sx={{ mr: 1 }} />
+                                    Logout
+                                </MenuItem>
+                            </Menu>
+                        </>
+                    ) : (
+                        <Button color="inherit" component={Link} to="/login">
+                            Login
+                        </Button>
+                    )}
                 </Box>
             </Toolbar>
         </AppBar>

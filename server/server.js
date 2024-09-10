@@ -7,6 +7,7 @@ import morgan from 'morgan';
 import { fileURLToPath } from 'url';
 import path from 'path';
 import fs from 'fs';
+import jwt from 'jsonwebtoken';
 
 import User from './model/User.js';
 import Project from './model/Project.js';
@@ -74,7 +75,49 @@ mongoose.connection.once('open', async () => {
     }
 });
 
-app.get('/tasks', async (req, res) => {
+const authenticateToken = (req, res, next) => {
+    const authHeader = req.headers['authorization'];
+    const token = authHeader && authHeader.split(' ')[1];
+
+    if (token == null) return res.sendStatus(401);
+
+    jwt.verify(token, process.env.JWT_SECRET, (err, user) => {
+        if (err) return res.sendStatus(403);
+        req.user = user;
+        next();
+    });
+};
+
+app.post('/auth/register', async (req, res) => {
+    try {
+        const { email, password, name } = req.body;
+        const existingUser = await User.findOne({ email });
+        if (existingUser) {
+            return res.status(400).json({ message: 'User already exists' });
+        }
+        const user = new User({ email, password, name });
+        await user.save();
+        res.status(201).json({ message: 'User registered successfully' });
+    } catch (error) {
+        res.status(500).json({ message: error.message });
+    }
+});
+
+app.post('/auth/login', async (req, res) => {
+    try {
+        const { email, password } = req.body;
+        const user = await User.findOne({ email });
+        if (!user || !(await user.comparePassword(password))) {
+            return res.status(400).json({ message: 'Invalid credentials' });
+        }
+        const token = jwt.sign({ id: user._id }, process.env.JWT_SECRET, { expiresIn: '1h' });
+        res.json({ token, userId: user._id });
+    } catch (error) {
+        res.status(500).json({ message: error.message });
+    }
+});
+
+app.get('/tasks', authenticateToken, async (req, res) => {
     try {
         const tasks = await Task.find().sort({ order: 1 });
         res.json(tasks);
@@ -83,7 +126,7 @@ app.get('/tasks', async (req, res) => {
     }
 });
 
-app.get('/tasks/:id', async (req, res) => {
+app.get('/tasks/:id', authenticateToken, async (req, res) => {
     try {
         const task = await Task.findById(req.params.id);
         if (!task) {
@@ -95,17 +138,19 @@ app.get('/tasks/:id', async (req, res) => {
     }
 });
 
-app.post('/tasks', async (req, res) => {
-    const task = new Task(req.body);
+app.post('/tasks', authenticateToken, async (req, res) => {
+    const task = new Task({ ...req.body, project: req.body.projectId });
     try {
         const newTask = await task.save();
+        const project = await Project.findById(req.body.projectId);
+        await project.addTaskToBacklog(newTask._id);
         res.status(201).json(newTask);
     } catch (error) {
         res.status(400).json({ message: error.message });
     }
 });
 
-app.put('/tasks/:id', async (req, res) => {
+app.put('/tasks/:id', authenticateToken, async (req, res) => {
     try {
         const updatedTask = await Task.findByIdAndUpdate(req.params.id, req.body, { new: true });
         res.json(updatedTask);
@@ -114,8 +159,14 @@ app.put('/tasks/:id', async (req, res) => {
     }
 });
 
-app.delete('/tasks/:id', async (req, res) => {
+app.delete('/tasks/:id', authenticateToken, async (req, res) => {
     try {
+        const task = await Task.findById(req.params.id);
+        if (!task) {
+            return res.status(404).json({ message: 'Task not found' });
+        }
+        const project = await Project.findById(task.project);
+        await project.removeTaskFromBacklog(task._id);
         await Task.findByIdAndDelete(req.params.id);
         res.json({ message: 'Task deleted' });
     } catch (error) {
@@ -123,7 +174,7 @@ app.delete('/tasks/:id', async (req, res) => {
     }
 });
 
-app.get('/sprints', async (req, res) => {
+app.get('/sprints', authenticateToken, async (req, res) => {
     try {
         const sprints = await Sprint.find();
         res.json(sprints);
@@ -132,17 +183,19 @@ app.get('/sprints', async (req, res) => {
     }
 });
 
-app.post('/sprints', async (req, res) => {
-    const sprint = new Sprint(req.body);
+app.post('/sprints', authenticateToken, async (req, res) => {
+    const sprint = new Sprint({ ...req.body, project: req.body.projectId });
     try {
         const newSprint = await sprint.save();
+        const project = await Project.findById(req.body.projectId);
+        await project.addSprint(newSprint._id);
         res.status(201).json(newSprint);
     } catch (error) {
         res.status(400).json({ message: error.message });
     }
 });
 
-app.put('/sprints/:id', async (req, res) => {
+app.put('/sprints/:id', authenticateToken, async (req, res) => {
     try {
         const updatedSprint = await Sprint.findByIdAndUpdate(req.params.id, req.body, {
             new: true
@@ -153,8 +206,14 @@ app.put('/sprints/:id', async (req, res) => {
     }
 });
 
-app.delete('/sprints/:id', async (req, res) => {
+app.delete('/sprints/:id', authenticateToken, async (req, res) => {
     try {
+        const sprint = await Sprint.findById(req.params.id);
+        if (!sprint) {
+            return res.status(404).json({ message: 'Sprint not found' });
+        }
+        const project = await Project.findById(sprint.project);
+        await project.removeSprint(sprint._id);
         await Sprint.findByIdAndDelete(req.params.id);
         res.json({ message: 'Sprint deleted' });
     } catch (error) {
@@ -162,7 +221,7 @@ app.delete('/sprints/:id', async (req, res) => {
     }
 });
 
-app.post('/sprints/:id/start', async (req, res) => {
+app.post('/sprints/:id/start', authenticateToken, async (req, res) => {
     try {
         const sprint = await Sprint.findById(req.params.id);
         if (!sprint) {
@@ -175,7 +234,7 @@ app.post('/sprints/:id/start', async (req, res) => {
     }
 });
 
-app.post('/sprints/:id/complete', async (req, res) => {
+app.post('/sprints/:id/complete', authenticateToken, async (req, res) => {
     try {
         const sprint = await Sprint.findById(req.params.id);
         if (!sprint) {
@@ -188,26 +247,28 @@ app.post('/sprints/:id/complete', async (req, res) => {
     }
 });
 
-app.get('/projects', async (req, res) => {
+app.get('/projects', authenticateToken, async (req, res) => {
     try {
-        const projects = await Project.find();
+        const projects = await Project.find({ members: req.user.id });
         res.json(projects);
     } catch (error) {
         res.status(500).json({ message: error.message });
     }
 });
 
-app.post('/projects', async (req, res) => {
-    const project = new Project(req.body);
+app.post('/projects', authenticateToken, async (req, res) => {
+    const project = new Project({ ...req.body, owner: req.user.id, members: [req.user.id] });
     try {
         const newProject = await project.save();
+        const user = await User.findById(req.user.id);
+        await user.addProject(newProject._id);
         res.status(201).json(newProject);
     } catch (error) {
         res.status(400).json({ message: error.message });
     }
 });
 
-app.put('/projects/:id', async (req, res) => {
+app.put('/projects/:id', authenticateToken, async (req, res) => {
     try {
         const updatedProject = await Project.findByIdAndUpdate(req.params.id, req.body, {
             new: true
@@ -218,8 +279,15 @@ app.put('/projects/:id', async (req, res) => {
     }
 });
 
-app.delete('/projects/:id', async (req, res) => {
+app.delete('/projects/:id', authenticateToken, async (req, res) => {
     try {
+        const project = await Project.findById(req.params.id);
+        if (!project) {
+            return res.status(404).json({ message: 'Project not found' });
+        }
+        if (project.owner.toString() !== req.user.id) {
+            return res.status(403).json({ message: 'Not authorized to delete this project' });
+        }
         await Project.findByIdAndDelete(req.params.id);
         res.json({ message: 'Project deleted' });
     } catch (error) {
@@ -227,7 +295,7 @@ app.delete('/projects/:id', async (req, res) => {
     }
 });
 
-app.get('/users', async (req, res) => {
+app.get('/users', authenticateToken, async (req, res) => {
     try {
         const users = await User.find();
         res.json(users);
@@ -236,18 +304,11 @@ app.get('/users', async (req, res) => {
     }
 });
 
-app.post('/users', async (req, res) => {
-    const user = new User(req.body);
+app.put('/users/:id', authenticateToken, async (req, res) => {
     try {
-        const newUser = await user.save();
-        res.status(201).json(newUser);
-    } catch (error) {
-        res.status(400).json({ message: error.message });
-    }
-});
-
-app.put('/users/:id', async (req, res) => {
-    try {
+        if (req.user.id !== req.params.id) {
+            return res.status(403).json({ message: 'Not authorized to update this user' });
+        }
         const updatedUser = await User.findByIdAndUpdate(req.params.id, req.body, { new: true });
         res.json(updatedUser);
     } catch (error) {
@@ -255,16 +316,7 @@ app.put('/users/:id', async (req, res) => {
     }
 });
 
-app.delete('/users/:id', async (req, res) => {
-    try {
-        await User.findByIdAndDelete(req.params.id);
-        res.json({ message: 'User deleted' });
-    } catch (error) {
-        res.status(500).json({ message: error.message });
-    }
-});
-
-app.get('/statuses', async (req, res) => {
+app.get('/statuses', authenticateToken, async (req, res) => {
     try {
         const statuses = await Status.find().sort({ order: 1 });
         res.json(statuses);
@@ -273,7 +325,7 @@ app.get('/statuses', async (req, res) => {
     }
 });
 
-app.get('/workflows', async (req, res) => {
+app.get('/workflows', authenticateToken, async (req, res) => {
     try {
         const workflows = await Workflow.find();
         res.json(workflows);
@@ -282,20 +334,20 @@ app.get('/workflows', async (req, res) => {
     }
 });
 
-app.post('/tasks/:id/comments', async (req, res) => {
+app.post('/tasks/:id/comments', authenticateToken, async (req, res) => {
     try {
         const task = await Task.findById(req.params.id);
         if (!task) {
             return res.status(404).json({ message: 'Task not found' });
         }
-        const comment = await task.addComment(req.body.text, req.body.author);
+        const comment = await task.addComment(req.body.text, req.user.id);
         res.status(201).json(comment);
     } catch (error) {
         res.status(400).json({ message: error.message });
     }
 });
 
-app.post('/tasks/:id/attachments', async (req, res) => {
+app.post('/tasks/:id/attachments', authenticateToken, async (req, res) => {
     try {
         const task = await Task.findById(req.params.id);
         if (!task) {
@@ -308,7 +360,7 @@ app.post('/tasks/:id/attachments', async (req, res) => {
     }
 });
 
-app.put('/tasks/:id/status', async (req, res) => {
+app.put('/tasks/:id/status', authenticateToken, async (req, res) => {
     try {
         const task = await Task.findById(req.params.id);
         if (!task) {
@@ -321,7 +373,7 @@ app.put('/tasks/:id/status', async (req, res) => {
     }
 });
 
-app.put('/tasks/:id/assign', async (req, res) => {
+app.put('/tasks/:id/assign', authenticateToken, async (req, res) => {
     try {
         const task = await Task.findById(req.params.id);
         if (!task) {
@@ -334,7 +386,7 @@ app.put('/tasks/:id/assign', async (req, res) => {
     }
 });
 
-app.post('/tasks/:id/log-time', async (req, res) => {
+app.post('/tasks/:id/log-time', authenticateToken, async (req, res) => {
     try {
         const task = await Task.findById(req.params.id);
         if (!task) {
@@ -347,7 +399,7 @@ app.post('/tasks/:id/log-time', async (req, res) => {
     }
 });
 
-app.put('/tasks/:id/order', async (req, res) => {
+app.put('/tasks/:id/order', authenticateToken, async (req, res) => {
     try {
         const task = await Task.findById(req.params.id);
         if (!task) {
@@ -360,7 +412,7 @@ app.put('/tasks/:id/order', async (req, res) => {
     }
 });
 
-app.get('/tasks/search', async (req, res) => {
+app.get('/tasks/search', authenticateToken, async (req, res) => {
     try {
         const query = req.query.q;
         const tasks = await Task.find({ $text: { $search: query } });
