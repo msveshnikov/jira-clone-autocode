@@ -15,13 +15,11 @@ import {
     DialogActions
 } from '@mui/material';
 import apiService from '../services/apiService';
-import { useAuth } from '../contexts/AuthContext';
 
 const Projects = () => {
     const [projects, setProjects] = useState([]);
     const [newProjectName, setNewProjectName] = useState('');
     const [openDialog, setOpenDialog] = useState(false);
-    const { user } = useAuth();
     const navigate = useNavigate();
 
     useEffect(() => {

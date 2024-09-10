@@ -38,8 +38,6 @@ import {
     getSprints,
     updateTask,
     deleteTask,
-    addTaskToSprint,
-    removeTaskFromSprint,
     searchTasks
 } from '../services/apiService';
 import { useNavigate, useParams } from 'react-router-dom';
@@ -116,20 +114,6 @@ const Backlog = () => {
         }
     });
 
-    const addTaskToSprintMutation = useMutation(addTaskToSprint, {
-        onSuccess: () => {
-            queryClient.invalidateQueries(['backlogTasks', projectId]);
-            queryClient.invalidateQueries(['sprints', projectId]);
-        }
-    });
-
-    const removeTaskFromSprintMutation = useMutation(removeTaskFromSprint, {
-        onSuccess: () => {
-            queryClient.invalidateQueries(['backlogTasks', projectId]);
-            queryClient.invalidateQueries(['sprints', projectId]);
-        }
-    });
-
     const searchTasksMutation = useMutation((query) => searchTasks(projectId, query), {
         onSuccess: (data) => {
             queryClient.setQueryData(['backlogTasks', projectId], data);
@@ -142,7 +126,7 @@ const Backlog = () => {
         } else {
             queryClient.invalidateQueries(['backlogTasks', projectId]);
         }
-    }, [searchQuery]);
+    }, [projectId, queryClient, searchQuery, searchTasksMutation]);
 
     const handleOpen = () => {
         setEditingTask(null);
@@ -252,14 +236,6 @@ const Backlog = () => {
 
     const handleCloseSprint = (sprintId) => {
         updateSprintMutation.mutate({ id: sprintId, status: 'completed' });
-    };
-
-    const handleAddTaskToSprint = (taskId, sprintId) => {
-        addTaskToSprintMutation.mutate({ taskId, sprintId });
-    };
-
-    const handleRemoveTaskFromSprint = (taskId, sprintId) => {
-        removeTaskFromSprintMutation.mutate({ taskId, sprintId });
     };
 
     const handleSearchChange = (e) => {

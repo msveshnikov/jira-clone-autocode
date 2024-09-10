@@ -72,6 +72,7 @@ const SprintBoard = () => {
             });
             setColumns(newColumns);
         }
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [tasks, activeSprint]);
 
     useEffect(() => {
