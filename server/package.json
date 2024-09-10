@@ -1,7 +1,7 @@
 {
-    "name": "jira-clone-backend",
+    "name": "jira--backend",
     "version": "1.0.0",
-    "description": "Backend for JIRA clone project",
+    "description": "Backend for JIRA  project",
     "main": "server.js",
     "type": "module",
     "scripts": {

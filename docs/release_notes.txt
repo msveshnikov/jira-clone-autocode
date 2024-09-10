@@ -1,6 +1,6 @@
-JIRA Clone v1.0.0 Release Notes
+JIRA  v1.0.0 Release Notes
 
-We're excited to introduce the first version of JIRA Clone, a lightweight project management tool inspired by JIRA!
+We're excited to introduce the first version of JIRA , a lightweight project management tool inspired by JIRA!
 
 New Features:
 • Backlog Management: Easily manage and prioritize your project tasks
@@ -22,4 +22,4 @@ Upcoming Improvements:
 • User authentication and authorization
 • Real-time collaboration features
 
-Thank you for choosing JIRA Clone for your project management needs. We're committed to continually improving your experience and welcome your feedback!
+Thank you for choosing JIRA  for your project management needs. We're committed to continually improving your experience and welcome your feedback!

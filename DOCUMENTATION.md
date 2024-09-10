@@ -1,4 +1,4 @@
-# JIRA Clone Project Documentation
+# JIRA  Project Documentation
 
 ## Table of Contents
 
@@ -13,7 +13,7 @@
 
 ## Project Overview
 
-The JIRA Clone is a lightweight project management tool inspired by Atlassian's JIRA, built with React and featuring a mocked backend. It aims to provide essential project management functionalities in a user-friendly interface.
+The JIRA  is a lightweight project management tool inspired by Atlassian's JIRA, built with React and featuring a mocked backend. It aims to provide essential project management functionalities in a user-friendly interface.
 
 ### Key Objectives
 

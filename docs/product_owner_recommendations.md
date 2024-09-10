@@ -1,4 +1,4 @@
-Here's my prioritized product backlog and recommendations for the JIRA Clone project:
+Here's my prioritized product backlog and recommendations for the JIRA  project:
 
 ### 1. Prioritized Features for Next Sprint
 
@@ -75,4 +75,4 @@ Here's my prioritized product backlog and recommendations for the JIRA Clone pro
    - Improve inline code documentation
    - Create technical documentation for the project architecture and key components
 
-By focusing on these priorities and addressing the identified concerns, we can significantly improve the JIRA Clone project and set a strong foundation for future enhancements.
+By focusing on these priorities and addressing the identified concerns, we can significantly improve the JIRA  project and set a strong foundation for future enhancements.

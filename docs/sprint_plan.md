@@ -3,7 +3,7 @@ Based on the current product backlog and project state, here's a proposed sprint
 # Sprint Plan
 
 ## Sprint Goal
-Improve core functionality and user experience of the JIRA Clone by implementing task ordering, fixing update issues, and enhancing task persistence.
+Improve core functionality and user experience of the JIRA  by implementing task ordering, fixing update issues, and enhancing task persistence.
 
 ## Selected User Stories/Tasks (Prioritized)
 
@@ -60,4 +60,4 @@ For this sprint, a task is considered Done when:
 8. All acceptance criteria defined for the task have been met.
 9. The code has been merged into the main branch without conflicts.
 
-By completing these tasks, we aim to significantly improve the functionality and reliability of our JIRA Clone, addressing the most critical issues and adding valuable features for our users.
+By completing these tasks, we aim to significantly improve the functionality and reliability of our JIRA , addressing the most critical issues and adding valuable features for our users.

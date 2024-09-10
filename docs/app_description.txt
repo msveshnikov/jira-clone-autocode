@@ -1,6 +1,6 @@
-Introducing JIRA Clone: Your Lightweight Project Management Solution
+Introducing JIRA : Your Lightweight Project Management Solution
 
-Streamline your project workflow with our JIRA-inspired task management tool, built for efficiency and ease of use. Whether you're a small team or a solo developer, JIRA Clone offers the perfect balance of functionality and simplicity.
+Streamline your project workflow with our JIRA-inspired task management tool, built for efficiency and ease of use. Whether you're a small team or a solo developer, JIRA  offers the perfect balance of functionality and simplicity.
 
 Key Features:
 • Backlog Management: Organize and prioritize your project tasks with ease
@@ -8,7 +8,7 @@ Key Features:
 • Detailed Task Cards: Capture essential information including title, description, points, and priority
 • Intuitive Interface: Navigate effortlessly through your projects with our clean, user-friendly design
 
-Why Choose JIRA Clone?
+Why Choose JIRA ?
 ✓ No steep learning curve – get started in minutes
 ✓ Customizable to fit your workflow
 ✓ Built with React for optimal performance
@@ -31,10 +31,10 @@ Perfect for:
 • Small businesses and startups
 • Personal project management
 
-Experience the power of efficient project management without the complexity. Try JIRA Clone today and take control of your tasks, sprints, and project success!
+Experience the power of efficient project management without the complexity. Try JIRA  today and take control of your tasks, sprints, and project success!
 
-Visit our demo: https://jira-clone-autocode.netlify.app/
+Visit our demo: https://jira--autocode.netlify.app/
 
 Contribute to our open-source project and help shape the future of project management tools. Together, we can build a more productive world, one task at a time.
 
-Download JIRA Clone now and transform the way you manage projects!
+Download JIRA  now and transform the way you manage projects!
