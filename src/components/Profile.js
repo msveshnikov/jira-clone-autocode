@@ -30,7 +30,7 @@ const Profile = () => {
     useEffect(() => {
         const fetchUser = async () => {
             try {
-                const userData = await getUser(userId || currentUser.id);
+                const userData = await getUser();
                 setUser(userData);
                 setFormData({
                     name: userData.name,

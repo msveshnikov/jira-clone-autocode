@@ -18,7 +18,6 @@ import {
     Brightness4,
     Brightness7,
     Menu as MenuIcon,
-    AccountCircle,
     ExitToApp
 } from '@mui/icons-material';
 import { AuthContext } from '../contexts/AuthContext';
@@ -53,6 +52,32 @@ const Header = ({ toggleDarkMode, darkMode }) => {
         navigate('/login');
     };
 
+    const renderMenuItems = () => (
+        <>
+            <MenuItem component={Link} to="/" onClick={handleMenuClose}>
+                Projects
+            </MenuItem>
+            {currentProject && (
+                <>
+                    <MenuItem
+                        component={Link}
+                        to={`/project/${currentProject._id}/backlog`}
+                        onClick={handleMenuClose}
+                    >
+                        Backlog
+                    </MenuItem>
+                    <MenuItem
+                        component={Link}
+                        to={`/project/${currentProject._id}`}
+                        onClick={handleMenuClose}
+                    >
+                        Sprint Board
+                    </MenuItem>
+                </>
+            )}
+        </>
+    );
+
     return (
         <AppBar position="static">
             <Toolbar sx={{ width: '100%', maxWidth: 'none' }}>
@@ -73,31 +98,7 @@ const Header = ({ toggleDarkMode, darkMode }) => {
                                 open={Boolean(anchorEl)}
                                 onClose={handleMenuClose}
                             >
-                                <MenuItem
-                                    component={Link}
-                                    to="/"
-                                    onClick={handleMenuClose}
-                                >
-                                    Projects
-                                </MenuItem>
-                                {currentProject && (
-                                    <>
-                                        <MenuItem
-                                            component={Link}
-                                            to={`/project/${currentProject._id}/backlog`}
-                                            onClick={handleMenuClose}
-                                        >
-                                            Backlog
-                                        </MenuItem>
-                                        <MenuItem
-                                            component={Link}
-                                            to={`/project/${currentProject._id}`}
-                                            onClick={handleMenuClose}
-                                        >
-                                            Sprint Board
-                                        </MenuItem>
-                                    </>
-                                )}
+                                {renderMenuItems()}
                             </Menu>
                         </>
                     )}

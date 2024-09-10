@@ -385,9 +385,9 @@ export const updateUserPreferences = async (preferences) => {
     }
 };
 
-export const getUser = async (userId) => {
+export const getUser = async () => {
     try {
-        const response = await apiService.get(`/users/${userId}`);
+        const response = await apiService.get(`/users/me`);
         return response.data;
     } catch (error) {
         handleApiError(error);

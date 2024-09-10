@@ -445,10 +445,49 @@ app.get('/tasks/search', authenticateToken, async (req, res) => {
 
 app.get('/projects/:id/tasks', authenticateToken, async (req, res) => {
     try {
-        const tasks = await Task.findByProject(req.params.id);
+        const tasks = await Task.find({ project: req.params.id });
         res.json(tasks);
     } catch (error) {
         res.status(500).json({ message: error.message });
+    }
+});
+
+app.get('/projects/:id/sprints', authenticateToken, async (req, res) => {
+    try {
+        const sprints = await Sprint.find({ project: req.params.id });
+        res.json(sprints);
+    } catch (error) {
+        res.status(500).json({ message: error.message });
+    }
+});
+
+app.post('/projects/:projectId/tasks', authenticateToken, async (req, res) => {
+    try {
+        const project = await Project.findById(req.params.projectId);
+        if (!project) {
+            return res.status(404).json({ message: 'Project not found' });
+        }
+        const task = new Task({ ...req.body, project: req.params.projectId });
+        const newTask = await task.save();
+        await project.addTaskToBacklog(newTask._id);
+        res.status(201).json(newTask);
+    } catch (error) {
+        res.status(400).json({ message: error.message });
+    }
+});
+
+app.post('/projects/:projectId/sprints', authenticateToken, async (req, res) => {
+    try {
+        const project = await Project.findById(req.params.projectId);
+        if (!project) {
+            return res.status(404).json({ message: 'Project not found' });
+        }
+        const sprint = new Sprint({ ...req.body, project: req.params.projectId });
+        const newSprint = await sprint.save();
+        await project.addSprint(newSprint._id);
+        res.status(201).json(newSprint);
+    } catch (error) {
+        res.status(400).json({ message: error.message });
     }
 });
 

@@ -92,4 +92,5 @@ Comprehensive documentation is available in the `docs` folder, including:
 
 # TODO
 
--   add backlog/sprint links in the header
+-   add POST /projects/:projectId/tasks
+-   add POST /projects/:projectId/sprints
