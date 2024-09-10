@@ -385,4 +385,22 @@ export const updateUserPreferences = async (preferences) => {
     }
 };
 
+export const getUser = async (userId) => {
+    try {
+        const response = await apiService.get(`/users/me`);
+        return response.data;
+    } catch (error) {
+        handleApiError(error);
+    }
+};
+
+export const updateUser = async (userId, userData) => {
+    try {
+        const response = await apiService.put(`/users/${userId}`, userData);
+        return response.data;
+    } catch (error) {
+        handleApiError(error);
+    }
+};
+
 export default apiService;

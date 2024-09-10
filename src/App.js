@@ -11,6 +11,7 @@ import Header from './components/Header';
 import Login from './components/Login';
 import Register from './components/Register';
 import Projects from './components/Projects';
+import Profile from './components/Profile';
 import { Container } from '@mui/material';
 import { AuthProvider, useAuth } from './contexts/AuthContext';
 import PropTypes from 'prop-types';
@@ -84,6 +85,14 @@ function App() {
                                         element={
                                             <PrivateRoute>
                                                 <TaskCard />
+                                            </PrivateRoute>
+                                        }
+                                    />
+                                    <Route
+                                        path="/profile"
+                                        element={
+                                            <PrivateRoute>
+                                                <Profile />
                                             </PrivateRoute>
                                         }
                                     />

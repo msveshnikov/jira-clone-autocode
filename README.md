@@ -109,5 +109,3 @@ Comprehensive documentation is available in the `docs` folder, including:
 
 # TODO
 
--   always include PropTypes
--   FIX! GET /users/me 404 3.726 ms - 147
