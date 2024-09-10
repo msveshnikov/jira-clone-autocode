@@ -59,13 +59,13 @@ const TaskCard = ({ id: propId }) => {
     const updateTaskMutation = useMutation(updateTask, {
         onSuccess: () => {
             queryClient.invalidateQueries(['task', id]);
-            navigate('/');
+            navigate('/backlog');
         }
     });
 
     const deleteTaskMutation = useMutation(deleteTask, {
         onSuccess: () => {
-            navigate('/');
+            navigate('/backlog');
         }
     });
 

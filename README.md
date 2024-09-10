@@ -88,11 +88,11 @@ server/
 
 1. Clone the repository
 2. Install dependencies:
-   - Frontend: `cd src && npm install`
-   - Backend: `cd server && npm install`
+    - Frontend: `cd src && npm install`
+    - Backend: `cd server && npm install`
 3. Start the development servers:
-   - Frontend: `npm start`
-   - Backend: `npm run dev`
+    - Frontend: `npm start`
+    - Backend: `npm run dev`
 
 ## Docker Support
 
@@ -112,10 +112,5 @@ Comprehensive documentation is available in the `docs` folder, including:
 -   API documentation
 -   User guides
 
-## Contributing
-
-We welcome contributions! Please read our contributing guidelines and code of conduct before submitting pull requests.
-
-## License
-
-This project is licensed under the MIT License. See the LICENSE file for details.
+# TODO
+-   show task edit in Dialog in Backlog (similar to SprintBoard)

@@ -130,7 +130,7 @@ const Backlog = () => {
                                 {...provided.droppableProps}
                                 ref={provided.innerRef}
                             >
-                                <Table>
+                                <Table size="small">
                                     <TableHead>
                                         <TableRow>
                                             <TableCell>Title</TableCell>
@@ -153,13 +153,14 @@ const Backlog = () => {
                                                         {...provided.draggableProps}
                                                         {...provided.dragHandleProps}
                                                         onClick={() => handleTaskClick(task._id)}
-                                                        sx={{ cursor: 'pointer' }}
+                                                        sx={{ cursor: 'pointer', height: '40px' }}
                                                     >
                                                         <TableCell>{task.title}</TableCell>
                                                         <TableCell>{task.points}</TableCell>
                                                         <TableCell>
                                                             <Chip
                                                                 label={task.priority.toUpperCase()}
+                                                                size="small"
                                                                 sx={{
                                                                     bgcolor: getPriorityColor(
                                                                         task.priority
