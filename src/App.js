@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useContext } from 'react';
 import { BrowserRouter as Router, Route, Routes, Navigate } from 'react-router-dom';
 import { ThemeProvider } from '@mui/material/styles';
 import CssBaseline from '@mui/material/CssBaseline';
@@ -12,11 +12,11 @@ import Register from './components/Register';
 import Projects from './components/Projects';
 import Profile from './components/Profile';
 import { Container } from '@mui/material';
-import { AuthProvider, useAuth } from './contexts/AuthContext';
+import { AuthContext, AuthProvider } from './contexts/AuthContext';
 import PropTypes from 'prop-types';
 
 function PrivateRoute({ children }) {
-    const { user, loading } = useAuth();
+    const { user, loading } = useContext(AuthContext);
     if (loading) return null;
     return user ? children : <Navigate to="/login" />;
 }

@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useContext } from 'react';
 import { useNavigate } from 'react-router-dom';
 import {
     Container,
@@ -18,7 +18,7 @@ import {
     Chip
 } from '@mui/material';
 import { Add, Edit, Delete } from '@mui/icons-material';
-import { useAuth } from '../contexts/AuthContext';
+import { AuthContext } from '../contexts/AuthContext';
 import { getProjects, createProject, updateProject, deleteProject } from '../services/apiService';
 
 const Projects = () => {
@@ -28,7 +28,7 @@ const Projects = () => {
     const [projects, setProjects] = useState([]);
     const [isLoading, setIsLoading] = useState(true);
     const [error, setError] = useState(null);
-    const { user, selectProject } = useAuth();
+    const { user, selectProject } = useContext(AuthContext);
     const navigate = useNavigate();
 
     useEffect(() => {

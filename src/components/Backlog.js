@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useContext } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import {
     Container,
@@ -41,7 +41,7 @@ import {
 } from '../services/apiService';
 import { useTheme } from '@mui/material/styles';
 import { Delete, Edit, Search } from '@mui/icons-material';
-import { useAuth } from '../contexts/AuthContext';
+import { AuthContext } from '../contexts/AuthContext';
 
 const Backlog = () => {
     const [open, setOpen] = useState(false);
@@ -69,7 +69,7 @@ const Backlog = () => {
     const navigate = useNavigate();
     const theme = useTheme();
     const { projectId } = useParams();
-    const { user } = useAuth();
+    const { user } = useContext(AuthContext);
 
     useEffect(() => {
         const fetchData = async () => {
@@ -90,15 +90,15 @@ const Backlog = () => {
     }, [projectId]);
 
     useEffect(() => {
+        const search = async () => {
+            try {
+                const searchResults = await searchTasks(projectId, searchQuery);
+                setTasks(searchResults);
+            } catch (err) {
+                setError('Error searching tasks');
+            }
+        };
         if (searchQuery) {
-            const search = async () => {
-                try {
-                    const searchResults = await searchTasks(projectId, searchQuery);
-                    setTasks(searchResults);
-                } catch (err) {
-                    setError('Error searching tasks');
-                }
-            };
             search();
         } else {
             const refreshTasks = async () => {

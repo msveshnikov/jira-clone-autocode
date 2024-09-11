@@ -13,8 +13,6 @@ import apiService, {
 
 export const AuthContext = createContext();
 
-export const useAuth = () => React.useContext(AuthContext);
-
 export const AuthProvider = ({ children }) => {
     const [user, setUser] = useState(null);
     const [loading, setLoading] = useState(true);

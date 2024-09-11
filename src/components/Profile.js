@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useContext } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import {
     Typography,
@@ -21,12 +21,12 @@ import {
     DialogActions
 } from '@mui/material';
 import { Edit, Delete } from '@mui/icons-material';
-import { useAuth } from '../contexts/AuthContext';
+import { AuthContext } from '../contexts/AuthContext';
 import { getUser, updateUser, deleteProject } from '../services/apiService';
 
 const Profile = () => {
     const { userId } = useParams();
-    const { user: currentUser } = useAuth();
+    const { user: currentUser } = useContext(AuthContext);
     const [editMode, setEditMode] = useState(false);
     const [formData, setFormData] = useState({
         name: '',
@@ -144,7 +144,12 @@ const Profile = () => {
                                 value={formData.bio}
                                 onChange={handleInputChange}
                             />
-                            <Button type="submit" variant="contained" color="primary" sx={{ mt: 2 }}>
+                            <Button
+                                type="submit"
+                                variant="contained"
+                                color="primary"
+                                sx={{ mt: 2 }}
+                            >
                                 Save
                             </Button>
                             <Button onClick={() => setEditMode(false)} sx={{ mt: 2, ml: 2 }}>

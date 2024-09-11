@@ -91,4 +91,6 @@ Comprehensive documentation is available in the `docs` folder, including:
 
 # TODO
 
--   Fix Login doesnt redirect to projects
+-   Fix Login and Auth
+-   After login show Projects of user
+

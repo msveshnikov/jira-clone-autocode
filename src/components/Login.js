@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useContext } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import {
     TextField,
@@ -12,7 +12,7 @@ import {
     Checkbox
 } from '@mui/material';
 import { useTheme } from '@mui/material/styles';
-import { useAuth } from '../contexts/AuthContext';
+import { AuthContext } from '../contexts/AuthContext';
 
 const Login = () => {
     const [email, setEmail] = useState('');
@@ -21,7 +21,7 @@ const Login = () => {
     const [error, setError] = useState('');
     const navigate = useNavigate();
     const theme = useTheme();
-    const { login, isAuthenticated } = useAuth();
+    const { login, isAuthenticated } = useContext(AuthContext);
 
     useEffect(() => {
         if (isAuthenticated) {

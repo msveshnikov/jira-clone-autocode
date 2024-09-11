@@ -37,7 +37,6 @@ import {
     assignTask,
     updateTaskDueDate
 } from '../services/apiService';
-import { useAuth } from '../contexts/AuthContext';
 
 const TaskCard = ({ id, projectId, onAssign, onUpdateDueDate }) => {
     const [task, setTask] = useState({
@@ -58,7 +57,6 @@ const TaskCard = ({ id, projectId, onAssign, onUpdateDueDate }) => {
     const [confirmDelete, setConfirmDelete] = useState(false);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
-    const { user } = useAuth();
 
     useEffect(() => {
         const loadTask = async () => {

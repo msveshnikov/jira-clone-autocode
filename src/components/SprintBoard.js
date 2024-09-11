@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useContext } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { DragDropContext, Droppable, Draggable } from 'react-beautiful-dnd';
 import {
@@ -18,7 +18,6 @@ import {
     fetchTasks,
     updateTask,
     getSprints,
-    updateSprint,
     closeSprint,
     searchTasks,
     assignTask,
@@ -26,13 +25,13 @@ import {
 } from '../services/apiService';
 import TaskCard from './TaskCard';
 import { useTheme } from '@mui/material/styles';
-import { useAuth } from '../contexts/AuthContext';
+import { AuthContext } from '../contexts/AuthContext';
 
 const SprintBoard = () => {
     const { projectId } = useParams();
     const theme = useTheme();
     const navigate = useNavigate();
-    const { user } = useAuth();
+    const { user } = useContext(AuthContext);
     const [columns, setColumns] = useState({
         todo: { title: 'To Do', items: [] },
         inprogress: { title: 'In Progress', items: [] },
