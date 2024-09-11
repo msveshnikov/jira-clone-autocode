@@ -8,7 +8,6 @@ import { fileURLToPath } from 'url';
 import path from 'path';
 import fs from 'fs';
 import jwt from 'jsonwebtoken';
-import rateLimit from 'express-rate-limit';
 import compression from 'compression';
 
 import User from './model/User.js';
@@ -25,12 +24,6 @@ const PORT = process.env.PORT || 5000;
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
-const limiter = rateLimit({
-    windowMs: 15 * 60 * 1000,
-    max: 100
-});
-
-app.use(limiter);
 app.use(compression());
 app.use(
     cors({

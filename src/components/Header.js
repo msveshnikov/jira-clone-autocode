@@ -19,7 +19,6 @@ import {
     Brightness4,
     Brightness7,
     Menu as MenuIcon,
-    ExitToApp,
     Search as SearchIcon
 } from '@mui/icons-material';
 import { AuthContext } from '../contexts/AuthContext';
@@ -30,7 +29,7 @@ const Header = ({ toggleDarkMode, darkMode }) => {
     const [anchorEl, setAnchorEl] = useState(null);
     const [userMenuAnchorEl, setUserMenuAnchorEl] = useState(null);
     const [searchQuery, setSearchQuery] = useState('');
-    const { user, logout, currentProject } = useContext(AuthContext);
+    const { user, currentProject } = useContext(AuthContext);
     const navigate = useNavigate();
 
     const handleMenuOpen = (event) => {
@@ -47,12 +46,6 @@ const Header = ({ toggleDarkMode, darkMode }) => {
 
     const handleUserMenuClose = () => {
         setUserMenuAnchorEl(null);
-    };
-
-    const handleLogout = () => {
-        logout();
-        handleUserMenuClose();
-        navigate('/login');
     };
 
     const handleSearch = (event) => {
@@ -176,10 +169,6 @@ const Header = ({ toggleDarkMode, darkMode }) => {
                                     onClick={handleUserMenuClose}
                                 >
                                     Profile
-                                </MenuItem>
-                                <MenuItem onClick={handleLogout}>
-                                    <ExitToApp fontSize="small" sx={{ mr: 1 }} />
-                                    Logout
                                 </MenuItem>
                             </Menu>
                         </>

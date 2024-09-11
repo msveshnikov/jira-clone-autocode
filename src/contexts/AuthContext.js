@@ -3,7 +3,6 @@ import { useNavigate } from 'react-router-dom';
 import PropTypes from 'prop-types';
 import apiService, {
     loginUser,
-    logoutUser,
     getCurrentUser,
     registerUser,
     createProject,
@@ -28,7 +27,6 @@ export const AuthProvider = ({ children }) => {
             setIsAuthenticated(true);
         } catch (error) {
             console.error('Error fetching user:', error);
-            logout();
         } finally {
             setLoading(false);
         }
@@ -90,18 +88,6 @@ export const AuthProvider = ({ children }) => {
         }
     };
 
-    const logout = () => {
-        logoutUser();
-        localStorage.removeItem('token');
-        localStorage.removeItem('rememberMe');
-        delete apiService.defaults.headers.common['Authorization'];
-        setUser(null);
-        setIsAuthenticated(false);
-        setCurrentProject(null);
-        setProjects([]);
-        navigate('/login');
-    };
-
     const createNewProject = async (projectData) => {
         try {
             const newProject = await createProject(projectData);
@@ -132,7 +118,6 @@ export const AuthProvider = ({ children }) => {
         user,
         login,
         register,
-        logout,
         loading,
         isAuthenticated,
         setIsAuthenticated,

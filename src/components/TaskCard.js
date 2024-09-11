@@ -1,5 +1,5 @@
+/* eslint-disable react/prop-types */
 import React, { useState, useEffect } from 'react';
-import PropTypes from 'prop-types';
 import {
     Card,
     CardContent,
@@ -400,13 +400,6 @@ const TaskCard = ({ id, projectId, onAssign, onUpdateDueDate }) => {
             </Dialog>
         </Card>
     );
-};
-
-TaskCard.propTypes = {
-    id: PropTypes.string.isRequired,
-    projectId: PropTypes.string.isRequired,
-    onAssign: PropTypes.func.isRequired,
-    onUpdateDueDate: PropTypes.func.isRequired
 };
 
 export default TaskCard;

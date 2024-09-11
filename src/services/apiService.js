@@ -366,10 +366,6 @@ export const loginUser = async (credentials) => {
     }
 };
 
-export const logoutUser = () => {
-    localStorage.removeItem('token');
-};
-
 export const getCurrentUser = async () => {
     try {
         const response = await apiService.get('/users/me');
