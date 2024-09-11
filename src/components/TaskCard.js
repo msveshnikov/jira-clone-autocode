@@ -1,6 +1,4 @@
 import React, { useState, useEffect } from 'react';
-import { useNavigate, useParams } from 'react-router-dom';
-import { useQuery, useMutation, useQueryClient } from 'react-query';
 import PropTypes from 'prop-types';
 import {
     Card,
@@ -41,11 +39,7 @@ import {
 } from '../services/apiService';
 import { useAuth } from '../contexts/AuthContext';
 
-const TaskCard = () => {
-    const { taskId, projectId } = useParams();
-    const navigate = useNavigate();
-    const queryClient = useQueryClient();
-    const { user } = useAuth();
+const TaskCard = ({ id, projectId, onAssign, onUpdateDueDate }) => {
     const [task, setTask] = useState({
         title: '',
         description: '',
@@ -62,76 +56,23 @@ const TaskCard = () => {
     const [newAttachment, setNewAttachment] = useState('');
     const [newComment, setNewComment] = useState('');
     const [confirmDelete, setConfirmDelete] = useState(false);
-
-    const {
-        data: fetchedTask,
-        isLoading,
-        isError
-    } = useQuery(['task', taskId], () => fetchTask(taskId));
-
-    const updateTaskMutation = useMutation(updateTask, {
-        onSuccess: () => {
-            queryClient.invalidateQueries(['task', taskId]);
-            queryClient.invalidateQueries(['tasks', projectId]);
-        }
-    });
-
-    const deleteTaskMutation = useMutation(deleteTask, {
-        onSuccess: () => {
-            queryClient.invalidateQueries(['tasks', projectId]);
-            navigate(`/project/${projectId}`);
-        }
-    });
-
-    const logTimeMutation = useMutation(logTime, {
-        onSuccess: () => {
-            queryClient.invalidateQueries(['task', taskId]);
-        }
-    });
-
-    const addAttachmentMutation = useMutation(addAttachment, {
-        onSuccess: () => {
-            queryClient.invalidateQueries(['task', taskId]);
-            setNewAttachment('');
-        }
-    });
-
-    const removeAttachmentMutation = useMutation(removeAttachment, {
-        onSuccess: () => {
-            queryClient.invalidateQueries(['task', taskId]);
-        }
-    });
-
-    const addCommentMutation = useMutation(addComment, {
-        onSuccess: () => {
-            queryClient.invalidateQueries(['task', taskId]);
-            setNewComment('');
-        }
-    });
-
-    const removeCommentMutation = useMutation(removeComment, {
-        onSuccess: () => {
-            queryClient.invalidateQueries(['task', taskId]);
-        }
-    });
-
-    const assignTaskMutation = useMutation(assignTask, {
-        onSuccess: () => {
-            queryClient.invalidateQueries(['task', taskId]);
-        }
-    });
-
-    const updateTaskDueDateMutation = useMutation(updateTaskDueDate, {
-        onSuccess: () => {
-            queryClient.invalidateQueries(['task', taskId]);
-        }
-    });
+    const [loading, setLoading] = useState(true);
+    const [error, setError] = useState(null);
+    const { user } = useAuth();
 
     useEffect(() => {
-        if (fetchedTask) {
-            setTask(fetchedTask);
-        }
-    }, [fetchedTask]);
+        const loadTask = async () => {
+            try {
+                const taskData = await fetchTask(id);
+                setTask(taskData);
+                setLoading(false);
+            } catch (err) {
+                setError('Error loading task');
+                setLoading(false);
+            }
+        };
+        loadTask();
+    }, [id]);
 
     const handleInputChange = (e) => {
         const { name, value } = e.target;
@@ -141,62 +82,113 @@ const TaskCard = () => {
         }));
     };
 
-    const handleSubmit = (e) => {
+    const handleSubmit = async (e) => {
         e.preventDefault();
-        updateTaskMutation.mutate({ id: taskId, ...task });
+        try {
+            await updateTask({ id, ...task });
+        } catch (err) {
+            setError('Error updating task');
+        }
     };
 
     const handleDelete = () => {
         setConfirmDelete(true);
     };
 
-    const confirmDeleteTask = () => {
-        deleteTaskMutation.mutate(taskId);
-        setConfirmDelete(false);
+    const confirmDeleteTask = async () => {
+        try {
+            await deleteTask(id);
+            setConfirmDelete(false);
+        } catch (err) {
+            setError('Error deleting task');
+        }
     };
 
-    const handleLogTime = () => {
-        logTimeMutation.mutate({ taskId, timeSpent: timeToLog });
-        setTimeToLog(0);
+    const handleLogTime = async () => {
+        try {
+            await logTime(id, timeToLog);
+            setTask((prevTask) => ({
+                ...prevTask,
+                timeSpent: prevTask.timeSpent + timeToLog
+            }));
+            setTimeToLog(0);
+        } catch (err) {
+            setError('Error logging time');
+        }
     };
 
-    const handleAddAttachment = () => {
-        addAttachmentMutation.mutate({
-            taskId,
-            attachment: { name: newAttachment, url: newAttachment }
-        });
+    const handleAddAttachment = async () => {
+        try {
+            const attachment = await addAttachment(id, newAttachment);
+            setTask((prevTask) => ({
+                ...prevTask,
+                attachments: [...prevTask.attachments, attachment]
+            }));
+            setNewAttachment('');
+        } catch (err) {
+            setError('Error adding attachment');
+        }
     };
 
-    const handleRemoveAttachment = (attachmentId) => {
-        removeAttachmentMutation.mutate({ taskId, attachmentId });
+    const handleRemoveAttachment = async (attachmentId) => {
+        try {
+            await removeAttachment(id, attachmentId);
+            setTask((prevTask) => ({
+                ...prevTask,
+                attachments: prevTask.attachments.filter((a) => a.id !== attachmentId)
+            }));
+        } catch (err) {
+            setError('Error removing attachment');
+        }
     };
 
-    const handleAddComment = () => {
-        addCommentMutation.mutate({
-            taskId,
-            comment: { text: newComment, author: user.id }
-        });
+    const handleAddComment = async () => {
+        try {
+            const comment = await addComment(id, newComment);
+            setTask((prevTask) => ({
+                ...prevTask,
+                comments: [...prevTask.comments, comment]
+            }));
+            setNewComment('');
+        } catch (err) {
+            setError('Error adding comment');
+        }
     };
 
-    const handleRemoveComment = (commentId) => {
-        removeCommentMutation.mutate({ taskId, commentId });
+    const handleRemoveComment = async (commentId) => {
+        try {
+            await removeComment(id, commentId);
+            setTask((prevTask) => ({
+                ...prevTask,
+                comments: prevTask.comments.filter((c) => c.id !== commentId)
+            }));
+        } catch (err) {
+            setError('Error removing comment');
+        }
     };
 
-    const handleAssign = (userId) => {
-        assignTaskMutation.mutate({ taskId, assigneeId: userId });
+    const handleAssign = async (userId) => {
+        try {
+            await assignTask(id, userId);
+            onAssign(id, userId);
+        } catch (err) {
+            setError('Error assigning task');
+        }
     };
 
-    const handleDueDateChange = (e) => {
+    const handleDueDateChange = async (e) => {
         const newDueDate = e.target.value;
-        updateTaskDueDateMutation.mutate({ taskId, dueDate: newDueDate });
+        try {
+            await updateTaskDueDate(id, newDueDate);
+            onUpdateDueDate(id, newDueDate);
+            setTask((prevTask) => ({ ...prevTask, dueDate: newDueDate }));
+        } catch (err) {
+            setError('Error updating due date');
+        }
     };
 
-    const handleCancel = () => {
-        navigate(`/project/${projectId}`);
-    };
-
-    if (isLoading) return <Typography>Loading...</Typography>;
-    if (isError) return <Typography>Error loading task</Typography>;
+    if (loading) return <Typography>Loading...</Typography>;
+    if (error) return <Typography color="error">{error}</Typography>;
 
     return (
         <Card>
@@ -381,13 +373,6 @@ const TaskCard = () => {
                                 <Button type="submit" variant="contained" color="primary">
                                     Update Task
                                 </Button>
-                                <Button
-                                    variant="contained"
-                                    color="secondary"
-                                    onClick={handleCancel}
-                                >
-                                    Cancel
-                                </Button>
                                 <Button variant="contained" color="error" onClick={handleDelete}>
                                     Delete Task
                                 </Button>
@@ -420,8 +405,10 @@ const TaskCard = () => {
 };
 
 TaskCard.propTypes = {
-    id: PropTypes.string,
-    projectId: PropTypes.string
+    id: PropTypes.string.isRequired,
+    projectId: PropTypes.string.isRequired,
+    onAssign: PropTypes.func.isRequired,
+    onUpdateDueDate: PropTypes.func.isRequired
 };
 
 export default TaskCard;

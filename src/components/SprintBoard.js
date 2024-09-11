@@ -14,7 +14,6 @@ import {
     Button,
     TextField
 } from '@mui/material';
-import { useQuery, useMutation, useQueryClient } from 'react-query';
 import {
     fetchTasks,
     updateTask,
@@ -45,53 +44,30 @@ const SprintBoard = () => {
     const [selectedTask, setSelectedTask] = useState(null);
     const [activeSprint, setActiveSprint] = useState(null);
     const [searchQuery, setSearchQuery] = useState('');
+    const [tasks, setTasks] = useState([]);
+    const [sprints, setSprints] = useState([]);
+    const [isLoading, setIsLoading] = useState(true);
+    const [error, setError] = useState(null);
 
-    const queryClient = useQueryClient();
-    const {
-        data: tasks,
-        isLoading: isTasksLoading,
-        isError: isTasksError
-    } = useQuery(['tasks', projectId], () => fetchTasks(projectId));
-
-    const { data: sprints, isLoading: isSprintsLoading } = useQuery(['sprints', projectId], () =>
-        getSprints(projectId)
-    );
-
-    const updateTaskMutation = useMutation(updateTask, {
-        onSuccess: () => {
-            queryClient.invalidateQueries(['tasks', projectId]);
-        }
-    });
-
-    const updateSprintMutation = useMutation(updateSprint, {
-        onSuccess: () => {
-            queryClient.invalidateQueries(['sprints', projectId]);
-        }
-    });
-
-    const closeSprintMutation = useMutation(closeSprint, {
-        onSuccess: () => {
-            queryClient.invalidateQueries(['sprints', projectId]);
-        }
-    });
-
-    const searchTasksMutation = useMutation(searchTasks, {
-        onSuccess: (data) => {
-            queryClient.setQueryData(['tasks', projectId], data);
-        }
-    });
-
-    const assignTaskMutation = useMutation(assignTask, {
-        onSuccess: () => {
-            queryClient.invalidateQueries(['tasks', projectId]);
-        }
-    });
-
-    const updateTaskDueDateMutation = useMutation(updateTaskDueDate, {
-        onSuccess: () => {
-            queryClient.invalidateQueries(['tasks', projectId]);
-        }
-    });
+    useEffect(() => {
+        const fetchData = async () => {
+            try {
+                const [tasksData, sprintsData] = await Promise.all([
+                    fetchTasks(projectId),
+                    getSprints(projectId)
+                ]);
+                setTasks(tasksData);
+                setSprints(sprintsData);
+                const active = sprintsData.find((sprint) => sprint.status === 'active');
+                setActiveSprint(active);
+                setIsLoading(false);
+            } catch (err) {
+                setError('Error loading data');
+                setIsLoading(false);
+            }
+        };
+        fetchData();
+    }, [projectId]);
 
     useEffect(() => {
         if (tasks && activeSprint) {
@@ -112,21 +88,27 @@ const SprintBoard = () => {
     }, [tasks, activeSprint]);
 
     useEffect(() => {
-        if (sprints) {
-            const active = sprints.find((sprint) => sprint.status === 'active');
-            setActiveSprint(active);
-        }
-    }, [sprints]);
+        const searchTasksAsync = async () => {
+            if (searchQuery) {
+                try {
+                    const searchResults = await searchTasks(projectId, searchQuery);
+                    setTasks(searchResults);
+                } catch (err) {
+                    setError('Error searching tasks');
+                }
+            } else {
+                try {
+                    const tasksData = await fetchTasks(projectId);
+                    setTasks(tasksData);
+                } catch (err) {
+                    setError('Error fetching tasks');
+                }
+            }
+        };
+        searchTasksAsync();
+    }, [searchQuery, projectId]);
 
-    useEffect(() => {
-        if (searchQuery) {
-            searchTasksMutation.mutate({ projectId, query: searchQuery });
-        } else {
-            queryClient.invalidateQueries(['tasks', projectId]);
-        }
-    }, [searchQuery, projectId, queryClient, searchTasksMutation]);
-
-    const onDragEnd = (result) => {
+    const onDragEnd = async (result) => {
         if (!result.destination) return;
         const { source, destination } = result;
 
@@ -149,10 +131,14 @@ const SprintBoard = () => {
                 }
             });
 
-            updateTaskMutation.mutate({
-                id: removed._id,
-                status: destination.droppableId
-            });
+            try {
+                await updateTask({
+                    id: removed._id,
+                    status: destination.droppableId
+                });
+            } catch (err) {
+                setError('Error updating task status');
+            }
         } else {
             const column = columns[source.droppableId];
             const copiedItems = [...column.items];
@@ -189,9 +175,16 @@ const SprintBoard = () => {
         setSelectedTask(null);
     };
 
-    const handleCloseSprint = () => {
+    const handleCloseSprint = async () => {
         if (activeSprint) {
-            closeSprintMutation.mutate(activeSprint._id);
+            try {
+                await closeSprint(activeSprint._id);
+                const updatedSprints = await getSprints(projectId);
+                setSprints(updatedSprints);
+                setActiveSprint(null);
+            } catch (err) {
+                setError('Error closing sprint');
+            }
         }
     };
 
@@ -203,16 +196,28 @@ const SprintBoard = () => {
         setSearchQuery(e.target.value);
     };
 
-    const handleAssignTask = (taskId, userId) => {
-        assignTaskMutation.mutate({ taskId, userId });
+    const handleAssignTask = async (taskId, userId) => {
+        try {
+            await assignTask(taskId, userId);
+            const updatedTasks = await fetchTasks(projectId);
+            setTasks(updatedTasks);
+        } catch (err) {
+            setError('Error assigning task');
+        }
     };
 
-    const handleUpdateDueDate = (taskId, dueDate) => {
-        updateTaskDueDateMutation.mutate({ taskId, dueDate });
+    const handleUpdateDueDate = async (taskId, dueDate) => {
+        try {
+            await updateTaskDueDate(taskId, dueDate);
+            const updatedTasks = await fetchTasks(projectId);
+            setTasks(updatedTasks);
+        } catch (err) {
+            setError('Error updating due date');
+        }
     };
 
-    if (isTasksLoading || isSprintsLoading) return <CircularProgress />;
-    if (isTasksError) return <Typography>Error loading tasks</Typography>;
+    if (isLoading) return <CircularProgress />;
+    if (error) return <Typography color="error">{error}</Typography>;
 
     return (
         <Box sx={{ flexGrow: 1, p: 3 }}>

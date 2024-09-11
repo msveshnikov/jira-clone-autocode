@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { useParams } from 'react-router-dom';
+import { useParams, useNavigate } from 'react-router-dom';
 import {
     Typography,
     Avatar,
@@ -14,26 +14,32 @@ import {
     ListItem,
     ListItemText,
     ListItemSecondaryAction,
-    IconButton
+    IconButton,
+    Dialog,
+    DialogTitle,
+    DialogContent,
+    DialogActions
 } from '@mui/material';
 import { Edit, Delete } from '@mui/icons-material';
 import { useAuth } from '../contexts/AuthContext';
-import { getUser, updateUser } from '../services/apiService';
-import PropTypes from 'prop-types';
+import { getUser, updateUser, deleteProject } from '../services/apiService';
 
 const Profile = () => {
     const { userId } = useParams();
     const { user: currentUser } = useAuth();
-    const [user, setUser] = useState(null);
     const [editMode, setEditMode] = useState(false);
-    const [loading, setLoading] = useState(true);
-    const [error, setError] = useState(null);
     const [formData, setFormData] = useState({
         name: '',
         email: '',
         role: '',
         bio: ''
     });
+    const [confirmDelete, setConfirmDelete] = useState(false);
+    const [projectToDelete, setProjectToDelete] = useState(null);
+    const [user, setUser] = useState(null);
+    const [isLoading, setIsLoading] = useState(true);
+    const [isError, setIsError] = useState(false);
+    const navigate = useNavigate();
 
     useEffect(() => {
         const fetchUser = async () => {
@@ -46,13 +52,12 @@ const Profile = () => {
                     role: userData.role,
                     bio: userData.bio || ''
                 });
-                setLoading(false);
+                setIsLoading(false);
             } catch (error) {
-                setError('Error fetching user data');
-                setLoading(false);
+                setIsError(true);
+                setIsLoading(false);
             }
         };
-
         fetchUser();
     }, [userId]);
 
@@ -63,20 +68,34 @@ const Profile = () => {
     const handleSubmit = async (e) => {
         e.preventDefault();
         try {
-            const updatedUser = await updateUser(user.id, formData);
-            setUser(updatedUser);
+            await updateUser(userId, formData);
+            setUser({ ...user, ...formData });
             setEditMode(false);
         } catch (error) {
-            setError('Error updating user data');
+            console.error('Error updating user:', error);
         }
     };
 
     const handleDeleteProject = (projectId) => {
-        // Implement project deletion logic here
+        setProjectToDelete(projectId);
+        setConfirmDelete(true);
     };
 
-    if (loading) return <CircularProgress />;
-    if (error) return <Typography color="error">{error}</Typography>;
+    const confirmDeleteProject = async () => {
+        try {
+            await deleteProject(projectToDelete);
+            setUser({
+                ...user,
+                projects: user.projects.filter((project) => project.id !== projectToDelete)
+            });
+            setConfirmDelete(false);
+        } catch (error) {
+            console.error('Error deleting project:', error);
+        }
+    };
+
+    if (isLoading) return <CircularProgress />;
+    if (isError) return <Typography color="error">Error loading user data</Typography>;
     if (!user) return <Typography>User not found</Typography>;
 
     return (
@@ -125,12 +144,7 @@ const Profile = () => {
                                 value={formData.bio}
                                 onChange={handleInputChange}
                             />
-                            <Button
-                                type="submit"
-                                variant="contained"
-                                color="primary"
-                                sx={{ mt: 2 }}
-                            >
+                            <Button type="submit" variant="contained" color="primary" sx={{ mt: 2 }}>
                                 Save
                             </Button>
                             <Button onClick={() => setEditMode(false)} sx={{ mt: 2, ml: 2 }}>
@@ -164,9 +178,7 @@ const Profile = () => {
                                 <IconButton
                                     edge="end"
                                     aria-label="edit"
-                                    onClick={() => {
-                                        /* Implement edit project logic */
-                                    }}
+                                    onClick={() => navigate(`/project/${project.id}`)}
                                 >
                                     <Edit />
                                 </IconButton>
@@ -190,12 +202,27 @@ const Profile = () => {
                     ))}
                 </Box>
             </Box>
+            <Dialog
+                open={confirmDelete}
+                onClose={() => setConfirmDelete(false)}
+                aria-labelledby="alert-dialog-title"
+                aria-describedby="alert-dialog-description"
+            >
+                <DialogTitle id="alert-dialog-title">{'Confirm Delete'}</DialogTitle>
+                <DialogContent>
+                    <Typography>Are you sure you want to delete this project?</Typography>
+                </DialogContent>
+                <DialogActions>
+                    <Button onClick={() => setConfirmDelete(false)} color="primary">
+                        Cancel
+                    </Button>
+                    <Button onClick={confirmDeleteProject} color="error" autoFocus>
+                        Delete
+                    </Button>
+                </DialogActions>
+            </Dialog>
         </Paper>
     );
-};
-
-Profile.propTypes = {
-    userId: PropTypes.string
 };
 
 export default Profile;

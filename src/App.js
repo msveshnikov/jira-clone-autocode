@@ -2,7 +2,6 @@ import React, { useState, useEffect } from 'react';
 import { BrowserRouter as Router, Route, Routes, Navigate } from 'react-router-dom';
 import { ThemeProvider } from '@mui/material/styles';
 import CssBaseline from '@mui/material/CssBaseline';
-import { QueryClient, QueryClientProvider } from 'react-query';
 import createCustomTheme from './utils/theme';
 import Backlog from './components/Backlog';
 import SprintBoard from './components/SprintBoard';
@@ -15,8 +14,6 @@ import Profile from './components/Profile';
 import { Container } from '@mui/material';
 import { AuthProvider, useAuth } from './contexts/AuthContext';
 import PropTypes from 'prop-types';
-
-const queryClient = new QueryClient();
 
 function PrivateRoute({ children }) {
     const { user, loading } = useAuth();
@@ -44,67 +41,65 @@ function App() {
     };
 
     return (
-        <QueryClientProvider client={queryClient}>
-            <Router>
-                <AuthProvider>
-                    <ThemeProvider theme={theme}>
-                        <CssBaseline />
-                        <div
-                            className="App"
-                            style={{ display: 'flex', flexDirection: 'column', minHeight: '100vh' }}
-                        >
-                            <Header toggleDarkMode={toggleDarkMode} darkMode={darkMode} />
-                            <Container maxWidth={false} style={{ flexGrow: 1, padding: 0 }}>
-                                <Routes>
-                                    <Route
-                                        path="/"
-                                        element={
-                                            <PrivateRoute>
-                                                <Projects />
-                                            </PrivateRoute>
-                                        }
-                                    />
-                                    <Route
-                                        path="/project/:projectId"
-                                        element={
-                                            <PrivateRoute>
-                                                <SprintBoard />
-                                            </PrivateRoute>
-                                        }
-                                    />
-                                    <Route
-                                        path="/project/:projectId/backlog"
-                                        element={
-                                            <PrivateRoute>
-                                                <Backlog />
-                                            </PrivateRoute>
-                                        }
-                                    />
-                                    <Route
-                                        path="/project/:projectId/task/:taskId"
-                                        element={
-                                            <PrivateRoute>
-                                                <TaskCard />
-                                            </PrivateRoute>
-                                        }
-                                    />
-                                    <Route
-                                        path="/profile"
-                                        element={
-                                            <PrivateRoute>
-                                                <Profile />
-                                            </PrivateRoute>
-                                        }
-                                    />
-                                    <Route path="/login" element={<Login />} />
-                                    <Route path="/register" element={<Register />} />
-                                </Routes>
-                            </Container>
-                        </div>
-                    </ThemeProvider>
-                </AuthProvider>
-            </Router>
-        </QueryClientProvider>
+        <Router>
+            <AuthProvider>
+                <ThemeProvider theme={theme}>
+                    <CssBaseline />
+                    <div
+                        className="App"
+                        style={{ display: 'flex', flexDirection: 'column', minHeight: '100vh' }}
+                    >
+                        <Header toggleDarkMode={toggleDarkMode} darkMode={darkMode} />
+                        <Container maxWidth={false} style={{ flexGrow: 1, padding: 0 }}>
+                            <Routes>
+                                <Route
+                                    path="/"
+                                    element={
+                                        <PrivateRoute>
+                                            <Projects />
+                                        </PrivateRoute>
+                                    }
+                                />
+                                <Route
+                                    path="/project/:projectId"
+                                    element={
+                                        <PrivateRoute>
+                                            <SprintBoard />
+                                        </PrivateRoute>
+                                    }
+                                />
+                                <Route
+                                    path="/project/:projectId/backlog"
+                                    element={
+                                        <PrivateRoute>
+                                            <Backlog />
+                                        </PrivateRoute>
+                                    }
+                                />
+                                <Route
+                                    path="/project/:projectId/task/:taskId"
+                                    element={
+                                        <PrivateRoute>
+                                            <TaskCard />
+                                        </PrivateRoute>
+                                    }
+                                />
+                                <Route
+                                    path="/profile"
+                                    element={
+                                        <PrivateRoute>
+                                            <Profile />
+                                        </PrivateRoute>
+                                    }
+                                />
+                                <Route path="/login" element={<Login />} />
+                                <Route path="/register" element={<Register />} />
+                            </Routes>
+                        </Container>
+                    </div>
+                </ThemeProvider>
+            </AuthProvider>
+        </Router>
     );
 }
 

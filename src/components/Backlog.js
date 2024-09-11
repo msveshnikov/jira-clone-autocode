@@ -1,6 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import PropTypes from 'prop-types';
-import { useQuery, useMutation, useQueryClient } from 'react-query';
+import { useParams, useNavigate } from 'react-router-dom';
 import {
     Container,
     Typography,
@@ -40,7 +39,6 @@ import {
     deleteTask,
     searchTasks
 } from '../services/apiService';
-import { useNavigate, useParams } from 'react-router-dom';
 import { useTheme } from '@mui/material/styles';
 import { Delete, Edit, Search } from '@mui/icons-material';
 import { useAuth } from '../contexts/AuthContext';
@@ -64,71 +62,56 @@ const Backlog = () => {
     });
     const [searchQuery, setSearchQuery] = useState('');
     const [view, setView] = useState('backlog');
-    const queryClient = useQueryClient();
+    const [tasks, setTasks] = useState([]);
+    const [sprints, setSprints] = useState([]);
+    const [loading, setLoading] = useState(true);
+    const [error, setError] = useState(null);
     const navigate = useNavigate();
     const theme = useTheme();
     const { projectId } = useParams();
     const { user } = useAuth();
 
-    const {
-        data: tasks,
-        isLoading,
-        isError
-    } = useQuery(['backlogTasks', projectId], () => fetchBacklogTasks(projectId));
-    const { data: sprints } = useQuery(['sprints', projectId], () => getSprints(projectId));
-
-    const createTaskMutation = useMutation((newTask) => createTask(projectId, newTask), {
-        onSuccess: () => {
-            queryClient.invalidateQueries(['backlogTasks', projectId]);
-            handleClose();
-        }
-    });
-
-    const updateTaskMutation = useMutation(updateTask, {
-        onSuccess: () => {
-            queryClient.invalidateQueries(['backlogTasks', projectId]);
-            handleClose();
-        }
-    });
-
-    const deleteTaskMutation = useMutation(deleteTask, {
-        onSuccess: () => {
-            queryClient.invalidateQueries(['backlogTasks', projectId]);
-        }
-    });
-
-    const updateTaskOrderMutation = useMutation(updateTaskOrder, {
-        onSuccess: () => {
-            queryClient.invalidateQueries(['backlogTasks', projectId]);
-        }
-    });
-
-    const createSprintMutation = useMutation((newSprint) => createSprint(projectId, newSprint), {
-        onSuccess: () => {
-            queryClient.invalidateQueries(['sprints', projectId]);
-            handleSprintDialogClose();
-        }
-    });
-
-    const updateSprintMutation = useMutation(updateSprint, {
-        onSuccess: () => {
-            queryClient.invalidateQueries(['sprints', projectId]);
-        }
-    });
-
-    const searchTasksMutation = useMutation((query) => searchTasks(projectId, query), {
-        onSuccess: (data) => {
-            queryClient.setQueryData(['backlogTasks', projectId], data);
-        }
-    });
+    useEffect(() => {
+        const fetchData = async () => {
+            try {
+                const [tasksData, sprintsData] = await Promise.all([
+                    fetchBacklogTasks(projectId),
+                    getSprints(projectId)
+                ]);
+                setTasks(tasksData);
+                setSprints(sprintsData);
+                setLoading(false);
+            } catch (err) {
+                setError('Error loading data');
+                setLoading(false);
+            }
+        };
+        fetchData();
+    }, [projectId]);
 
     useEffect(() => {
         if (searchQuery) {
-            searchTasksMutation.mutate(searchQuery);
+            const search = async () => {
+                try {
+                    const searchResults = await searchTasks(projectId, searchQuery);
+                    setTasks(searchResults);
+                } catch (err) {
+                    setError('Error searching tasks');
+                }
+            };
+            search();
         } else {
-            queryClient.invalidateQueries(['backlogTasks', projectId]);
+            const refreshTasks = async () => {
+                try {
+                    const tasksData = await fetchBacklogTasks(projectId);
+                    setTasks(tasksData);
+                } catch (err) {
+                    setError('Error refreshing tasks');
+                }
+            };
+            refreshTasks();
         }
-    }, [projectId, queryClient, searchQuery, searchTasksMutation]);
+    }, [projectId, searchQuery]);
 
     const handleOpen = () => {
         setEditingTask(null);
@@ -154,11 +137,18 @@ const Backlog = () => {
         });
     };
 
-    const handleCreateTask = () => {
-        if (editingTask) {
-            updateTaskMutation.mutate({ id: editingTask._id, ...newTask });
-        } else {
-            createTaskMutation.mutate(newTask);
+    const handleCreateTask = async () => {
+        try {
+            if (editingTask) {
+                await updateTask({ id: editingTask._id, ...newTask });
+            } else {
+                await createTask(projectId, newTask);
+            }
+            const updatedTasks = await fetchBacklogTasks(projectId);
+            setTasks(updatedTasks);
+            handleClose();
+        } catch (err) {
+            setError('Error creating/updating task');
         }
     };
 
@@ -167,16 +157,22 @@ const Backlog = () => {
         setNewTask({ ...newTask, [name]: value });
     };
 
-    const onDragEnd = (result) => {
+    const onDragEnd = async (result) => {
         if (!result.destination) return;
 
         const reorderedTasks = Array.from(tasks);
         const [reorderedItem] = reorderedTasks.splice(result.source.index, 1);
         reorderedTasks.splice(result.destination.index, 0, reorderedItem);
 
-        reorderedTasks.forEach((task, index) => {
-            updateTaskOrderMutation.mutate({ id: task._id, order: index });
-        });
+        setTasks(reorderedTasks);
+
+        try {
+            await Promise.all(
+                reorderedTasks.map((task, index) => updateTaskOrder({ id: task._id, order: index }))
+            );
+        } catch (err) {
+            setError('Error updating task order');
+        }
     };
 
     const handleTaskClick = (taskId) => {
@@ -195,8 +191,14 @@ const Backlog = () => {
         setOpen(true);
     };
 
-    const handleDeleteTask = (taskId) => {
-        deleteTaskMutation.mutate(taskId);
+    const handleDeleteTask = async (taskId) => {
+        try {
+            await deleteTask(taskId);
+            const updatedTasks = await fetchBacklogTasks(projectId);
+            setTasks(updatedTasks);
+        } catch (err) {
+            setError('Error deleting task');
+        }
     };
 
     const getPriorityColor = (priority) => {
@@ -228,16 +230,35 @@ const Backlog = () => {
         setNewSprint({ ...newSprint, [name]: value });
     };
 
-    const handleCreateSprint = () => {
-        createSprintMutation.mutate(newSprint);
+    const handleCreateSprint = async () => {
+        try {
+            await createSprint(projectId, newSprint);
+            const updatedSprints = await getSprints(projectId);
+            setSprints(updatedSprints);
+            handleSprintDialogClose();
+        } catch (err) {
+            setError('Error creating sprint');
+        }
     };
 
-    const handleStartSprint = (sprintId) => {
-        updateSprintMutation.mutate({ id: sprintId, status: 'active' });
+    const handleStartSprint = async (sprintId) => {
+        try {
+            await updateSprint({ id: sprintId, status: 'active' });
+            const updatedSprints = await getSprints(projectId);
+            setSprints(updatedSprints);
+        } catch (err) {
+            setError('Error starting sprint');
+        }
     };
 
-    const handleCloseSprint = (sprintId) => {
-        updateSprintMutation.mutate({ id: sprintId, status: 'completed' });
+    const handleCloseSprint = async (sprintId) => {
+        try {
+            await updateSprint({ id: sprintId, status: 'completed' });
+            const updatedSprints = await getSprints(projectId);
+            setSprints(updatedSprints);
+        } catch (err) {
+            setError('Error closing sprint');
+        }
     };
 
     const handleSearchChange = (e) => {
@@ -248,8 +269,8 @@ const Backlog = () => {
         setView(newView);
     };
 
-    if (isLoading) return <CircularProgress />;
-    if (isError) return <Typography>Error loading tasks</Typography>;
+    if (loading) return <CircularProgress />;
+    if (error) return <Typography color="error">{error}</Typography>;
 
     return (
         <Box sx={{ my: 3, width: '100%', overflowX: 'auto' }}>
@@ -413,7 +434,7 @@ const Backlog = () => {
                                     </TableRow>
                                 </TableHead>
                                 <TableBody>
-                                    {sprints?.map((sprint) => (
+                                    {sprints.map((sprint) => (
                                         <TableRow key={sprint._id}>
                                             <TableCell>{sprint.name}</TableCell>
                                             <TableCell>{sprint.status}</TableCell>
@@ -580,27 +601,6 @@ const Backlog = () => {
             </Container>
         </Box>
     );
-};
-
-Backlog.propTypes = {
-    tasks: PropTypes.arrayOf(
-        PropTypes.shape({
-            id: PropTypes.string.isRequired,
-            title: PropTypes.string.isRequired,
-            description: PropTypes.string,
-            points: PropTypes.number.isRequired,
-            priority: PropTypes.oneOf(['low', 'medium', 'high']).isRequired,
-            assignedTo: PropTypes.string,
-            status: PropTypes.oneOf([
-                'todo',
-                'inprogress',
-                'readytotest',
-                'codereview',
-                'qa',
-                'done'
-            ]).isRequired
-        })
-    )
 };
 
 export default Backlog;

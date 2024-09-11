@@ -19,7 +19,6 @@ https://jira.autocode.work/
 -   Drag-and-Drop Functionality: Enhance user experience for task management
 -   Search and Filter: Add advanced search capabilities for tasks
 -   Reporting: Implement burndown charts and sprint velocity metrics
--   Mobile Responsiveness: Optimize the application for various screen sizes
 -   Task Comments: Implement a comment system for tasks
 -   Custom Fields: Allow users to add custom fields to tasks
 -   Version Control Integration: Link tasks to Git commits or pull requests
@@ -92,3 +91,4 @@ Comprehensive documentation is available in the `docs` folder, including:
 
 # TODO
 
+-   get rid of react-query

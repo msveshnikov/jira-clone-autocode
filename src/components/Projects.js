@@ -1,6 +1,5 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { useQuery, useMutation, useQueryClient } from 'react-query';
 import {
     Container,
     Typography,
@@ -26,37 +25,30 @@ const Projects = () => {
     const [openDialog, setOpenDialog] = useState(false);
     const [projectData, setProjectData] = useState({ name: '', description: '' });
     const [editingProject, setEditingProject] = useState(null);
+    const [projects, setProjects] = useState([]);
+    const [isLoading, setIsLoading] = useState(true);
+    const [error, setError] = useState(null);
     const { user, selectProject } = useAuth();
     const navigate = useNavigate();
-    const queryClient = useQueryClient();
 
-    const {
-        data: projects,
-        isLoading,
-        isError
-    } = useQuery('projects', getProjects, {
-        enabled: !!user
-    });
+    useEffect(() => {
+        fetchProjects();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [user]);
 
-    const createProjectMutation = useMutation(createProject, {
-        onSuccess: () => {
-            queryClient.invalidateQueries('projects');
-            handleCloseDialog();
+    const fetchProjects = async () => {
+        if (user) {
+            try {
+                setIsLoading(true);
+                const fetchedProjects = await getProjects();
+                setProjects(fetchedProjects);
+                setIsLoading(false);
+            } catch (err) {
+                setError('Error loading projects');
+                setIsLoading(false);
+            }
         }
-    });
-
-    const updateProjectMutation = useMutation(updateProject, {
-        onSuccess: () => {
-            queryClient.invalidateQueries('projects');
-            handleCloseDialog();
-        }
-    });
-
-    const deleteProjectMutation = useMutation(deleteProject, {
-        onSuccess: () => {
-            queryClient.invalidateQueries('projects');
-        }
-    });
+    };
 
     const handleOpenDialog = (project = null) => {
         if (project) {
@@ -80,18 +72,29 @@ const Projects = () => {
         setProjectData({ ...projectData, [name]: value });
     };
 
-    const handleSubmit = (e) => {
+    const handleSubmit = async (e) => {
         e.preventDefault();
-        if (editingProject) {
-            updateProjectMutation.mutate({ id: editingProject._id, ...projectData });
-        } else {
-            createProjectMutation.mutate(projectData);
+        try {
+            if (editingProject) {
+                await updateProject({ id: editingProject._id, ...projectData });
+            } else {
+                await createProject(projectData);
+            }
+            fetchProjects();
+            handleCloseDialog();
+        } catch (err) {
+            setError('Error saving project');
         }
     };
 
-    const handleDeleteProject = (projectId) => {
+    const handleDeleteProject = async (projectId) => {
         if (window.confirm('Are you sure you want to delete this project?')) {
-            deleteProjectMutation.mutate(projectId);
+            try {
+                await deleteProject(projectId);
+                fetchProjects();
+            } catch (err) {
+                setError('Error deleting project');
+            }
         }
     };
 
@@ -101,7 +104,7 @@ const Projects = () => {
     };
 
     if (isLoading) return <CircularProgress />;
-    if (isError) return <Typography color="error">Error loading projects</Typography>;
+    if (error) return <Typography color="error">{error}</Typography>;
 
     return (
         <Container maxWidth="lg" sx={{ mt: 4 }}>
