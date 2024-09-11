@@ -1,5 +1,4 @@
-import React, { useState } from 'react';
-import PropTypes from 'prop-types';
+import React, { useState, useEffect } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import {
     TextField,
@@ -22,7 +21,13 @@ const Login = () => {
     const [error, setError] = useState('');
     const navigate = useNavigate();
     const theme = useTheme();
-    const { login } = useAuth();
+    const { login, isAuthenticated } = useAuth();
+
+    useEffect(() => {
+        if (isAuthenticated) {
+            navigate('/');
+        }
+    }, [isAuthenticated, navigate]);
 
     const handleSubmit = async (e) => {
         e.preventDefault();
@@ -30,9 +35,7 @@ const Login = () => {
 
         try {
             const success = await login(email, password, rememberMe);
-            if (success) {
-                navigate('/');
-            } else {
+            if (!success) {
                 setError('Invalid email or password');
             }
         } catch (err) {
@@ -120,11 +123,6 @@ const Login = () => {
             </Paper>
         </Container>
     );
-};
-
-Login.propTypes = {
-    toggleDarkMode: PropTypes.func,
-    darkMode: PropTypes.bool
 };
 
 export default Login;

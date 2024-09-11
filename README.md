@@ -91,4 +91,4 @@ Comprehensive documentation is available in the `docs` folder, including:
 
 # TODO
 
--   get rid of react-query
+-   Fix Login doesnt redirect to projects
