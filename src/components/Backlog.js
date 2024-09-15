@@ -98,6 +98,7 @@ const Backlog = () => {
     };
 
     const onDragEnd = async (result) => {
+        console.log('OnDragEnd', result);
         if (!result.destination) return;
 
         const sourceId = result.source.droppableId;
@@ -227,74 +228,60 @@ const Backlog = () => {
                         {(provided) => (
                             <Box {...provided.droppableProps} ref={provided.innerRef}>
                                 {sprints.map((sprint) => (
-                                    <Draggable
+                                    <Paper
                                         key={sprint._id}
-                                        draggableId={sprint._id}
-                                        index={sprint.order}
+                                        sx={{ p: 2, mb: 2 }}
+                                        ref={provided.innerRef}
+                                        {...provided.draggableProps}
                                     >
-                                        {(provided) => (
-                                            <Paper
-                                                sx={{ p: 2, mb: 2 }}
-                                                ref={provided.innerRef}
-                                                {...provided.draggableProps}
-                                            >
-                                                <Box
-                                                    sx={{
-                                                        display: 'flex',
-                                                        justifyContent: 'space-between',
-                                                        alignItems: 'center',
-                                                        mb: 2
-                                                    }}
-                                                    {...provided.dragHandleProps}
+                                        <Box
+                                            sx={{
+                                                display: 'flex',
+                                                justifyContent: 'space-between',
+                                                alignItems: 'center',
+                                                mb: 2
+                                            }}
+                                            {...provided.dragHandleProps}
+                                        >
+                                            <Typography variant="h6">{sprint.name}</Typography>
+                                            {sprint.status === 'planning' && (
+                                                <Button
+                                                    variant="contained"
+                                                    color="primary"
+                                                    onClick={() => handleStartSprint(sprint._id)}
                                                 >
-                                                    <Typography variant="h6">
-                                                        {sprint.name}
-                                                    </Typography>
-                                                    {sprint.status === 'planning' && (
-                                                        <Button
-                                                            variant="contained"
-                                                            color="primary"
-                                                            onClick={() =>
-                                                                handleStartSprint(sprint._id)
-                                                            }
-                                                        >
-                                                            Start Sprint
-                                                        </Button>
-                                                    )}
-                                                    {sprint.status === 'active' && (
-                                                        <Button
-                                                            variant="contained"
-                                                            color="secondary"
-                                                            onClick={() =>
-                                                                handleCloseSprint(sprint._id)
-                                                            }
-                                                        >
-                                                            Close Sprint
-                                                        </Button>
-                                                    )}
+                                                    Start Sprint
+                                                </Button>
+                                            )}
+                                            {sprint.status === 'active' && (
+                                                <Button
+                                                    variant="contained"
+                                                    color="secondary"
+                                                    onClick={() => handleCloseSprint(sprint._id)}
+                                                >
+                                                    Close Sprint
+                                                </Button>
+                                            )}
+                                        </Box>
+                                        <Droppable droppableId={sprint._id} type="TASK">
+                                            {(provided) => (
+                                                <Box
+                                                    {...provided.droppableProps}
+                                                    ref={provided.innerRef}
+                                                >
+                                                    <TaskTable
+                                                        tasks={tasks?.filter(
+                                                            (task) => task.sprint === sprint._id
+                                                        )}
+                                                        provided={provided}
+                                                        handleTaskClick={handleTaskClick}
+                                                        handleEditTask={handleEditTask}
+                                                        handleDeleteTask={handleDeleteTask}
+                                                    />
                                                 </Box>
-                                                <Droppable droppableId={sprint._id} type="TASK">
-                                                    {(provided) => (
-                                                        <Box
-                                                            {...provided.droppableProps}
-                                                            ref={provided.innerRef}
-                                                        >
-                                                            <TaskTable
-                                                                tasks={tasks?.filter(
-                                                                    (task) =>
-                                                                        task.sprint === sprint._id
-                                                                )}
-                                                                provided={provided}
-                                                                handleTaskClick={handleTaskClick}
-                                                                handleEditTask={handleEditTask}
-                                                                handleDeleteTask={handleDeleteTask}
-                                                            />
-                                                        </Box>
-                                                    )}
-                                                </Droppable>
-                                            </Paper>
-                                        )}
-                                    </Draggable>
+                                            )}
+                                        </Droppable>
+                                    </Paper>
                                 ))}
                                 <Paper sx={{ p: 2, mb: 2 }}>
                                     <Typography variant="h6">Backlog</Typography>
