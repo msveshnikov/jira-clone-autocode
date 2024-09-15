@@ -19,7 +19,12 @@ import {
 } from '@mui/material';
 import { Add, Edit, Delete } from '@mui/icons-material';
 import { AuthContext } from '../contexts/AuthContext';
-import { getProjects, createProject, updateProject, deleteProject } from '../services/apiService';
+import {
+    getUserProjects,
+    createUserProject,
+    updateProject,
+    deleteProject
+} from '../services/apiService';
 
 const Projects = () => {
     const [openDialog, setOpenDialog] = useState(false);
@@ -33,14 +38,14 @@ const Projects = () => {
 
     useEffect(() => {
         fetchProjects();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [user]);
 
     const fetchProjects = async () => {
         if (user) {
             try {
                 setIsLoading(true);
-                const fetchedProjects = await getProjects();
+                const fetchedProjects = await getUserProjects();
                 setProjects(fetchedProjects);
                 setIsLoading(false);
             } catch (err) {
@@ -78,7 +83,7 @@ const Projects = () => {
             if (editingProject) {
                 await updateProject({ id: editingProject._id, ...projectData });
             } else {
-                await createProject(projectData);
+                await createUserProject(projectData);
             }
             fetchProjects();
             handleCloseDialog();

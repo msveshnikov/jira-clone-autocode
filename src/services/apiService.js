@@ -44,7 +44,7 @@ export const fetchTasks = async (projectId) => {
         const response = await apiService.get(`/projects/${projectId}/tasks`);
         return response.data;
     } catch (error) {
-        handleApiError(error);
+        handleApiError(error); 
     }
 };
 
@@ -310,7 +310,7 @@ export const closeSprint = async (sprintId) => {
     }
 };
 
-export const getProjects = async () => {
+export const getUserProjects = async () => {
     try {
         const response = await apiService.get('/projects');
         return response.data;
@@ -319,7 +319,7 @@ export const getProjects = async () => {
     }
 };
 
-export const createProject = async (projectData) => {
+export const createUserProject = async (projectData) => {
     try {
         const response = await apiService.post('/projects', projectData);
         return response.data;

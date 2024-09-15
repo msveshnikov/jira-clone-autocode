@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useContext } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import {
     Container,
@@ -41,7 +41,6 @@ import {
 } from '../services/apiService';
 import { useTheme } from '@mui/material/styles';
 import { Delete, Edit, Search } from '@mui/icons-material';
-import { AuthContext } from '../contexts/AuthContext';
 
 const Backlog = () => {
     const [open, setOpen] = useState(false);
@@ -69,7 +68,6 @@ const Backlog = () => {
     const navigate = useNavigate();
     const theme = useTheme();
     const { projectId } = useParams();
-    const { user } = useContext(AuthContext);
 
     useEffect(() => {
         const fetchData = async () => {

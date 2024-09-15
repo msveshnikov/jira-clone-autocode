@@ -5,9 +5,9 @@ import apiService, {
     loginUser,
     getCurrentUser,
     registerUser,
-    createProject,
+    createUserProject,
     updateUserPreferences,
-    getProjects
+    getUserProjects
 } from '../services/apiService';
 
 export const AuthContext = createContext();
@@ -34,7 +34,7 @@ export const AuthProvider = ({ children }) => {
 
     const fetchProjects = useCallback(async () => {
         try {
-            const projectsData = await getProjects();
+            const projectsData = await getUserProjects();
             setProjects(projectsData);
         } catch (error) {
             console.error('Error fetching projects:', error);
@@ -88,9 +88,9 @@ export const AuthProvider = ({ children }) => {
         }
     };
 
-    const createNewProject = async (projectData) => {
+    const createProject = async (projectData) => {
         try {
-            const newProject = await createProject(projectData);
+            const newProject = await createUserProject(projectData);
             setProjects([...projects, newProject]);
             return newProject;
         } catch (error) {
@@ -121,10 +121,10 @@ export const AuthProvider = ({ children }) => {
         loading,
         isAuthenticated,
         setIsAuthenticated,
-        createProject: createNewProject,
+        createProject,
         selectProject,
         currentProject,
-        updateUserPreferences: updatePreferences,
+        updatePreferences,
         projects,
         fetchProjects
     };

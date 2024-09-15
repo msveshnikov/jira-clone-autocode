@@ -44,7 +44,7 @@ const SprintBoard = () => {
     const [activeSprint, setActiveSprint] = useState(null);
     const [searchQuery, setSearchQuery] = useState('');
     const [tasks, setTasks] = useState([]);
-    const [sprints, setSprints] = useState([]);
+    const [, setSprints] = useState([]);
     const [isLoading, setIsLoading] = useState(true);
     const [error, setError] = useState(null);
 
@@ -56,7 +56,6 @@ const SprintBoard = () => {
                     getSprints(projectId)
                 ]);
                 setTasks(tasksData);
-                setSprints(sprintsData);
                 const active = sprintsData.find((sprint) => sprint.status === 'active');
                 setActiveSprint(active);
                 setIsLoading(false);
@@ -84,6 +83,7 @@ const SprintBoard = () => {
             });
             setColumns(newColumns);
         }
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [tasks, activeSprint]);
 
     useEffect(() => {
