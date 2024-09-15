@@ -112,7 +112,7 @@ const Header = ({ toggleDarkMode, darkMode }) => {
                         </>
                     )}
                     <Typography variant="h6" component="div" sx={{ flexGrow: 1 }}>
-                        JIRA
+                        SCRUM Manager
                     </Typography>
                     {!isMobile && (
                         <>

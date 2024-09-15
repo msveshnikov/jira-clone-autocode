@@ -71,13 +71,6 @@ server/
     - Frontend: `npm start`
     - Backend: `npm run dev`
 
-## Docker Support
-
-The project includes Docker configuration for easy deployment:
-
-1. Build the Docker images: `docker-compose build`
-2. Run the containers: `docker-compose up`
-
 ## Documentation
 
 Comprehensive documentation is available in the `docs` folder, including:
@@ -91,6 +84,4 @@ Comprehensive documentation is available in the `docs` folder, including:
 
 # TODO
 
--   backlog should have sprints containers for tasks, and allow reaarange task vertically dragging
-    to any sprint or (below) just backlog (task without sprint)
--   implement GET `/projects/${projectId}/tasks/search?q=text`
+
