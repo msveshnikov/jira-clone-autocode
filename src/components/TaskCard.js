@@ -35,10 +35,11 @@ import {
     addComment,
     removeComment,
     assignTask,
-    updateTaskDueDate
+    updateTaskDueDate,
+    createTask
 } from '../services/apiService';
 
-const TaskCard = ({ id, onDelete, onUpdate }) => {
+const TaskCard = ({ id, onDelete, onUpdate, projectId }) => {
     const [task, setTask] = useState({
         title: '',
         description: '',
@@ -56,20 +57,25 @@ const TaskCard = ({ id, onDelete, onUpdate }) => {
     const [newComment, setNewComment] = useState('');
     const [confirmDelete, setConfirmDelete] = useState(false);
     const [loading, setLoading] = useState(true);
-    const [error, setError] = useState(null);
 
     useEffect(() => {
         const loadTask = async () => {
-            try {
-                const taskData = await fetchTask(id);
-                setTask(taskData);
-                setLoading(false);
-            } catch (err) {
-                setError('Error loading task');
-                setLoading(false);
-            }
+            const taskData = await fetchTask(id);
+            setTask(taskData);
+            setLoading(false);
         };
-        loadTask();
+        if (id) {
+            loadTask();
+        } else {
+            setTask({
+                title: '',
+                description: '',
+                points: 0,
+                priority: 'low',
+                status: 'todo'
+            });
+            setLoading(false);
+        }
     }, [id]);
 
     const handleInputChange = (e) => {
@@ -82,7 +88,11 @@ const TaskCard = ({ id, onDelete, onUpdate }) => {
 
     const handleSubmit = async (e) => {
         e.preventDefault();
-        await updateTask({ id, ...task });
+        if (id) {
+            await updateTask({ id, ...task });
+        } else {
+            await createTask(projectId, task);
+        }
         onUpdate(task);
     };
 
@@ -154,7 +164,6 @@ const TaskCard = ({ id, onDelete, onUpdate }) => {
     };
 
     if (loading) return <Typography>Loading...</Typography>;
-    if (error) return <Typography color="error">{error}</Typography>;
 
     return (
         <Card>

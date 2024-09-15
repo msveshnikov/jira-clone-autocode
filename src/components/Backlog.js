@@ -16,16 +16,13 @@ import {
 import { DragDropContext, Droppable, Draggable } from 'react-beautiful-dnd';
 import {
     fetchBacklogTasks,
-    createTask,
     updateTaskOrder,
     createSprint,
     updateSprint,
     getSprints,
-    updateTask,
-    deleteTask,
     searchTasks,
     moveTask,
-    fetchTasks
+    deleteTask
 } from '../services/apiService';
 import { Search } from '@mui/icons-material';
 import TaskCard from './TaskCard';
@@ -34,13 +31,6 @@ import { TaskTable } from './TaskTable';
 const Backlog = () => {
     const [open, setOpen] = useState(false);
     const [editingTask, setEditingTask] = useState(null);
-    const [newTask, setNewTask] = useState({
-        title: '',
-        description: '',
-        points: 0,
-        priority: 'low',
-        status: 'todo'
-    });
     const [sprintDialogOpen, setSprintDialogOpen] = useState(false);
     const [newSprint, setNewSprint] = useState({
         name: '',
@@ -97,34 +87,14 @@ const Backlog = () => {
         }
     }, [projectId, searchQuery]);
 
-    const handleOpen = () => {
+    const handleAddTask = () => {
         setEditingTask(null);
-        setNewTask({
-            title: '',
-            description: '',
-            points: 0,
-            priority: 'low',
-            status: 'todo'
-        });
         setOpen(true);
     };
 
     const handleClose = () => {
         setOpen(false);
         setEditingTask(null);
-    };
-
-    const handleCreateTask = async () => {
-        try {
-            if (!editingTask) {
-                await createTask(projectId, newTask);
-            }
-            const updatedTasks = await fetchBacklogTasks(projectId);
-            setTasks(updatedTasks);
-            handleClose();
-        } catch (err) {
-            setError('Error creating/updating task');
-        }
     };
 
     const onDragEnd = async (result) => {
@@ -159,18 +129,11 @@ const Backlog = () => {
 
     const handleEditTask = (task) => {
         setEditingTask(task);
-        setNewTask({
-            title: task.title,
-            description: task.description,
-            points: task.points,
-            priority: task.priority,
-            status: task.status
-        });
         setOpen(true);
     };
 
     const handleDeleteTask = async (taskId) => {
-        // await deleteTask(taskId);
+        await deleteTask(taskId);
         const updatedTasks = await fetchBacklogTasks(projectId);
         setTasks(updatedTasks);
     };
@@ -240,7 +203,12 @@ const Backlog = () => {
         <Box sx={{ my: 3, width: '100%', overflowX: 'auto' }}>
             <Container maxWidth={false}>
                 <Box sx={{ display: 'flex', mb: 2 }}>
-                    <Button variant="contained" color="primary" onClick={handleOpen} sx={{ mr: 2 }}>
+                    <Button
+                        variant="contained"
+                        color="primary"
+                        onClick={handleAddTask}
+                        sx={{ mr: 2 }}
+                    >
                         Add Task
                     </Button>
                     <Button
@@ -365,8 +333,9 @@ const Backlog = () => {
                     <DialogContent>
                         <TaskCard
                             id={editingTask?._id}
+                            projectId={projectId}
                             onUpdate={handleUpdate}
-                            onDelete={handleDeleteTask}
+                            onDelete={() => {}}
                         />
                     </DialogContent>
                 </Dialog>
