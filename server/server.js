@@ -403,10 +403,13 @@ app.put('/tasks/:id/order', authenticateToken, async (req, res) => {
     }
 });
 
-app.get('/tasks/search', authenticateToken, async (req, res) => {
+app.get('/projects/:projectId/tasks/search', authenticateToken, async (req, res) => {
     try {
         const query = req.query.q;
-        const tasks = await Task.find({ $text: { $search: query } });
+        const tasks = await Task.find({
+            project: req.params.projectId,
+            $text: { $search: query }
+        });
         res.json(tasks);
     } catch (error) {
         res.status(500).json({ message: error.message });
@@ -415,7 +418,7 @@ app.get('/tasks/search', authenticateToken, async (req, res) => {
 
 app.get('/projects/:id/tasks', authenticateToken, async (req, res) => {
     try {
-        const tasks = await Task.find({ project: req.params.id });
+        const tasks = await Task.find({ project: req.params.id }).sort({ order: 1 });
         res.json(tasks);
     } catch (error) {
         res.status(500).json({ message: error.message });
@@ -456,6 +459,40 @@ app.post('/projects/:projectId/sprints', authenticateToken, async (req, res) => 
         const newSprint = await sprint.save();
         await project.addSprint(newSprint._id);
         res.status(201).json(newSprint);
+    } catch (error) {
+        res.status(400).json({ message: error.message });
+    }
+});
+
+app.put('/projects/:projectId/tasks/:taskId/move', authenticateToken, async (req, res) => {
+    try {
+        const { projectId, taskId } = req.params;
+        const { sprintId, order } = req.body;
+
+        const project = await Project.findById(projectId);
+        if (!project) {
+            return res.status(404).json({ message: 'Project not found' });
+        }
+
+        const task = await Task.findById(taskId);
+        if (!task) {
+            return res.status(404).json({ message: 'Task not found' });
+        }
+
+        if (sprintId) {
+            const sprint = await Sprint.findById(sprintId);
+            if (!sprint) {
+                return res.status(404).json({ message: 'Sprint not found' });
+            }
+            await project.moveTaskToSprint(taskId, sprintId);
+        } else {
+            await project.moveTaskToBacklog(taskId);
+        }
+
+        task.order = order;
+        await task.save();
+
+        res.json(task);
     } catch (error) {
         res.status(400).json({ message: error.message });
     }

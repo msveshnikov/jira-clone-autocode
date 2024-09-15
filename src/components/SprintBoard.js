@@ -235,14 +235,14 @@ const SprintBoard = () => {
                         <Button variant="outlined" onClick={handleBackToBacklog}>
                             Back to Backlog
                         </Button>
+                        <TextField
+                            label="Search tasks"
+                            variant="standard"
+                            value={searchQuery}
+                            onChange={handleSearchChange}
+                            sx={{ ml: 2, mt:-2}}
+                        />
                     </Box>
-                    <TextField
-                        label="Search tasks"
-                        variant="outlined"
-                        value={searchQuery}
-                        onChange={handleSearchChange}
-                        sx={{ mb: 2 }}
-                    />
                     <DragDropContext onDragEnd={onDragEnd}>
                         <Grid container spacing={2}>
                             {Object.entries(columns).map(([columnId, column]) => (
@@ -319,7 +319,7 @@ const SprintBoard = () => {
             ) : (
                 <Typography>No active sprint. Please start a sprint from the Backlog.</Typography>
             )}
-            <Dialog open={!!selectedTask} onClose={handleCloseDialog} >
+            <Dialog open={!!selectedTask} onClose={handleCloseDialog}>
                 <DialogTitle>Task Details</DialogTitle>
                 <DialogContent>
                     {selectedTask && (

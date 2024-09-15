@@ -91,4 +91,6 @@ Comprehensive documentation is available in the `docs` folder, including:
 
 # TODO
 
--   backlog should have sprints containers for tasks, and allow reaarange task vertically dragging to any sprint or (below) just backlog (task without sprint)
+-   backlog should have sprints containers for tasks, and allow reaarange task vertically dragging
+    to any sprint or (below) just backlog (task without sprint)
+-   implement GET `/projects/${projectId}/tasks/search?q=text`

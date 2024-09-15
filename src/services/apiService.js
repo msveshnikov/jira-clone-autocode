@@ -206,7 +206,7 @@ export const deleteWorkflow = async (workflowId) => {
 
 export const searchTasks = async (projectId, query) => {
     try {
-        const response = await apiService.get(
+        const response = await apiService.get( 
             `/projects/${projectId}/tasks/search?q=${encodeURIComponent(query)}`
         );
         return response.data;
