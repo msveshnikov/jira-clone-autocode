@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useContext } from 'react';
-import { useParams, useNavigate } from 'react-router-dom';
+import { useParams } from 'react-router-dom';
 import { DragDropContext, Droppable, Draggable } from 'react-beautiful-dnd';
 import {
     Box,
@@ -11,14 +11,12 @@ import {
     DialogTitle,
     DialogContent,
     CircularProgress,
-    Button,
     TextField
 } from '@mui/material';
 import {
     fetchTasks,
     updateTask,
     getSprints,
-    closeSprint,
     searchTasks,
     assignTask,
     updateTaskDueDate
@@ -26,11 +24,11 @@ import {
 import TaskCard from './TaskCard';
 import { useTheme } from '@mui/material/styles';
 import { AuthContext } from '../contexts/AuthContext';
+import { Search } from '@mui/icons-material';
 
 const SprintBoard = () => {
     const { projectId } = useParams();
     const theme = useTheme();
-    const navigate = useNavigate();
     const { user } = useContext(AuthContext);
     const [columns, setColumns] = useState({
         todo: { title: 'To Do', items: [] },
@@ -44,7 +42,6 @@ const SprintBoard = () => {
     const [activeSprint, setActiveSprint] = useState(null);
     const [searchQuery, setSearchQuery] = useState('');
     const [tasks, setTasks] = useState([]);
-    const [, setSprints] = useState([]);
     const [isLoading, setIsLoading] = useState(true);
     const [error, setError] = useState(null);
 
@@ -174,23 +171,6 @@ const SprintBoard = () => {
         setSelectedTask(null);
     };
 
-    const handleCloseSprint = async () => {
-        if (activeSprint) {
-            try {
-                await closeSprint(activeSprint._id);
-                const updatedSprints = await getSprints(projectId);
-                setSprints(updatedSprints);
-                setActiveSprint(null);
-            } catch (err) {
-                setError('Error closing sprint');
-            }
-        }
-    };
-
-    const handleBackToBacklog = () => {
-        navigate(`/project/${projectId}/backlog`);
-    };
-
     const handleSearchChange = (e) => {
         setSearchQuery(e.target.value);
     };
@@ -220,27 +200,26 @@ const SprintBoard = () => {
 
     return (
         <Box sx={{ flexGrow: 1, p: 3 }}>
-            <Typography variant="h4" gutterBottom>
-                Sprint Board
-            </Typography>
             {activeSprint ? (
                 <>
-                    <Typography variant="h6" gutterBottom>
-                        Active Sprint: {activeSprint.name}
-                    </Typography>
-                    <Box sx={{ mb: 2 }}>
-                        <Button variant="contained" onClick={handleCloseSprint} sx={{ mr: 2 }}>
-                            Close Sprint
-                        </Button>
-                        <Button variant="outlined" onClick={handleBackToBacklog}>
-                            Back to Backlog
-                        </Button>
+                    <Box
+                        sx={{
+                            mb: 2,
+                            display: 'flex',
+                            alignItems: 'center',
+                            justifyContent: 'space-between'
+                        }}
+                    >
+                        <Typography variant="h6">Active Sprint: {activeSprint.name}</Typography>
                         <TextField
-                            label="Search tasks"
-                            variant="standard"
+                            variant="outlined"
+                            size="small"
+                            placeholder="Search tasks..."
                             value={searchQuery}
                             onChange={handleSearchChange}
-                            sx={{ ml: 2, mt: -2 }}
+                            InputProps={{
+                                startAdornment: <Search />
+                            }}
                         />
                     </Box>
                     <DragDropContext onDragEnd={onDragEnd}>

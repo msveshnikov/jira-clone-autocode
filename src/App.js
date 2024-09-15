@@ -44,7 +44,10 @@ function App() {
             <AuthProvider>
                 <ThemeProvider theme={theme}>
                     <CssBaseline />
-                    <div className="App" style={{ display: 'flex', flexDirection: 'column', minHeight: '100vh' }}>
+                    <div
+                        className="App"
+                        style={{ display: 'flex', flexDirection: 'column', minHeight: '100vh' }}
+                    >
                         <Header toggleDarkMode={toggleDarkMode} darkMode={darkMode} />
                         <Container maxWidth={false} style={{ flexGrow: 1, padding: 0 }}>
                             <Routes>

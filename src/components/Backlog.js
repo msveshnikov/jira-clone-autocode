@@ -245,9 +245,6 @@ const Backlog = () => {
     return (
         <Box sx={{ my: 3, width: '100%', overflowX: 'auto' }}>
             <Container maxWidth={false}>
-                <Typography variant="h4" gutterBottom>
-                    Project Management
-                </Typography>
                 <Box sx={{ display: 'flex', mb: 2 }}>
                     <Button variant="contained" color="primary" onClick={handleOpen} sx={{ mr: 2 }}>
                         Add Task
@@ -275,25 +272,6 @@ const Backlog = () => {
                     <Droppable droppableId="backlog" type="COLUMN">
                         {(provided) => (
                             <Box {...provided.droppableProps} ref={provided.innerRef}>
-                                <Paper sx={{ p: 2, mb: 2 }}>
-                                    <Typography variant="h6">Backlog</Typography>
-                                    <Droppable droppableId="backlog" type="TASK">
-                                        {(provided) => (
-                                            <Box
-                                                {...provided.droppableProps}
-                                                ref={provided.innerRef}
-                                            >
-                                                <TaskTable
-                                                    tasks={tasks?.filter((task) => !task.sprint)}
-                                                    provided={provided}
-                                                    handleTaskClick={handleTaskClick}
-                                                    handleEditTask={handleEditTask}
-                                                    handleDeleteTask={handleDeleteTask}
-                                                />
-                                            </Box>
-                                        )}
-                                    </Droppable>
-                                </Paper>
                                 {sprints.map((sprint) => (
                                     <Draggable
                                         key={sprint._id}
@@ -348,7 +326,10 @@ const Backlog = () => {
                                                             ref={provided.innerRef}
                                                         >
                                                             <TaskTable
-                                                                tasks={tasks?.filter( (task) => task.sprint === sprint._id )}
+                                                                tasks={tasks?.filter(
+                                                                    (task) =>
+                                                                        task.sprint === sprint._id
+                                                                )}
                                                                 provided={provided}
                                                                 handleTaskClick={handleTaskClick}
                                                                 handleEditTask={handleEditTask}
@@ -361,6 +342,25 @@ const Backlog = () => {
                                         )}
                                     </Draggable>
                                 ))}
+                                <Paper sx={{ p: 2, mb: 2 }}>
+                                    <Typography variant="h6">Backlog</Typography>
+                                    <Droppable droppableId="backlog" type="TASK">
+                                        {(provided) => (
+                                            <Box
+                                                {...provided.droppableProps}
+                                                ref={provided.innerRef}
+                                            >
+                                                <TaskTable
+                                                    tasks={tasks?.filter((task) => !task.sprint)}
+                                                    provided={provided}
+                                                    handleTaskClick={handleTaskClick}
+                                                    handleEditTask={handleEditTask}
+                                                    handleDeleteTask={handleDeleteTask}
+                                                />
+                                            </Box>
+                                        )}
+                                    </Droppable>
+                                </Paper>
                                 {provided.placeholder}
                             </Box>
                         )}
