@@ -134,6 +134,16 @@ taskSchema.methods.removeCustomField = function (key) {
     return this;
 };
 
+taskSchema.methods.moveTaskToSprint = function (sprintId) {
+    this.sprint = sprintId;
+    return this.save();
+};
+
+taskSchema.methods.moveTaskToBacklog = function () {
+    this.sprint = null;
+    return this.save();
+};
+
 taskSchema.statics.findByProject = function (projectId) {
     return this.find({ project: projectId }).sort('order');
 };

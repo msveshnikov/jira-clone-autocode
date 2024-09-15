@@ -13,7 +13,7 @@ import {
     Box,
     CircularProgress
 } from '@mui/material';
-import { DragDropContext, Droppable, Draggable } from 'react-beautiful-dnd';
+import { DragDropContext, Droppable } from 'react-beautiful-dnd';
 import {
     fetchBacklogTasks,
     updateTaskOrder,
@@ -21,8 +21,8 @@ import {
     updateSprint,
     getSprints,
     searchTasks,
-    moveTask,
-    deleteTask
+    deleteTask,
+    moveTaskBetweenSprintsOrBacklog
 } from '../services/apiService';
 import { Search } from '@mui/icons-material';
 import TaskCard from './TaskCard';
@@ -98,7 +98,6 @@ const Backlog = () => {
     };
 
     const onDragEnd = async (result) => {
-        console.log('OnDragEnd', result);
         if (!result.destination) return;
 
         const sourceId = result.source.droppableId;
@@ -109,7 +108,12 @@ const Backlog = () => {
             await updateTaskOrder({ id: taskId, order: result.destination.index });
         } else {
             const sprintId = destinationId === 'backlog' ? null : destinationId;
-            await moveTask(projectId, taskId, sprintId, result.destination.index);
+            await moveTaskBetweenSprintsOrBacklog(
+                projectId,
+                taskId,
+                sprintId,
+                result.destination.index
+            );
         }
         const updatedTasks = await fetchBacklogTasks(projectId);
         setTasks(updatedTasks);
@@ -224,7 +228,7 @@ const Backlog = () => {
                     />
                 </Box>
                 <DragDropContext onDragEnd={onDragEnd}>
-                    <Droppable droppableId="backlog" type="COLUMN">
+                    <Droppable droppableId="backlog" type="TASK">
                         {(provided) => (
                             <Box {...provided.droppableProps} ref={provided.innerRef}>
                                 {sprints.map((sprint) => (

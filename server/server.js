@@ -467,7 +467,7 @@ app.post('/projects/:projectId/sprints', authenticateToken, async (req, res) => 
 app.put('/projects/:projectId/tasks/:taskId/move', authenticateToken, async (req, res) => {
     try {
         const { projectId, taskId } = req.params;
-        const { sprintId, order } = req.body;
+        const { sprintId, order } = req.body; 
 
         const project = await Project.findById(projectId);
         if (!project) {
@@ -484,9 +484,9 @@ app.put('/projects/:projectId/tasks/:taskId/move', authenticateToken, async (req
             if (!sprint) {
                 return res.status(404).json({ message: 'Sprint not found' });
             }
-            await project.moveTaskToSprint(taskId, sprintId);
+            await task.moveTaskToSprint(sprintId);
         } else {
-            await project.moveTaskToBacklog(taskId);
+            await task.moveTaskToBacklog();
         }
 
         task.order = order;
