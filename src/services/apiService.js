@@ -206,7 +206,7 @@ export const deleteWorkflow = async (workflowId) => {
 
 export const searchTasks = async (projectId, query) => {
     try {
-        const response = await apiService.get( 
+        const response = await apiService.get(
             `/projects/${projectId}/tasks/search?q=${encodeURIComponent(query)}`
         );
         return response.data;
@@ -217,7 +217,7 @@ export const searchTasks = async (projectId, query) => {
 
 export const logTime = async (taskId, timeSpent) => {
     try {
-        const response = await apiService.post(`/tasks/${taskId}/log-time`, { timeSpent });
+        const response = await apiService.post(`/tasks/${taskId}/log-time`, { time: timeSpent });
         return response.data;
     } catch (error) {
         handleApiError(error);
@@ -396,6 +396,18 @@ export const getUser = async () => {
 export const updateUser = async (userId, userData) => {
     try {
         const response = await apiService.put(`/users/${userId}`, userData);
+        return response.data;
+    } catch (error) {
+        handleApiError(error);
+    }
+};
+
+export const moveTaskBetweenSprintsOrBacklog = async (projectId, taskId, sprintId, order) => {
+    try {
+        const response = await apiService.put(`/projects/${projectId}/tasks/${taskId}/move`, {
+            sprintId,
+            order
+        });
         return response.data;
     } catch (error) {
         handleApiError(error);

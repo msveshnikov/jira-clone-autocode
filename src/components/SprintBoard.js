@@ -240,7 +240,7 @@ const SprintBoard = () => {
                             variant="standard"
                             value={searchQuery}
                             onChange={handleSearchChange}
-                            sx={{ ml: 2, mt:-2}}
+                            sx={{ ml: 2, mt: -2 }}
                         />
                     </Box>
                     <DragDropContext onDragEnd={onDragEnd}>
