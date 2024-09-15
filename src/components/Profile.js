@@ -18,9 +18,12 @@ import {
     Dialog,
     DialogTitle,
     DialogContent,
-    DialogActions
+    DialogActions,
+    Card,
+    CardContent,
+    Divider
 } from '@mui/material';
-import { Delete } from '@mui/icons-material';
+import { Delete, Edit } from '@mui/icons-material';
 import { AuthContext } from '../contexts/AuthContext';
 import { getUser, updateUser, deleteProject } from '../services/apiService';
 
@@ -98,107 +101,121 @@ const Profile = () => {
     if (!user) return <Typography>User not found</Typography>;
 
     return (
-        <Paper elevation={3} sx={{ p: 3, mt: 3 }}>
-            <Grid container spacing={3} alignItems="center">
-                <Grid item>
-                    <Avatar src={user.avatar} alt={user.name} sx={{ width: 100, height: 100 }} />
-                </Grid>
-                <Grid item xs>
-                    {editMode ? (
-                        <form onSubmit={handleSubmit}>
-                            <TextField
-                                fullWidth
-                                margin="normal"
-                                name="name"
-                                label="Name"
-                                value={formData.name}
-                                onChange={handleInputChange}
-                                required
-                            />
-                            <TextField
-                                fullWidth
-                                margin="normal"
-                                name="email"
-                                label="Email"
-                                type="email"
-                                value={formData.email}
-                                onChange={handleInputChange}
-                                required
-                            />
-                            <TextField
-                                fullWidth
-                                margin="normal"
-                                name="role"
-                                label="Role"
-                                value={formData.role}
-                                onChange={handleInputChange}
-                            />
-                            <TextField
-                                fullWidth
-                                margin="normal"
-                                name="bio"
-                                label="Bio"
-                                multiline
-                                rows={4}
-                                value={formData.bio}
-                                onChange={handleInputChange}
-                            />
-                            <Button
-                                type="submit"
-                                variant="contained"
-                                color="primary"
-                                sx={{ mt: 2 }}
-                            >
-                                Save
-                            </Button>
-                            <Button onClick={() => setEditMode(false)} sx={{ mt: 2, ml: 2 }}>
-                                Cancel
-                            </Button>
-                        </form>
-                    ) : (
-                        <>
-                            <Typography variant="h4">{user.name}</Typography>
-                            <Typography variant="subtitle1">{user.email}</Typography>
-                            <Typography variant="body1">{user.role}</Typography>
-                            <Typography variant="body2" sx={{ mt: 2 }}>
-                                {user.bio}
-                            </Typography>
-                            {(currentUser._id === user._id || currentUser.role === 'admin') && (
-                                <Button onClick={() => setEditMode(true)} sx={{ mt: 2 }}>
-                                    Edit Profile
-                                </Button>
+        <Box sx={{ maxWidth: 800, margin: 'auto', mt: 4 }}>
+            <Card elevation={3}>
+                <CardContent>
+                    <Grid container spacing={3} alignItems="center">
+                        <Grid item>
+                            <Avatar src={user.avatar} alt={user.name} sx={{ width: 120, height: 120 }} />
+                        </Grid>
+                        <Grid item xs>
+                            {editMode ? (
+                                <form onSubmit={handleSubmit}>
+                                    <TextField
+                                        fullWidth
+                                        margin="normal"
+                                        name="name"
+                                        label="Name"
+                                        value={formData.name}
+                                        onChange={handleInputChange}
+                                        required
+                                    />
+                                    <TextField
+                                        fullWidth
+                                        margin="normal"
+                                        name="email"
+                                        label="Email"
+                                        type="email"
+                                        value={formData.email}
+                                        onChange={handleInputChange}
+                                        required
+                                    />
+                                    <TextField
+                                        fullWidth
+                                        margin="normal"
+                                        name="role"
+                                        label="Role"
+                                        value={formData.role}
+                                        onChange={handleInputChange}
+                                    />
+                                    <TextField
+                                        fullWidth
+                                        margin="normal"
+                                        name="bio"
+                                        label="Bio"
+                                        multiline
+                                        rows={4}
+                                        value={formData.bio}
+                                        onChange={handleInputChange}
+                                    />
+                                    <Box sx={{ mt: 2 }}>
+                                        <Button type="submit" variant="contained" color="primary">
+                                            Save
+                                        </Button>
+                                        <Button onClick={() => setEditMode(false)} sx={{ ml: 2 }}>
+                                            Cancel
+                                        </Button>
+                                    </Box>
+                                </form>
+                            ) : (
+                                <>
+                                    <Typography variant="h4" gutterBottom>{user.name}</Typography>
+                                    <Typography variant="subtitle1" color="textSecondary" gutterBottom>{user.email}</Typography>
+                                    <Typography variant="body1" gutterBottom>{user.role}</Typography>
+                                    <Typography variant="body2" sx={{ mt: 2 }}>{user.bio}</Typography>
+                                    {(currentUser._id === user._id || currentUser.role === 'admin') && (
+                                        <Button
+                                            startIcon={<Edit />}
+                                            onClick={() => setEditMode(true)}
+                                            sx={{ mt: 2 }}
+                                            variant="outlined"
+                                        >
+                                            Edit Profile
+                                        </Button>
+                                    )}
+                                </>
                             )}
-                        </>
-                    )}
-                </Grid>
-            </Grid>
-            <Box sx={{ mt: 4 }}>
-                <Typography variant="h6">Projects</Typography>
-                <List>
-                    {user.projects?.map((project) => (
-                        <ListItem key={project._id}>
-                            <ListItemText primary={project.name} />
-                            <ListItemSecondaryAction>
-                                <IconButton
-                                    edge="end"
-                                    aria-label="delete"
-                                    onClick={() => handleDeleteProject(project._id)}
-                                >
-                                    <Delete />
-                                </IconButton>
-                            </ListItemSecondaryAction>
-                        </ListItem>
-                    ))}
-                </List>
-            </Box>
-            <Box sx={{ mt: 4 }}>
-                <Typography variant="h6">Skills</Typography>
-                <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 1, mt: 1 }}>
-                    {user.skills?.map((skill) => (
-                        <Chip key={skill} label={skill} />
-                    ))}
-                </Box>
-            </Box>
+                        </Grid>
+                    </Grid>
+                </CardContent>
+            </Card>
+
+            <Card sx={{ mt: 4 }}>
+                <CardContent>
+                    <Typography variant="h6" gutterBottom>Skills</Typography>
+                    <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 1, mt: 1 }}>
+                        {user.skills?.map((skill) => (
+                            <Chip key={skill} label={skill} variant="outlined" />
+                        ))}
+                    </Box>
+                </CardContent>
+            </Card>
+
+            <Card sx={{ mt: 4 }}>
+                <CardContent>
+                    <Typography variant="h6" gutterBottom>Projects</Typography>
+                    <List>
+                        {user.projects?.map((project) => (
+                            <React.Fragment key={project._id}>
+                                <ListItem>
+                                    <ListItemText primary={project.name} secondary={project.description} />
+                                    <ListItemSecondaryAction>
+                                        <IconButton
+                                            edge="end"
+                                            aria-label="delete"
+                                            onClick={() => handleDeleteProject(project._id)}
+                                        >
+                                            <Delete />
+                                        </IconButton>
+                                    </ListItemSecondaryAction>
+                                </ListItem>
+                                <Divider />
+                            </React.Fragment>
+                        ))}
+                    </List>
+                </CardContent>
+            </Card>
+
             <Dialog
                 open={confirmDelete}
                 onClose={() => setConfirmDelete(false)}
@@ -218,7 +235,7 @@ const Profile = () => {
                     </Button>
                 </DialogActions>
             </Dialog>
-        </Paper>
+        </Box>
     );
 };
 
