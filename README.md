@@ -91,4 +91,8 @@ Comprehensive documentation is available in the `docs` folder, including:
 
 # TODO
 
--   
+-   fix: task cannot be opened in Backlog by click
+-   use TaskCard component for task add/edit in Backlog too, remove semi-done self dialog
+-   to display, task should be still narrow row
+-   create task should add it to current active sprint
+-   backlog should have sprints containers for tasks, and allow reaarange task vertically dragging to any sprint or (below) just backlog (task without sprint)

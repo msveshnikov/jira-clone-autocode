@@ -38,7 +38,7 @@ import {
     updateTaskDueDate
 } from '../services/apiService';
 
-const TaskCard = ({ id, onAssign, onUpdateDueDate }) => {
+const TaskCard = ({ id, onAssign, onUpdateDueDate, onDelete }) => {
     const [task, setTask] = useState({
         title: '',
         description: '',
@@ -97,6 +97,7 @@ const TaskCard = ({ id, onAssign, onUpdateDueDate }) => {
         try {
             await deleteTask(id);
             setConfirmDelete(false);
+            onDelete(id);
         } catch (err) {
             setError('Error deleting task');
         }
@@ -165,9 +166,11 @@ const TaskCard = ({ id, onAssign, onUpdateDueDate }) => {
         }
     };
 
-    const handleAssign = async (userId) => {
+    const handleAssign = async (e) => {
+        const userId = e.target.value;
         try {
             await assignTask(id, userId);
+            setTask((prevTask) => ({ ...prevTask, assignedTo: userId }));
             onAssign(id, userId);
         } catch (err) {
             setError('Error assigning task');
@@ -178,8 +181,8 @@ const TaskCard = ({ id, onAssign, onUpdateDueDate }) => {
         const newDueDate = e.target.value;
         try {
             await updateTaskDueDate(id, newDueDate);
-            onUpdateDueDate(id, newDueDate);
             setTask((prevTask) => ({ ...prevTask, dueDate: newDueDate }));
+            onUpdateDueDate(id, newDueDate);
         } catch (err) {
             setError('Error updating due date');
         }
@@ -255,13 +258,19 @@ const TaskCard = ({ id, onAssign, onUpdateDueDate }) => {
                             </FormControl>
                         </Grid>
                         <Grid item xs={6}>
-                            <TextField
-                                fullWidth
-                                label="Assigned To"
-                                name="assignedTo"
-                                value={task.assignedTo}
-                                onChange={handleInputChange}
-                            />
+                            <FormControl fullWidth>
+                                <InputLabel>Assigned To</InputLabel>
+                                <Select
+                                    name="assignedTo"
+                                    value={task.assignedTo}
+                                    onChange={handleAssign}
+                                >
+                                    <MenuItem value="">Unassigned</MenuItem>
+                                    <MenuItem value="user1">User 1</MenuItem>
+                                    <MenuItem value="user2">User 2</MenuItem>
+                                    <MenuItem value="user3">User 3</MenuItem>
+                                </Select>
+                            </FormControl>
                         </Grid>
                         <Grid item xs={6}>
                             <TextField

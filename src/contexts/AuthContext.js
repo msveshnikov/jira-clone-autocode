@@ -36,10 +36,13 @@ export const AuthProvider = ({ children }) => {
         try {
             const projectsData = await getUserProjects();
             setProjects(projectsData);
+            if (projectsData.length > 0 && !currentProject) {
+                setCurrentProject(projectsData[0]);
+            }
         } catch (error) {
             console.error('Error fetching projects:', error);
         }
-    }, []);
+    }, [currentProject]);
 
     useEffect(() => {
         const token = localStorage.getItem('token');
@@ -112,6 +115,7 @@ export const AuthProvider = ({ children }) => {
 
     const selectProject = (project) => {
         setCurrentProject(project);
+        localStorage.setItem('currentProject', JSON.stringify(project));
     };
 
     const updatePreferences = async (preferences) => {
@@ -124,6 +128,13 @@ export const AuthProvider = ({ children }) => {
             return null;
         }
     };
+
+    useEffect(() => {
+        const savedProject = localStorage.getItem('currentProject');
+        if (savedProject) {
+            setCurrentProject(JSON.parse(savedProject));
+        }
+    }, []);
 
     const value = {
         user,
