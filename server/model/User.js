@@ -4,7 +4,7 @@ import bcrypt from 'bcryptjs';
 const userSchema = new mongoose.Schema({
     email: { type: String, required: true, unique: true },
     password: { type: String, required: true },
-    name: { type: String, unique: true },
+    name: { type: String, required: true },
     role: {
         type: String,
         enum: ['user', 'admin', 'developer', 'project_manager'],
@@ -73,7 +73,28 @@ userSchema.statics.findByEmail = function (email) {
 };
 
 userSchema.statics.findByUsername = function (username) {
-    return this.findOne({ username });
+    return this.findOne({ name: username });
+};
+
+userSchema.methods.getAssignedTasks = function () {
+    return mongoose.model('Task').find({ assignedTo: this._id });
+};
+
+userSchema.methods.getProjectMemberships = function () {
+    return mongoose.model('Project').find({ members: this._id });
+};
+
+userSchema.methods.changeRole = function (newRole) {
+    if (['user', 'admin', 'developer', 'project_manager'].includes(newRole)) {
+        this.role = newRole;
+        return this.save();
+    }
+    throw new Error('Invalid role');
+};
+
+userSchema.methods.resetPassword = async function (newPassword) {
+    this.password = newPassword;
+    return this.save();
 };
 
 const User = mongoose.model('User', userSchema);

@@ -1,7 +1,5 @@
+/* eslint-disable react/prop-types */
 import React, { useState, useEffect } from 'react';
-import { useParams, useNavigate } from 'react-router-dom';
-import { useQuery, useMutation, useQueryClient } from 'react-query';
-import PropTypes from 'prop-types';
 import {
     Card,
     CardContent,
@@ -19,7 +17,11 @@ import {
     List,
     ListItem,
     ListItemText,
-    ListItemSecondaryAction
+    ListItemSecondaryAction,
+    Dialog,
+    DialogTitle,
+    DialogContent,
+    DialogActions
 } from '@mui/material';
 import DeleteIcon from '@mui/icons-material/Delete';
 import AttachFileIcon from '@mui/icons-material/AttachFile';
@@ -31,14 +33,12 @@ import {
     addAttachment,
     removeAttachment,
     addComment,
-    removeComment
+    removeComment,
+    assignTask,
+    updateTaskDueDate
 } from '../services/apiService';
 
-const TaskCard = ({ id: propId }) => {
-    const { id: paramId } = useParams();
-    const id = propId || paramId;
-    const navigate = useNavigate();
-    const queryClient = useQueryClient();
+const TaskCard = ({ id, onAssign, onUpdateDueDate, onDelete, onUpdate }) => {
     const [task, setTask] = useState({
         title: '',
         description: '',
@@ -48,64 +48,29 @@ const TaskCard = ({ id: propId }) => {
         assignedTo: '',
         timeSpent: 0,
         attachments: [],
-        comments: []
+        comments: [],
+        dueDate: null
     });
     const [timeToLog, setTimeToLog] = useState(0);
     const [newAttachment, setNewAttachment] = useState('');
     const [newComment, setNewComment] = useState('');
-
-    const { data: fetchedTask, isLoading, isError } = useQuery(['task', id], () => fetchTask(id));
-
-    const updateTaskMutation = useMutation(updateTask, {
-        onSuccess: () => {
-            queryClient.invalidateQueries(['task', id]);
-            navigate('/backlog');
-        }
-    });
-
-    const deleteTaskMutation = useMutation(deleteTask, {
-        onSuccess: () => {
-            navigate('/backlog');
-        }
-    });
-
-    const logTimeMutation = useMutation(logTime, {
-        onSuccess: () => {
-            queryClient.invalidateQueries(['task', id]);
-        }
-    });
-
-    const addAttachmentMutation = useMutation(addAttachment, {
-        onSuccess: () => {
-            queryClient.invalidateQueries(['task', id]);
-            setNewAttachment('');
-        }
-    });
-
-    const removeAttachmentMutation = useMutation(removeAttachment, {
-        onSuccess: () => {
-            queryClient.invalidateQueries(['task', id]);
-        }
-    });
-
-    const addCommentMutation = useMutation(addComment, {
-        onSuccess: () => {
-            queryClient.invalidateQueries(['task', id]);
-            setNewComment('');
-        }
-    });
-
-    const removeCommentMutation = useMutation(removeComment, {
-        onSuccess: () => {
-            queryClient.invalidateQueries(['task', id]);
-        }
-    });
+    const [confirmDelete, setConfirmDelete] = useState(false);
+    const [loading, setLoading] = useState(true);
+    const [error, setError] = useState(null);
 
     useEffect(() => {
-        if (fetchedTask) {
-            setTask(fetchedTask);
-        }
-    }, [fetchedTask]);
+        const loadTask = async () => {
+            try {
+                const taskData = await fetchTask(id);
+                setTask(taskData);
+                setLoading(false);
+            } catch (err) {
+                setError('Error loading task');
+                setLoading(false);
+            }
+        };
+        loadTask();
+    }, [id]);
 
     const handleInputChange = (e) => {
         const { name, value } = e.target;
@@ -115,59 +80,120 @@ const TaskCard = ({ id: propId }) => {
         }));
     };
 
-    const handleSubmit = (e) => {
+    const handleSubmit = async (e) => {
         e.preventDefault();
-        updateTaskMutation.mutate({ id, ...task });
-    };
-
-    const handleDelete = () => {
-        if (window.confirm('Are you sure you want to delete this task?')) {
-            deleteTaskMutation.mutate(id);
+        try {
+            await updateTask({ id, ...task });
+            onUpdate(task);
+        } catch (err) {
+            setError('Error updating task');
         }
     };
 
-    const handleLogTime = () => {
-        logTimeMutation.mutate({ taskId: id, timeSpent: timeToLog });
-        setTimeToLog(0);
+    const handleDelete = () => {
+        setConfirmDelete(true);
     };
 
-    const handleAddAttachment = () => {
-        addAttachmentMutation.mutate({
-            taskId: id,
-            attachment: { id: Date.now(), url: newAttachment }
-        });
+    const confirmDeleteTask = async () => {
+        try {
+            await deleteTask(id);
+            setConfirmDelete(false);
+            onDelete(id);
+        } catch (err) {
+            setError('Error deleting task');
+        }
     };
 
-    const handleRemoveAttachment = (attachmentId) => {
-        removeAttachmentMutation.mutate({ taskId: id, attachmentId });
+    const handleLogTime = async () => {
+        try {
+            await logTime(id, timeToLog);
+            setTask((prevTask) => ({
+                ...prevTask,
+                timeSpent: prevTask.timeSpent + timeToLog
+            }));
+            setTimeToLog(0);
+        } catch (err) {
+            setError('Error logging time');
+        }
     };
 
-    const handleAddComment = () => {
-        addCommentMutation.mutate({
-            taskId: id,
-            comment: { id: Date.now(), text: newComment, author: 'Current User' }
-        });
+    const handleAddAttachment = async () => {
+        try {
+            const attachment = await addAttachment(id, newAttachment);
+            setTask((prevTask) => ({
+                ...prevTask,
+                attachments: [...prevTask.attachments, attachment]
+            }));
+            setNewAttachment('');
+        } catch (err) {
+            setError('Error adding attachment');
+        }
     };
 
-    const handleRemoveComment = (commentId) => {
-        removeCommentMutation.mutate({ taskId: id, commentId });
+    const handleRemoveAttachment = async (attachmentId) => {
+        try {
+            await removeAttachment(id, attachmentId);
+            setTask((prevTask) => ({
+                ...prevTask,
+                attachments: prevTask.attachments.filter((a) => a._id !== attachmentId)
+            }));
+        } catch (err) {
+            setError('Error removing attachment');
+        }
     };
 
-    const handleCancel = () => {
-        navigate('/backlog');
+    const handleAddComment = async () => {
+        try {
+            const comment = await addComment(id, newComment);
+            setTask((prevTask) => ({
+                ...prevTask,
+                comments: [...prevTask.comments, comment]
+            }));
+            setNewComment('');
+        } catch (err) {
+            setError('Error adding comment');
+        }
     };
 
-    if (isLoading) return <Typography>Loading...</Typography>;
-    if (isError) return <Typography>Error loading task</Typography>;
-
-    const priorityColors = {
-        low: 'success',
-        medium: 'warning',
-        high: 'error'
+    const handleRemoveComment = async (commentId) => {
+        try {
+            await removeComment(id, commentId);
+            setTask((prevTask) => ({
+                ...prevTask,
+                comments: prevTask.comments.filter((c) => c._id !== commentId)
+            }));
+        } catch (err) {
+            setError('Error removing comment');
+        }
     };
+
+    const handleAssign = async (e) => {
+        const userId = e.target.value;
+        try {
+            await assignTask(id, userId);
+            setTask((prevTask) => ({ ...prevTask, assignedTo: userId }));
+            onAssign(id, userId);
+        } catch (err) {
+            setError('Error assigning task');
+        }
+    };
+
+    const handleDueDateChange = async (e) => {
+        const newDueDate = e.target.value;
+        try {
+            await updateTaskDueDate(id, newDueDate);
+            setTask((prevTask) => ({ ...prevTask, dueDate: newDueDate }));
+            onUpdateDueDate(id, newDueDate);
+        } catch (err) {
+            setError('Error updating due date');
+        }
+    };
+
+    if (loading) return <Typography>Loading...</Typography>;
+    if (error) return <Typography color="error">{error}</Typography>;
 
     return (
-        <Card sx={{ maxWidth: 800, margin: 'auto', mt: 4 }}>
+        <Card>
             <CardContent>
                 <form onSubmit={handleSubmit}>
                     <Grid container spacing={2}>
@@ -233,20 +259,35 @@ const TaskCard = ({ id: propId }) => {
                             </FormControl>
                         </Grid>
                         <Grid item xs={6}>
+                            <FormControl fullWidth>
+                                <InputLabel>Assigned To</InputLabel>
+                                <Select
+                                    name="assignedTo"
+                                    value={task.assignedTo}
+                                    onChange={handleAssign}
+                                >
+                                    <MenuItem value="">Unassigned</MenuItem>
+                                    <MenuItem value="user1">User 1</MenuItem>
+                                    <MenuItem value="user2">User 2</MenuItem>
+                                    <MenuItem value="user3">User 3</MenuItem>
+                                </Select>
+                            </FormControl>
+                        </Grid>
+                        <Grid item xs={6}>
                             <TextField
                                 fullWidth
-                                label="Assigned To"
-                                name="assignedTo"
-                                value={task.assignedTo}
-                                onChange={handleInputChange}
+                                label="Due Date"
+                                type="date"
+                                value={task.dueDate ? task.dueDate.split('T')[0] : ''}
+                                onChange={handleDueDateChange}
+                                InputLabelProps={{
+                                    shrink: true
+                                }}
                             />
                         </Grid>
                         <Grid item xs={12}>
                             <Box sx={{ mt: 2, mb: 2 }}>
-                                <Chip
-                                    label={task.priority.toUpperCase()}
-                                    color={priorityColors[task.priority]}
-                                />
+                                <Chip label={task.priority.toUpperCase()} color="primary" />
                             </Box>
                         </Grid>
                         <Grid item xs={12}>
@@ -271,7 +312,7 @@ const TaskCard = ({ id: propId }) => {
                             <List>
                                 {task.attachments?.map((attachment) => (
                                     <ListItem key={attachment._id}>
-                                        <ListItemText primary={attachment.url} />
+                                        <ListItemText primary={attachment.name} />
                                         <ListItemSecondaryAction>
                                             <IconButton
                                                 edge="end"
@@ -340,9 +381,6 @@ const TaskCard = ({ id: propId }) => {
                                 <Button type="submit" variant="contained" color="primary">
                                     Update Task
                                 </Button>
-                                <Button variant="contained" color="primary" onClick={handleCancel}>
-                                    Cancel
-                                </Button>
                                 <Button variant="contained" color="error" onClick={handleDelete}>
                                     Delete Task
                                 </Button>
@@ -351,12 +389,27 @@ const TaskCard = ({ id: propId }) => {
                     </Grid>
                 </form>
             </CardContent>
+            <Dialog
+                open={confirmDelete}
+                onClose={() => setConfirmDelete(false)}
+                aria-labelledby="alert-dialog-title"
+                aria-describedby="alert-dialog-description"
+            >
+                <DialogTitle id="alert-dialog-title">{'Confirm Delete'}</DialogTitle>
+                <DialogContent>
+                    <Typography>Are you sure you want to delete this task?</Typography>
+                </DialogContent>
+                <DialogActions>
+                    <Button onClick={() => setConfirmDelete(false)} color="primary">
+                        Cancel
+                    </Button>
+                    <Button onClick={confirmDeleteTask} color="error" autoFocus>
+                        Delete
+                    </Button>
+                </DialogActions>
+            </Dialog>
         </Card>
     );
-};
-
-TaskCard.propTypes = {
-    id: PropTypes.string
 };
 
 export default TaskCard;

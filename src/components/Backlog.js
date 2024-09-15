@@ -1,32 +1,17 @@
-import React, { useState } from 'react';
-import PropTypes from 'prop-types';
-import { useQuery, useMutation, useQueryClient } from 'react-query';
+import React, { useState, useEffect } from 'react';
+import { useParams } from 'react-router-dom';
 import {
     Container,
     Typography,
-    Table,
-    TableBody,
-    TableCell,
-    TableContainer,
-    TableHead,
-    TableRow,
     Button,
     TextField,
     Dialog,
     DialogTitle,
     DialogContent,
     DialogActions,
-    Select,
-    MenuItem,
-    FormControl,
-    InputLabel,
     Paper,
     Box,
-    Chip,
-    CircularProgress,
-    Card,
-    CardContent,
-    CardActions
+    CircularProgress
 } from '@mui/material';
 import { DragDropContext, Droppable, Draggable } from 'react-beautiful-dnd';
 import {
@@ -35,13 +20,19 @@ import {
     updateTaskOrder,
     createSprint,
     updateSprint,
-    getSprints
+    getSprints,
+    updateTask,
+    deleteTask,
+    searchTasks,
+    moveTask
 } from '../services/apiService';
-import { useNavigate } from 'react-router-dom';
-import { useTheme } from '@mui/material/styles';
+import { Search } from '@mui/icons-material';
+import TaskCard from './TaskCard';
+import { TaskTable } from './TaskTable';
 
 const Backlog = () => {
     const [open, setOpen] = useState(false);
+    const [editingTask, setEditingTask] = useState(null);
     const [newTask, setNewTask] = useState({
         title: '',
         description: '',
@@ -56,42 +47,70 @@ const Backlog = () => {
         endDate: '',
         goal: ''
     });
-    const queryClient = useQueryClient();
-    const navigate = useNavigate();
-    const theme = useTheme();
+    const [searchQuery, setSearchQuery] = useState('');
+    const [tasks, setTasks] = useState([]);
+    const [sprints, setSprints] = useState([]);
+    const [loading, setLoading] = useState(true);
+    const [error, setError] = useState(null);
+    const { projectId } = useParams();
 
-    const { data: tasks, isLoading, isError } = useQuery('backlogTasks', fetchBacklogTasks);
-    const { data: sprints } = useQuery('sprints', getSprints);
+    useEffect(() => {
+        const fetchData = async () => {
+            try {
+                const [tasksData, sprintsData] = await Promise.all([
+                    fetchBacklogTasks(projectId),
+                    getSprints(projectId)
+                ]);
+                setTasks(tasksData);
+                setSprints(sprintsData);
+                setLoading(false);
+            } catch (err) {
+                setError('Error loading data');
+                setLoading(false);
+            }
+        };
+        fetchData();
+    }, [projectId]);
 
-    const createTaskMutation = useMutation(createTask, {
-        onSuccess: () => {
-            queryClient.invalidateQueries('backlogTasks');
-            handleClose();
+    useEffect(() => {
+        const search = async () => {
+            try {
+                const searchResults = await searchTasks(projectId, searchQuery);
+                setTasks(searchResults);
+            } catch (err) {
+                setError('Error searching tasks');
+            }
+        };
+        if (searchQuery) {
+            search();
+        } else {
+            const refreshTasks = async () => {
+                try {
+                    const tasksData = await fetchBacklogTasks(projectId);
+                    setTasks(tasksData);
+                } catch (err) {
+                    setError('Error refreshing tasks');
+                }
+            };
+            refreshTasks();
         }
-    });
+    }, [projectId, searchQuery]);
 
-    const updateTaskOrderMutation = useMutation(updateTaskOrder, {
-        onSuccess: () => {
-            queryClient.invalidateQueries('backlogTasks');
-        }
-    });
+    const handleOpen = () => {
+        setEditingTask(null);
+        setNewTask({
+            title: '',
+            description: '',
+            points: 0,
+            priority: 'low',
+            status: 'todo'
+        });
+        setOpen(true);
+    };
 
-    const createSprintMutation = useMutation(createSprint, {
-        onSuccess: () => {
-            queryClient.invalidateQueries('sprints');
-            handleSprintDialogClose();
-        }
-    });
-
-    const updateSprintMutation = useMutation(updateSprint, {
-        onSuccess: () => {
-            queryClient.invalidateQueries('sprints');
-        }
-    });
-
-    const handleOpen = () => setOpen(true);
     const handleClose = () => {
         setOpen(false);
+        setEditingTask(null);
         setNewTask({
             title: '',
             description: '',
@@ -101,45 +120,75 @@ const Backlog = () => {
         });
     };
 
-    const handleCreateTask = () => {
-        createTaskMutation.mutate(newTask);
+    const handleCreateTask = async () => {
+        try {
+            if (editingTask) {
+                await updateTask({ id: editingTask._id, ...newTask });
+            } else {
+                await createTask(projectId, newTask);
+            }
+            const updatedTasks = await fetchBacklogTasks(projectId);
+            setTasks(updatedTasks);
+            handleClose();
+        } catch (err) {
+            setError('Error creating/updating task');
+        }
     };
 
-    const handleInputChange = (e) => {
-        const { name, value } = e.target;
-        setNewTask({ ...newTask, [name]: value });
-    };
-
-    const onDragEnd = (result) => {
+    const onDragEnd = async (result) => {
         if (!result.destination) return;
 
-        const reorderedTasks = Array.from(tasks);
-        const [reorderedItem] = reorderedTasks.splice(result.source.index, 1);
-        reorderedTasks.splice(result.destination.index, 0, reorderedItem);
+        const sourceId = result.source.droppableId;
+        const destinationId = result.destination.droppableId;
+        const taskId = result.draggableId;
 
-        reorderedTasks.forEach((task, index) => {
-            updateTaskOrderMutation.mutate({ id: task._id, order: index });
-        });
+        let updatedTasks = [...tasks];
+        const [movedTask] = updatedTasks.splice(result.source.index, 1);
+        updatedTasks.splice(result.destination.index, 0, movedTask);
+
+        setTasks(updatedTasks);
+
+        try {
+            if (sourceId === destinationId) {
+                await updateTaskOrder({ id: taskId, order: result.destination.index });
+            } else {
+                const sprintId = destinationId === 'backlog' ? null : destinationId;
+                await moveTask(projectId, taskId, sprintId, result.destination.index);
+            }
+        } catch (err) {
+            setError('Error updating task order');
+        }
     };
 
     const handleTaskClick = (taskId) => {
-        navigate(`/task/${taskId}`);
+        setEditingTask(tasks.find((task) => task._id === taskId));
+        setOpen(true);
     };
 
-    const getPriorityColor = (priority) => {
-        switch (priority.toLowerCase()) {
-            case 'high':
-                return theme.palette.error.main;
-            case 'medium':
-                return theme.palette.warning.main;
-            case 'low':
-                return theme.palette.success.main;
-            default:
-                return theme.palette.text.secondary;
+    const handleEditTask = (task) => {
+        setEditingTask(task);
+        setNewTask({
+            title: task.title,
+            description: task.description,
+            points: task.points,
+            priority: task.priority,
+            status: task.status
+        });
+        setOpen(true);
+    };
+
+    const handleDeleteTask = async (taskId) => {
+        try {
+            await deleteTask(taskId);
+            const updatedTasks = await fetchBacklogTasks(projectId);
+            setTasks(updatedTasks);
+        } catch (err) {
+            setError('Error deleting task');
         }
     };
 
     const handleSprintDialogOpen = () => setSprintDialogOpen(true);
+
     const handleSprintDialogClose = () => {
         setSprintDialogOpen(false);
         setNewSprint({
@@ -155,168 +204,182 @@ const Backlog = () => {
         setNewSprint({ ...newSprint, [name]: value });
     };
 
-    const handleCreateSprint = () => {
-        createSprintMutation.mutate(newSprint);
+    const handleCreateSprint = async () => {
+        try {
+            await createSprint(projectId, newSprint);
+            const updatedSprints = await getSprints(projectId);
+            setSprints(updatedSprints);
+            handleSprintDialogClose();
+        } catch (err) {
+            setError('Error creating sprint');
+        }
     };
 
-    const handleStartSprint = (sprintId) => {
-        updateSprintMutation.mutate({ id: sprintId, status: 'active' });
+    const handleStartSprint = async (sprintId) => {
+        try {
+            await updateSprint({ id: sprintId, status: 'active' });
+            const updatedSprints = await getSprints(projectId);
+            setSprints(updatedSprints);
+        } catch (err) {
+            setError('Error starting sprint');
+        }
     };
 
-    const handleCloseSprint = (sprintId) => {
-        updateSprintMutation.mutate({ id: sprintId, status: 'completed' });
+    const handleCloseSprint = async (sprintId) => {
+        try {
+            await updateSprint({ id: sprintId, status: 'completed' });
+            const updatedSprints = await getSprints(projectId);
+            setSprints(updatedSprints);
+        } catch (err) {
+            setError('Error closing sprint');
+        }
     };
 
-    if (isLoading) return <CircularProgress />;
-    if (isError) return <Typography>Error loading tasks</Typography>;
+    const handleSearchChange = (e) => {
+        setSearchQuery(e.target.value);
+    };
+
+    if (loading) return <CircularProgress />;
+    if (error) return <Typography color="error">{error}</Typography>;
 
     return (
         <Box sx={{ my: 3, width: '100%', overflowX: 'auto' }}>
             <Container maxWidth={false}>
-                <Typography variant="h4" gutterBottom>
-                    Backlog
-                </Typography>
-                <Button
-                    variant="contained"
-                    color="primary"
-                    onClick={handleOpen}
-                    sx={{ mr: 2, mb: 2 }}
-                >
-                    Add Task
-                </Button>
-                <Button
-                    variant="contained"
-                    color="secondary"
-                    onClick={handleSprintDialogOpen}
-                    sx={{ mb: 2 }}
-                >
-                    Create Sprint
-                </Button>
+                <Box sx={{ display: 'flex', mb: 2 }}>
+                    <Button variant="contained" color="primary" onClick={handleOpen} sx={{ mr: 2 }}>
+                        Add Task
+                    </Button>
+                    <Button
+                        variant="contained"
+                        color="secondary"
+                        onClick={handleSprintDialogOpen}
+                        sx={{ mr: 2 }}
+                    >
+                        Create Sprint
+                    </Button>
+                    <TextField
+                        variant="outlined"
+                        size="small"
+                        placeholder="Search tasks..."
+                        value={searchQuery}
+                        onChange={handleSearchChange}
+                        InputProps={{
+                            startAdornment: <Search />
+                        }}
+                    />
+                </Box>
                 <DragDropContext onDragEnd={onDragEnd}>
-                    <Droppable droppableId="backlog">
+                    <Droppable droppableId="backlog" type="COLUMN">
                         {(provided) => (
-                            <TableContainer
-                                component={Paper}
-                                {...provided.droppableProps}
-                                ref={provided.innerRef}
-                            >
-                                <Table size="small">
-                                    <TableHead>
-                                        <TableRow>
-                                            <TableCell>Title</TableCell>
-                                            <TableCell>Points</TableCell>
-                                            <TableCell>Priority</TableCell>
-                                            <TableCell>Assigned To</TableCell>
-                                            <TableCell>Status</TableCell>
-                                        </TableRow>
-                                    </TableHead>
-                                    <TableBody>
-                                        {tasks.map((task, index) => (
-                                            <Draggable
-                                                key={task._id}
-                                                draggableId={task._id.toString()}
-                                                index={index}
+                            <Box {...provided.droppableProps} ref={provided.innerRef}>
+                                {sprints.map((sprint) => (
+                                    <Draggable
+                                        key={sprint._id}
+                                        draggableId={sprint._id}
+                                        index={sprint.order}
+                                    >
+                                        {(provided) => (
+                                            <Paper
+                                                sx={{ p: 2, mb: 2 }}
+                                                ref={provided.innerRef}
+                                                {...provided.draggableProps}
                                             >
-                                                {(provided) => (
-                                                    <TableRow
-                                                        ref={provided.innerRef}
-                                                        {...provided.draggableProps}
-                                                        {...provided.dragHandleProps}
-                                                        onClick={() => handleTaskClick(task._id)}
-                                                        sx={{ cursor: 'pointer', height: '40px' }}
-                                                    >
-                                                        <TableCell>{task.title}</TableCell>
-                                                        <TableCell>{task.points}</TableCell>
-                                                        <TableCell>
-                                                            <Chip
-                                                                label={task.priority.toUpperCase()}
-                                                                size="small"
-                                                                sx={{
-                                                                    bgcolor: getPriorityColor(
-                                                                        task.priority
-                                                                    ),
-                                                                    color: 'white'
-                                                                }}
+                                                <Box
+                                                    sx={{
+                                                        display: 'flex',
+                                                        justifyContent: 'space-between',
+                                                        alignItems: 'center',
+                                                        mb: 2
+                                                    }}
+                                                    {...provided.dragHandleProps}
+                                                >
+                                                    <Typography variant="h6">
+                                                        {sprint.name}
+                                                    </Typography>
+                                                    {sprint.status === 'planning' && (
+                                                        <Button
+                                                            variant="contained"
+                                                            color="primary"
+                                                            onClick={() =>
+                                                                handleStartSprint(sprint._id)
+                                                            }
+                                                        >
+                                                            Start Sprint
+                                                        </Button>
+                                                    )}
+                                                    {sprint.status === 'active' && (
+                                                        <Button
+                                                            variant="contained"
+                                                            color="secondary"
+                                                            onClick={() =>
+                                                                handleCloseSprint(sprint._id)
+                                                            }
+                                                        >
+                                                            Close Sprint
+                                                        </Button>
+                                                    )}
+                                                </Box>
+                                                <Droppable droppableId={sprint._id} type="TASK">
+                                                    {(provided) => (
+                                                        <Box
+                                                            {...provided.droppableProps}
+                                                            ref={provided.innerRef}
+                                                        >
+                                                            <TaskTable
+                                                                tasks={tasks?.filter(
+                                                                    (task) =>
+                                                                        task.sprint === sprint._id
+                                                                )}
+                                                                provided={provided}
+                                                                handleTaskClick={handleTaskClick}
+                                                                handleEditTask={handleEditTask}
+                                                                handleDeleteTask={handleDeleteTask}
                                                             />
-                                                        </TableCell>
-                                                        <TableCell>{task.assignedTo}</TableCell>
-                                                        <TableCell>{task.status}</TableCell>
-                                                    </TableRow>
-                                                )}
-                                            </Draggable>
-                                        ))}
-                                        {provided.placeholder}
-                                    </TableBody>
-                                </Table>
-                            </TableContainer>
+                                                        </Box>
+                                                    )}
+                                                </Droppable>
+                                            </Paper>
+                                        )}
+                                    </Draggable>
+                                ))}
+                                <Paper sx={{ p: 2, mb: 2 }}>
+                                    <Typography variant="h6">Backlog</Typography>
+                                    <Droppable droppableId="backlog" type="TASK">
+                                        {(provided) => (
+                                            <Box
+                                                {...provided.droppableProps}
+                                                ref={provided.innerRef}
+                                            >
+                                                <TaskTable
+                                                    tasks={tasks?.filter((task) => !task.sprint)}
+                                                    provided={provided}
+                                                    handleTaskClick={handleTaskClick}
+                                                    handleEditTask={handleEditTask}
+                                                    handleDeleteTask={handleDeleteTask}
+                                                />
+                                            </Box>
+                                        )}
+                                    </Droppable>
+                                </Paper>
+                                {provided.placeholder}
+                            </Box>
                         )}
                     </Droppable>
                 </DragDropContext>
                 <Dialog open={open} onClose={handleClose}>
-                    <DialogTitle>Add New Task</DialogTitle>
+                    <DialogTitle>{editingTask ? 'Edit Task' : 'Add New Task'}</DialogTitle>
                     <DialogContent>
-                        <TextField
-                            autoFocus
-                            margin="dense"
-                            name="title"
-                            label="Title"
-                            type="text"
-                            fullWidth
-                            value={newTask.title}
-                            onChange={handleInputChange}
+                        <TaskCard
+                            id={editingTask ? editingTask._id : null}
+                            onAssign={() => {}}
+                            onUpdateDueDate={() => {}}
+                            onDelete={handleDeleteTask}
                         />
-                        <TextField
-                            margin="dense"
-                            name="description"
-                            label="Description"
-                            type="text"
-                            fullWidth
-                            multiline
-                            rows={4}
-                            value={newTask.description}
-                            onChange={handleInputChange}
-                        />
-                        <TextField
-                            margin="dense"
-                            name="points"
-                            label="Points"
-                            type="number"
-                            fullWidth
-                            value={newTask.points}
-                            onChange={handleInputChange}
-                        />
-                        <FormControl fullWidth margin="dense">
-                            <InputLabel>Priority</InputLabel>
-                            <Select
-                                name="priority"
-                                value={newTask.priority}
-                                onChange={handleInputChange}
-                            >
-                                <MenuItem value="low">Low</MenuItem>
-                                <MenuItem value="medium">Medium</MenuItem>
-                                <MenuItem value="high">High</MenuItem>
-                            </Select>
-                        </FormControl>
-                        <FormControl fullWidth margin="dense">
-                            <InputLabel>Status</InputLabel>
-                            <Select
-                                name="status"
-                                value={newTask.status}
-                                onChange={handleInputChange}
-                            >
-                                <MenuItem value="todo">To Do</MenuItem>
-                                <MenuItem value="inprogress">In Progress</MenuItem>
-                                <MenuItem value="readytotest">Ready to Test</MenuItem>
-                                <MenuItem value="codereview">Code Review</MenuItem>
-                                <MenuItem value="qa">QA</MenuItem>
-                                <MenuItem value="done">Done</MenuItem>
-                            </Select>
-                        </FormControl>
                     </DialogContent>
                     <DialogActions>
                         <Button onClick={handleClose}>Cancel</Button>
                         <Button onClick={handleCreateTask} color="primary">
-                            Create
+                            {editingTask ? 'Update' : 'Create'}
                         </Button>
                     </DialogActions>
                 </Dialog>
@@ -372,84 +435,9 @@ const Backlog = () => {
                         </Button>
                     </DialogActions>
                 </Dialog>
-                {sprints && (
-                    <Box sx={{ mt: 4 }}>
-                        <Typography variant="h5" gutterBottom>
-                            Sprints
-                        </Typography>
-                        <TableContainer component={Paper}>
-                            <Table size="small">
-                                <TableHead>
-                                    <TableRow>
-                                        <TableCell>Name</TableCell>
-                                        <TableCell>Status</TableCell>
-                                        <TableCell>Start Date</TableCell>
-                                        <TableCell>End Date</TableCell>
-                                        <TableCell>Goal</TableCell>
-                                        <TableCell>Actions</TableCell>
-                                    </TableRow>
-                                </TableHead>
-                                <TableBody>
-                                    {sprints.map((sprint) => (
-                                        <TableRow key={sprint._id}>
-                                            <TableCell>{sprint.name}</TableCell>
-                                            <TableCell>{sprint.status}</TableCell>
-                                            <TableCell>{new Date(sprint.startDate).toLocaleDateString()}</TableCell>
-                                            <TableCell>{new Date(sprint.endDate).toLocaleDateString()}</TableCell>
-                                            <TableCell>{sprint.goal}</TableCell>
-                                            <TableCell>
-                                                {sprint.status === 'planning' && (
-                                                    <Button
-                                                        variant="contained"
-                                                        color="primary"
-                                                        size="small"
-                                                        onClick={() => handleStartSprint(sprint._id)}
-                                                    >
-                                                        Start Sprint
-                                                    </Button>
-                                                )}
-                                                {sprint.status === 'active' && (
-                                                    <Button
-                                                        variant="contained"
-                                                        color="secondary"
-                                                        size="small"
-                                                        onClick={() => handleCloseSprint(sprint._id)}
-                                                    >
-                                                        Close Sprint
-                                                    </Button>
-                                                )}
-                                            </TableCell>
-                                        </TableRow>
-                                    ))}
-                                </TableBody>
-                            </Table>
-                        </TableContainer>
-                    </Box>
-                )}
             </Container>
         </Box>
     );
-};
-
-Backlog.propTypes = {
-    tasks: PropTypes.arrayOf(
-        PropTypes.shape({
-            id: PropTypes.string.isRequired,
-            title: PropTypes.string.isRequired,
-            description: PropTypes.string,
-            points: PropTypes.number.isRequired,
-            priority: PropTypes.oneOf(['low', 'medium', 'high']).isRequired,
-            assignedTo: PropTypes.string,
-            status: PropTypes.oneOf([
-                'todo',
-                'inprogress',
-                'readytotest',
-                'codereview',
-                'qa',
-                'done'
-            ]).isRequired
-        })
-    )
 };
 
 export default Backlog;

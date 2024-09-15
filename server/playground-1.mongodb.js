@@ -1,8 +1,4 @@
 /* global use, db */
-// MongoDB Playground
-// To disable this template go to Settings | MongoDB | Use Default Template For Playground.
-// Make sure you are connected to enable completions and to be able to run a playground.
-// Use Ctrl+Space inside a snippet or a string literal to trigger completions.
 
 // Select the database to use.
 use('jira');
@@ -38,6 +34,8 @@ db.projects.insertMany([
         name: 'Project Alpha',
         description: 'A sample project',
         createdBy: 'john_doe',
+        owner: 'john_doe',
+        members: ['john_doe', 'jane_smith'],
         createdAt: new Date(),
         updatedAt: new Date()
     }
@@ -126,3 +124,37 @@ db.tasks.updateOne(
 
 // Get tasks with comments
 db.tasks.find({ comments: { $exists: true, $ne: [] } }).toArray();
+
+// Find all projects owned by a specific user
+db.projects.find({ owner: 'john_doe' }).toArray();
+
+// Find all projects where a user is a member
+db.projects.find({ members: 'jane_smith' }).toArray();
+
+// Add a new member to a project
+db.projects.updateOne(
+    { name: 'Project Alpha' },
+    { $addToSet: { members: 'new_member' }, $set: { updatedAt: new Date() } }
+);
+
+// Remove a member from a project
+db.projects.updateOne(
+    { name: 'Project Alpha' },
+    { $pull: { members: 'jane_smith' }, $set: { updatedAt: new Date() } }
+);
+
+// Change project owner
+use('jira');
+db.projects.updateOne(
+    { name: 'JIRA Clone' },
+    {
+        $set: {
+            members: [
+                {
+                    $oid: '66e08a9a1e11f85f96239cf1'
+                }
+            ],
+            updatedAt: new Date()
+        }
+    }
+);

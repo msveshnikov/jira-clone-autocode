@@ -19,7 +19,6 @@ https://jira.autocode.work/
 -   Drag-and-Drop Functionality: Enhance user experience for task management
 -   Search and Filter: Add advanced search capabilities for tasks
 -   Reporting: Implement burndown charts and sprint velocity metrics
--   Mobile Responsiveness: Optimize the application for various screen sizes
 -   Task Comments: Implement a comment system for tasks
 -   Custom Fields: Allow users to add custom fields to tasks
 -   Version Control Integration: Link tasks to Git commits or pull requests
@@ -53,31 +52,14 @@ server/
 └── server.js
 ```
 
-## Design Considerations
-
--   Modular Component Architecture: Ensures reusability and maintainability
--   Service Layer: Abstracts API calls for better separation of concerns
--   Theming: Utilizes a centralized theme for consistent styling
--   State Management: Consider implementing Redux or MobX for robust state handling
--   Performance Optimization: Implement lazy loading and code splitting
--   Microservices Architecture: Consider breaking down the server into microservices
--   GraphQL Integration: Explore GraphQL for more efficient data fetching
--   WebSocket Implementation: Real-time updates for collaborative features
--   Serverless Functions: Utilize serverless architecture for scalability
--   Caching Strategy: Implement client-side and server-side caching
-
 ## Technical Improvements
 
--   Set up continuous integration and deployment pipeline
 -   Optimize API integration and data fetching strategies
 -   Implement proper error handling and logging
 -   Enhance security measures (e.g., input validation, XSS protection)
--   Implement automated testing (unit, integration, and end-to-end tests)
 -   Optimize database queries and implement indexing
 -   Set up monitoring and alerting systems
 -   Implement rate limiting and request throttling
--   Utilize content delivery networks (CDNs) for static assets
--   Implement database migrations for version control
 
 ## Getting Started
 
@@ -88,13 +70,6 @@ server/
 3. Start the development servers:
     - Frontend: `npm start`
     - Backend: `npm run dev`
-
-## Docker Support
-
-The project includes Docker configuration for easy deployment:
-
-1. Build the Docker images: `docker-compose build`
-2. Run the containers: `docker-compose up`
 
 ## Documentation
 
@@ -109,4 +84,4 @@ Comprehensive documentation is available in the `docs` folder, including:
 
 # TODO
 
--   add User auth
+

@@ -1,6 +1,5 @@
-/* eslint-disable react-hooks/exhaustive-deps */
-import React, { useState, useEffect } from 'react';
-import PropTypes from 'prop-types';
+import React, { useState, useEffect, useContext } from 'react';
+import { useParams } from 'react-router-dom';
 import { DragDropContext, Droppable, Draggable } from 'react-beautiful-dnd';
 import {
     Box,
@@ -11,15 +10,26 @@ import {
     Dialog,
     DialogTitle,
     DialogContent,
-    CircularProgress
+    CircularProgress,
+    TextField
 } from '@mui/material';
-import { useQuery, useMutation, useQueryClient } from 'react-query';
-import { fetchTasks, updateTask } from '../services/apiService';
+import {
+    fetchTasks,
+    updateTask,
+    getSprints,
+    searchTasks,
+    assignTask,
+    updateTaskDueDate
+} from '../services/apiService';
 import TaskCard from './TaskCard';
 import { useTheme } from '@mui/material/styles';
+import { AuthContext } from '../contexts/AuthContext';
+import { Search } from '@mui/icons-material';
 
 const SprintBoard = () => {
+    const { projectId } = useParams();
     const theme = useTheme();
+    const { user } = useContext(AuthContext);
     const [columns, setColumns] = useState({
         todo: { title: 'To Do', items: [] },
         inprogress: { title: 'In Progress', items: [] },
@@ -29,33 +39,72 @@ const SprintBoard = () => {
         done: { title: 'Done', items: [] }
     });
     const [selectedTask, setSelectedTask] = useState(null);
-
-    const queryClient = useQueryClient();
-    const { data: tasks, isLoading, isError } = useQuery('tasks', fetchTasks);
-
-    const updateTaskMutation = useMutation(updateTask, {
-        onSuccess: () => {
-            queryClient.invalidateQueries('tasks');
-        }
-    });
+    const [activeSprint, setActiveSprint] = useState(null);
+    const [searchQuery, setSearchQuery] = useState('');
+    const [tasks, setTasks] = useState([]);
+    const [isLoading, setIsLoading] = useState(true);
+    const [error, setError] = useState(null);
 
     useEffect(() => {
-        if (tasks) {
+        const fetchData = async () => {
+            try {
+                const [tasksData, sprintsData] = await Promise.all([
+                    fetchTasks(projectId),
+                    getSprints(projectId)
+                ]);
+                setTasks(tasksData);
+                const active = sprintsData.find((sprint) => sprint.status === 'active');
+                setActiveSprint(active);
+                setIsLoading(false);
+            } catch (err) {
+                setError('Error loading data');
+                setIsLoading(false);
+            }
+        };
+        fetchData();
+    }, [projectId]);
+
+    useEffect(() => {
+        if (tasks && activeSprint) {
             const newColumns = { ...columns };
             Object.keys(newColumns).forEach((key) => {
                 newColumns[key].items = [];
             });
             tasks.forEach((task) => {
-                const column = task.status.toLowerCase().replace(' ', '');
-                if (newColumns[column]) {
-                    newColumns[column].items.push(task);
+                if (task.sprint === activeSprint._id) {
+                    const column = task.status.toLowerCase().replace(' ', '');
+                    if (newColumns[column]) {
+                        newColumns[column].items.push(task);
+                    }
                 }
             });
             setColumns(newColumns);
         }
-    }, [tasks]);
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [tasks, activeSprint]);
 
-    const onDragEnd = (result) => {
+    useEffect(() => {
+        const searchTasksAsync = async () => {
+            if (searchQuery) {
+                try {
+                    const searchResults = await searchTasks(projectId, searchQuery);
+                    setTasks(searchResults);
+                } catch (err) {
+                    setError('Error searching tasks');
+                }
+            } else {
+                try {
+                    const tasksData = await fetchTasks(projectId);
+                    setTasks(tasksData);
+                } catch (err) {
+                    setError('Error fetching tasks');
+                }
+            }
+        };
+        searchTasksAsync();
+    }, [searchQuery, projectId]);
+
+    const onDragEnd = async (result) => {
         if (!result.destination) return;
         const { source, destination } = result;
 
@@ -78,10 +127,14 @@ const SprintBoard = () => {
                 }
             });
 
-            updateTaskMutation.mutate({
-                id: removed._id,
-                status: destination.droppableId
-            });
+            try {
+                await updateTask({
+                    id: removed._id,
+                    status: destination.droppableId
+                });
+            } catch (err) {
+                setError('Error updating task status');
+            }
         } else {
             const column = columns[source.droppableId];
             const copiedItems = [...column.items];
@@ -118,101 +171,148 @@ const SprintBoard = () => {
         setSelectedTask(null);
     };
 
+    const handleSearchChange = (e) => {
+        setSearchQuery(e.target.value);
+    };
+
+    const handleAssignTask = async (taskId, userId) => {
+        try {
+            await assignTask(taskId, userId);
+            const updatedTasks = await fetchTasks(projectId);
+            setTasks(updatedTasks);
+        } catch (err) {
+            setError('Error assigning task');
+        }
+    };
+
+    const handleUpdateDueDate = async (taskId, dueDate) => {
+        try {
+            await updateTaskDueDate(taskId, dueDate);
+            const updatedTasks = await fetchTasks(projectId);
+            setTasks(updatedTasks);
+        } catch (err) {
+            setError('Error updating due date');
+        }
+    };
+
     if (isLoading) return <CircularProgress />;
-    if (isError) return <Typography>Error loading tasks</Typography>;
+    if (error) return <Typography color="error">{error}</Typography>;
 
     return (
         <Box sx={{ flexGrow: 1, p: 3 }}>
-            <Typography variant="h4" gutterBottom>
-                Sprint Board
-            </Typography>
-            <DragDropContext onDragEnd={onDragEnd}>
-                <Grid container spacing={2}>
-                    {Object.entries(columns).map(([columnId, column]) => (
-                        <Grid item xs={12} sm={6} md={4} lg={2} key={columnId}>
-                            <Paper sx={{ p: 2, bgcolor: 'background.default', height: '100%' }}>
-                                <Typography variant="h6" gutterBottom>
-                                    {column.title}
-                                </Typography>
-                                <Droppable droppableId={columnId}>
-                                    {(provided) => (
-                                        <Box
-                                            {...provided.droppableProps}
-                                            ref={provided.innerRef}
-                                            sx={{ minHeight: 500 }}
-                                        >
-                                            {column.items.map((task, index) => (
-                                                <Draggable
-                                                    key={task._id}
-                                                    draggableId={task._id}
-                                                    index={index}
+            {activeSprint ? (
+                <>
+                    <Box
+                        sx={{
+                            mb: 2,
+                            display: 'flex',
+                            alignItems: 'center',
+                            justifyContent: 'space-between'
+                        }}
+                    >
+                        <Typography variant="h6">Active Sprint: {activeSprint.name}</Typography>
+                        <TextField
+                            variant="outlined"
+                            size="small"
+                            placeholder="Search tasks..."
+                            value={searchQuery}
+                            onChange={handleSearchChange}
+                            InputProps={{
+                                startAdornment: <Search />
+                            }}
+                        />
+                    </Box>
+                    <DragDropContext onDragEnd={onDragEnd}>
+                        <Grid container spacing={2}>
+                            {Object.entries(columns).map(([columnId, column]) => (
+                                <Grid item xs={12} sm={6} md={4} lg={2} key={columnId}>
+                                    <Paper
+                                        sx={{ p: 2, bgcolor: 'background.default', height: '100%' }}
+                                    >
+                                        <Typography variant="h6" gutterBottom>
+                                            {column.title}
+                                        </Typography>
+                                        <Droppable droppableId={columnId}>
+                                            {(provided) => (
+                                                <Box
+                                                    {...provided.droppableProps}
+                                                    ref={provided.innerRef}
+                                                    sx={{ minHeight: 500 }}
                                                 >
-                                                    {(provided) => (
-                                                        <Paper
-                                                            ref={provided.innerRef}
-                                                            {...provided.draggableProps}
-                                                            {...provided.dragHandleProps}
-                                                            sx={{
-                                                                p: 1,
-                                                                mb: 1,
-                                                                bgcolor: 'background.paper',
-                                                                cursor: 'pointer'
-                                                            }}
-                                                            onClick={() => handleTaskClick(task)}
+                                                    {column.items.map((task, index) => (
+                                                        <Draggable
+                                                            key={task._id}
+                                                            draggableId={task._id}
+                                                            index={index}
                                                         >
-                                                            <Typography variant="subtitle2">
-                                                                {task.title}
-                                                            </Typography>
-                                                            <Box sx={{ mt: 1 }}>
-                                                                <Chip
-                                                                    label={`Points: ${task.points}`}
-                                                                    size="small"
-                                                                    sx={{ mr: 1 }}
-                                                                />
-                                                                <Chip
-                                                                    label={task.priority}
-                                                                    size="small"
+                                                            {(provided) => (
+                                                                <Paper
+                                                                    ref={provided.innerRef}
+                                                                    {...provided.draggableProps}
+                                                                    {...provided.dragHandleProps}
                                                                     sx={{
-                                                                        bgcolor: getPriorityColor(
-                                                                            task.priority
-                                                                        ),
-                                                                        color: 'white'
+                                                                        p: 1,
+                                                                        mb: 1,
+                                                                        bgcolor: 'background.paper',
+                                                                        cursor: 'pointer'
                                                                     }}
-                                                                />
-                                                            </Box>
-                                                        </Paper>
-                                                    )}
-                                                </Draggable>
-                                            ))}
-                                            {provided.placeholder}
-                                        </Box>
-                                    )}
-                                </Droppable>
-                            </Paper>
+                                                                    onClick={() =>
+                                                                        handleTaskClick(task)
+                                                                    }
+                                                                >
+                                                                    <Typography variant="subtitle2">
+                                                                        {task.title}
+                                                                    </Typography>
+                                                                    <Box sx={{ mt: 1 }}>
+                                                                        <Chip
+                                                                            label={`Points: ${task.points}`}
+                                                                            size="small"
+                                                                            sx={{ mr: 1 }}
+                                                                        />
+                                                                        <Chip
+                                                                            label={task.priority}
+                                                                            size="small"
+                                                                            sx={{
+                                                                                bgcolor:
+                                                                                    getPriorityColor(
+                                                                                        task.priority
+                                                                                    ),
+                                                                                color: 'white'
+                                                                            }}
+                                                                        />
+                                                                    </Box>
+                                                                </Paper>
+                                                            )}
+                                                        </Draggable>
+                                                    ))}
+                                                    {provided.placeholder}
+                                                </Box>
+                                            )}
+                                        </Droppable>
+                                    </Paper>
+                                </Grid>
+                            ))}
                         </Grid>
-                    ))}
-                </Grid>
-            </DragDropContext>
-            <Dialog open={!!selectedTask} onClose={handleCloseDialog} maxWidth="md" fullWidth>
+                    </DragDropContext>
+                </>
+            ) : (
+                <Typography>No active sprint. Please start a sprint from the Backlog.</Typography>
+            )}
+            <Dialog open={!!selectedTask} onClose={handleCloseDialog}>
                 <DialogTitle>Task Details</DialogTitle>
-                <DialogContent>{selectedTask && <TaskCard id={selectedTask._id} />}</DialogContent>
+                <DialogContent>
+                    {selectedTask && (
+                        <TaskCard
+                            id={selectedTask._id}
+                            onAssign={handleAssignTask}
+                            onUpdateDueDate={handleUpdateDueDate}
+                            currentUser={user}
+                        />
+                    )}
+                </DialogContent>
             </Dialog>
         </Box>
     );
-};
-
-SprintBoard.propTypes = {
-    tasks: PropTypes.arrayOf(
-        PropTypes.shape({
-            id: PropTypes.string.isRequired,
-            title: PropTypes.string.isRequired,
-            description: PropTypes.string,
-            points: PropTypes.number.isRequired,
-            priority: PropTypes.string.isRequired,
-            status: PropTypes.string.isRequired,
-            assignedTo: PropTypes.string
-        })
-    )
 };
 
 export default SprintBoard;

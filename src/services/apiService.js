@@ -1,5 +1,3 @@
-// src/services/apiService.js
-
 import axios from 'axios';
 
 const API_BASE_URL = process.env.REACT_APP_API_BASE_URL || 'http://localhost:5000';
@@ -32,18 +30,18 @@ const handleApiError = (error) => {
     }
 };
 
-export const fetchBacklogTasks = async () => {
+export const fetchBacklogTasks = async (projectId) => {
     try {
-        const response = await apiService.get('/tasks');
+        const response = await apiService.get(`/projects/${projectId}/tasks?status=backlog`);
         return response.data;
     } catch (error) {
         handleApiError(error);
     }
 };
 
-export const fetchTasks = async () => {
+export const fetchTasks = async (projectId) => {
     try {
-        const response = await apiService.get('/tasks');
+        const response = await apiService.get(`/projects/${projectId}/tasks`);
         return response.data;
     } catch (error) {
         handleApiError(error);
@@ -59,9 +57,9 @@ export const fetchTask = async (taskId) => {
     }
 };
 
-export const createTask = async (taskData) => {
+export const createTask = async (projectId, taskData) => {
     try {
-        const response = await apiService.post('/tasks', taskData);
+        const response = await apiService.post(`/projects/${projectId}/tasks`, taskData);
         return response.data;
     } catch (error) {
         handleApiError(error);
@@ -71,8 +69,7 @@ export const createTask = async (taskData) => {
 export const updateTask = async (data) => {
     try {
         const taskId = data.id;
-        const taskData = data;
-        const response = await apiService.put(`/tasks/${taskId}`, taskData);
+        const response = await apiService.put(`/tasks/${taskId}`, data);
         return response.data;
     } catch (error) {
         handleApiError(error);
@@ -88,27 +85,28 @@ export const deleteTask = async (taskId) => {
     }
 };
 
-export const getSprints = async () => {
+export const getSprints = async (projectId) => {
     try {
-        const response = await apiService.get('/sprints');
+        const response = await apiService.get(`/projects/${projectId}/sprints`);
         return response.data;
     } catch (error) {
         handleApiError(error);
     }
 };
 
-export const createSprint = async (sprintData) => {
+export const createSprint = async (projectId, sprintData) => {
     try {
-        const response = await apiService.post('/sprints', sprintData);
+        const response = await apiService.post(`/projects/${projectId}/sprints`, sprintData);
         return response.data;
     } catch (error) {
         handleApiError(error);
     }
 };
 
-export const updateSprint = async (sprintId, sprintData) => {
+export const updateSprint = async (data) => {
     try {
-        const response = await apiService.put(`/sprints/${sprintId}`, sprintData);
+        const sprintId = data.id;
+        const response = await apiService.put(`/sprints/${sprintId}`, data);
         return response.data;
     } catch (error) {
         handleApiError(error);
@@ -144,7 +142,7 @@ export const updateStatuses = async (statusesData) => {
 
 export const moveTask = async (taskId, newStatus) => {
     try {
-        const response = await apiService.put(`/tasks/${taskId}/move`, { status: newStatus });
+        const response = await apiService.put(`/tasks/${taskId}/status`, { status: newStatus });
         return response.data;
     } catch (error) {
         handleApiError(error);
@@ -160,9 +158,9 @@ export const addTaskToSprint = async (taskId, sprintId) => {
     }
 };
 
-export const removeTaskFromSprint = async (taskId, sprintId) => {
+export const removeTaskFromSprint = async (taskId) => {
     try {
-        const response = await apiService.delete(`/tasks/${taskId}/sprint/${sprintId}`);
+        const response = await apiService.delete(`/tasks/${taskId}/sprint`);
         return response.data;
     } catch (error) {
         handleApiError(error);
@@ -187,9 +185,10 @@ export const createWorkflow = async (workflowData) => {
     }
 };
 
-export const updateWorkflow = async (workflowId, workflowData) => {
+export const updateWorkflow = async (data) => {
     try {
-        const response = await apiService.put(`/workflows/${workflowId}`, workflowData);
+        const workflowId = data.id;
+        const response = await apiService.put(`/workflows/${workflowId}`, data);
         return response.data;
     } catch (error) {
         handleApiError(error);
@@ -205,9 +204,11 @@ export const deleteWorkflow = async (workflowId) => {
     }
 };
 
-export const searchTasks = async (query) => {
+export const searchTasks = async (projectId, query) => {
     try {
-        const response = await apiService.get(`/tasks/search?q=${encodeURIComponent(query)}`);
+        const response = await apiService.get(
+            `/projects/${projectId}/tasks/search?q=${encodeURIComponent(query)}`
+        );
         return response.data;
     } catch (error) {
         handleApiError(error);
@@ -216,7 +217,7 @@ export const searchTasks = async (query) => {
 
 export const logTime = async (taskId, timeSpent) => {
     try {
-        const response = await apiService.post(`/tasks/${taskId}/log-time`, { timeSpent });
+        const response = await apiService.post(`/tasks/${taskId}/log-time`, { time: timeSpent });
         return response.data;
     } catch (error) {
         handleApiError(error);
@@ -247,7 +248,7 @@ export const removeAttachment = async (taskId, attachmentId) => {
 
 export const addComment = async (taskId, comment) => {
     try {
-        const response = await apiService.post(`/tasks/${taskId}/comments`, { comment });
+        const response = await apiService.post(`/tasks/${taskId}/comments`, { text: comment });
         return response.data;
     } catch (error) {
         handleApiError(error);
@@ -263,18 +264,10 @@ export const removeComment = async (taskId, commentId) => {
     }
 };
 
-export const updateTaskOrder = async (taskId, newOrder) => {
+export const updateTaskOrder = async (data) => {
     try {
-        const response = await apiService.put(`/tasks/${taskId}/order`, { order: newOrder });
-        return response.data;
-    } catch (error) {
-        handleApiError(error);
-    }
-};
-
-export const updateTaskStatus = async (taskId, newStatus) => {
-    try {
-        const response = await apiService.put(`/tasks/${taskId}/status`, { status: newStatus });
+        const taskId = data.id;
+        const response = await apiService.put(`/tasks/${taskId}/order`, { order: data.order });
         return response.data;
     } catch (error) {
         handleApiError(error);
@@ -283,7 +276,7 @@ export const updateTaskStatus = async (taskId, newStatus) => {
 
 export const assignTask = async (taskId, assigneeId) => {
     try {
-        const response = await apiService.put(`/tasks/${taskId}/assign`, { assigneeId });
+        const response = await apiService.put(`/tasks/${taskId}/assign`, { userId: assigneeId });
         return response.data;
     } catch (error) {
         handleApiError(error);
@@ -292,7 +285,7 @@ export const assignTask = async (taskId, assigneeId) => {
 
 export const updateTaskDueDate = async (taskId, dueDate) => {
     try {
-        const response = await apiService.put(`/tasks/${taskId}/due-date`, { dueDate });
+        const response = await apiService.put(`/tasks/${taskId}`, { dueDate });
         return response.data;
     } catch (error) {
         handleApiError(error);
@@ -301,7 +294,7 @@ export const updateTaskDueDate = async (taskId, dueDate) => {
 
 export const startSprint = async (sprintId) => {
     try {
-        const response = await apiService.put(`/sprints/${sprintId}/start`);
+        const response = await apiService.post(`/sprints/${sprintId}/start`);
         return response.data;
     } catch (error) {
         handleApiError(error);
@@ -310,7 +303,111 @@ export const startSprint = async (sprintId) => {
 
 export const closeSprint = async (sprintId) => {
     try {
-        const response = await apiService.put(`/sprints/${sprintId}/close`);
+        const response = await apiService.post(`/sprints/${sprintId}/complete`);
+        return response.data;
+    } catch (error) {
+        handleApiError(error);
+    }
+};
+
+export const getUserProjects = async () => {
+    try {
+        const response = await apiService.get('/projects');
+        return response.data;
+    } catch (error) {
+        handleApiError(error);
+    }
+};
+
+export const createUserProject = async (projectData) => {
+    try {
+        const response = await apiService.post('/projects', projectData);
+        return response.data;
+    } catch (error) {
+        handleApiError(error);
+    }
+};
+
+export const updateProject = async (data) => {
+    try {
+        const projectId = data.id;
+        const response = await apiService.put(`/projects/${projectId}`, data);
+        return response.data;
+    } catch (error) {
+        handleApiError(error);
+    }
+};
+
+export const deleteProject = async (projectId) => {
+    try {
+        await apiService.delete(`/projects/${projectId}`);
+        return true;
+    } catch (error) {
+        handleApiError(error);
+    }
+};
+
+export const registerUser = async (userData) => {
+    try {
+        const response = await apiService.post('/auth/register', userData);
+        return response.data;
+    } catch (error) {
+        handleApiError(error);
+    }
+};
+
+export const loginUser = async (credentials) => {
+    try {
+        const response = await apiService.post('/auth/login', credentials);
+        localStorage.setItem('token', response.data.token);
+        return response.data;
+    } catch (error) {
+        handleApiError(error);
+    }
+};
+
+export const getCurrentUser = async () => {
+    try {
+        const response = await apiService.get('/users/me');
+        return response.data;
+    } catch (error) {
+        handleApiError(error);
+    }
+};
+
+export const updateUserPreferences = async (preferences) => {
+    try {
+        const response = await apiService.put('/users/preferences', preferences);
+        return response.data;
+    } catch (error) {
+        handleApiError(error);
+    }
+};
+
+export const getUser = async () => {
+    try {
+        const response = await apiService.get(`/users/me`);
+        return response.data;
+    } catch (error) {
+        handleApiError(error);
+    }
+};
+
+export const updateUser = async (userId, userData) => {
+    try {
+        const response = await apiService.put(`/users/${userId}`, userData);
+        return response.data;
+    } catch (error) {
+        handleApiError(error);
+    }
+};
+
+export const moveTaskBetweenSprintsOrBacklog = async (projectId, taskId, sprintId, order) => {
+    try {
+        const response = await apiService.put(`/projects/${projectId}/tasks/${taskId}/move`, {
+            sprintId,
+            order
+        });
         return response.data;
     } catch (error) {
         handleApiError(error);
