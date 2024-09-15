@@ -24,7 +24,8 @@ import {
     updateTask,
     deleteTask,
     searchTasks,
-    moveTask
+    moveTask,
+    fetchTasks
 } from '../services/apiService';
 import { Search } from '@mui/icons-material';
 import TaskCard from './TaskCard';
@@ -111,20 +112,11 @@ const Backlog = () => {
     const handleClose = () => {
         setOpen(false);
         setEditingTask(null);
-        setNewTask({
-            title: '',
-            description: '',
-            points: 0,
-            priority: 'low',
-            status: 'todo'
-        });
     };
 
     const handleCreateTask = async () => {
         try {
-            if (editingTask) {
-                await updateTask({ id: editingTask._id, ...newTask });
-            } else {
+            if (!editingTask) {
                 await createTask(projectId, newTask);
             }
             const updatedTasks = await fetchBacklogTasks(projectId);
@@ -178,13 +170,9 @@ const Backlog = () => {
     };
 
     const handleDeleteTask = async (taskId) => {
-        try {
-            await deleteTask(taskId);
-            const updatedTasks = await fetchBacklogTasks(projectId);
-            setTasks(updatedTasks);
-        } catch (err) {
-            setError('Error deleting task');
-        }
+        // await deleteTask(taskId);
+        const updatedTasks = await fetchBacklogTasks(projectId);
+        setTasks(updatedTasks);
     };
 
     const handleSprintDialogOpen = () => setSprintDialogOpen(true);
@@ -233,6 +221,12 @@ const Backlog = () => {
         } catch (err) {
             setError('Error closing sprint');
         }
+    };
+
+    const handleUpdate = async (taskId) => {
+        const updatedTasks = await fetchBacklogTasks(projectId);
+        setTasks(updatedTasks);
+        setOpen(false);
     };
 
     const handleSearchChange = (e) => {
@@ -370,18 +364,11 @@ const Backlog = () => {
                     <DialogTitle>{editingTask ? 'Edit Task' : 'Add New Task'}</DialogTitle>
                     <DialogContent>
                         <TaskCard
-                            id={editingTask ? editingTask._id : null}
-                            onAssign={() => {}}
-                            onUpdateDueDate={() => {}}
+                            id={editingTask?._id}
+                            onUpdate={handleUpdate}
                             onDelete={handleDeleteTask}
                         />
                     </DialogContent>
-                    <DialogActions>
-                        <Button onClick={handleClose}>Cancel</Button>
-                        <Button onClick={handleCreateTask} color="primary">
-                            {editingTask ? 'Update' : 'Create'}
-                        </Button>
-                    </DialogActions>
                 </Dialog>
                 <Dialog open={sprintDialogOpen} onClose={handleSprintDialogClose}>
                     <DialogTitle>Create New Sprint</DialogTitle>

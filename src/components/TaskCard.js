@@ -38,7 +38,7 @@ import {
     updateTaskDueDate
 } from '../services/apiService';
 
-const TaskCard = ({ id, onAssign, onUpdateDueDate, onDelete, onUpdate }) => {
+const TaskCard = ({ id, onDelete, onUpdate }) => {
     const [task, setTask] = useState({
         title: '',
         description: '',
@@ -82,12 +82,8 @@ const TaskCard = ({ id, onAssign, onUpdateDueDate, onDelete, onUpdate }) => {
 
     const handleSubmit = async (e) => {
         e.preventDefault();
-        try {
-            await updateTask({ id, ...task });
-            onUpdate(task);
-        } catch (err) {
-            setError('Error updating task');
-        }
+        await updateTask({ id, ...task });
+        onUpdate(task);
     };
 
     const handleDelete = () => {
@@ -95,98 +91,66 @@ const TaskCard = ({ id, onAssign, onUpdateDueDate, onDelete, onUpdate }) => {
     };
 
     const confirmDeleteTask = async () => {
-        try {
-            await deleteTask(id);
-            setConfirmDelete(false);
-            onDelete(id);
-        } catch (err) {
-            setError('Error deleting task');
-        }
+        await deleteTask(id);
+        setConfirmDelete(false);
+        onDelete(id);
     };
 
     const handleLogTime = async () => {
-        try {
-            await logTime(id, timeToLog);
-            setTask((prevTask) => ({
-                ...prevTask,
-                timeSpent: prevTask.timeSpent + timeToLog
-            }));
-            setTimeToLog(0);
-        } catch (err) {
-            setError('Error logging time');
-        }
+        await logTime(id, timeToLog);
+        setTask((prevTask) => ({
+            ...prevTask,
+            timeSpent: prevTask.timeSpent + timeToLog
+        }));
+        setTimeToLog(0);
     };
 
     const handleAddAttachment = async () => {
-        try {
-            const attachment = await addAttachment(id, newAttachment);
-            setTask((prevTask) => ({
-                ...prevTask,
-                attachments: [...prevTask.attachments, attachment]
-            }));
-            setNewAttachment('');
-        } catch (err) {
-            setError('Error adding attachment');
-        }
+        const attachment = await addAttachment(id, newAttachment);
+        setTask((prevTask) => ({
+            ...prevTask,
+            attachments: [...prevTask.attachments, attachment]
+        }));
+        setNewAttachment('');
     };
 
     const handleRemoveAttachment = async (attachmentId) => {
-        try {
-            await removeAttachment(id, attachmentId);
-            setTask((prevTask) => ({
-                ...prevTask,
-                attachments: prevTask.attachments.filter((a) => a._id !== attachmentId)
-            }));
-        } catch (err) {
-            setError('Error removing attachment');
-        }
+        await removeAttachment(id, attachmentId);
+        setTask((prevTask) => ({
+            ...prevTask,
+            attachments: prevTask.attachments.filter((a) => a._id !== attachmentId)
+        }));
     };
 
     const handleAddComment = async () => {
-        try {
-            const comment = await addComment(id, newComment);
-            setTask((prevTask) => ({
-                ...prevTask,
-                comments: [...prevTask.comments, comment]
-            }));
-            setNewComment('');
-        } catch (err) {
-            setError('Error adding comment');
-        }
+        const comment = await addComment(id, newComment);
+        setTask((prevTask) => ({
+            ...prevTask,
+            comments: [...prevTask.comments, comment]
+        }));
+        setNewComment('');
     };
 
     const handleRemoveComment = async (commentId) => {
-        try {
-            await removeComment(id, commentId);
-            setTask((prevTask) => ({
-                ...prevTask,
-                comments: prevTask.comments.filter((c) => c._id !== commentId)
-            }));
-        } catch (err) {
-            setError('Error removing comment');
-        }
+        await removeComment(id, commentId);
+        setTask((prevTask) => ({
+            ...prevTask,
+            comments: prevTask.comments.filter((c) => c._id !== commentId)
+        }));
     };
 
     const handleAssign = async (e) => {
         const userId = e.target.value;
-        try {
-            await assignTask(id, userId);
-            setTask((prevTask) => ({ ...prevTask, assignedTo: userId }));
-            onAssign(id, userId);
-        } catch (err) {
-            setError('Error assigning task');
-        }
+        await assignTask(id, userId);
+        setTask((prevTask) => ({ ...prevTask, assignedTo: userId }));
+        onUpdate(id);
     };
 
     const handleDueDateChange = async (e) => {
         const newDueDate = e.target.value;
-        try {
-            await updateTaskDueDate(id, newDueDate);
-            setTask((prevTask) => ({ ...prevTask, dueDate: newDueDate }));
-            onUpdateDueDate(id, newDueDate);
-        } catch (err) {
-            setError('Error updating due date');
-        }
+        await updateTaskDueDate(id, newDueDate);
+        setTask((prevTask) => ({ ...prevTask, dueDate: newDueDate }));
+        onUpdate(id);
     };
 
     if (loading) return <Typography>Loading...</Typography>;

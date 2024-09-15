@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useContext } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useParams } from 'react-router-dom';
 import { DragDropContext, Droppable, Draggable } from 'react-beautiful-dnd';
 import {
@@ -13,23 +13,14 @@ import {
     CircularProgress,
     TextField
 } from '@mui/material';
-import {
-    fetchTasks,
-    updateTask,
-    getSprints,
-    searchTasks,
-    assignTask,
-    updateTaskDueDate
-} from '../services/apiService';
+import { fetchTasks, updateTask, getSprints, searchTasks } from '../services/apiService';
 import TaskCard from './TaskCard';
 import { useTheme } from '@mui/material/styles';
-import { AuthContext } from '../contexts/AuthContext';
 import { Search } from '@mui/icons-material';
 
 const SprintBoard = () => {
     const { projectId } = useParams();
     const theme = useTheme();
-    const { user } = useContext(AuthContext);
     const [columns, setColumns] = useState({
         todo: { title: 'To Do', items: [] },
         inprogress: { title: 'In Progress', items: [] },
@@ -175,24 +166,10 @@ const SprintBoard = () => {
         setSearchQuery(e.target.value);
     };
 
-    const handleAssignTask = async (taskId, userId) => {
-        try {
-            await assignTask(taskId, userId);
-            const updatedTasks = await fetchTasks(projectId);
-            setTasks(updatedTasks);
-        } catch (err) {
-            setError('Error assigning task');
-        }
-    };
-
-    const handleUpdateDueDate = async (taskId, dueDate) => {
-        try {
-            await updateTaskDueDate(taskId, dueDate);
-            const updatedTasks = await fetchTasks(projectId);
-            setTasks(updatedTasks);
-        } catch (err) {
-            setError('Error updating due date');
-        }
+    const handleUpdate = async (taskId) => {
+        const updatedTasks = await fetchTasks(projectId);
+        setTasks(updatedTasks);
+        setSelectedTask(null);
     };
 
     if (isLoading) return <CircularProgress />;
@@ -301,14 +278,7 @@ const SprintBoard = () => {
             <Dialog open={!!selectedTask} onClose={handleCloseDialog}>
                 <DialogTitle>Task Details</DialogTitle>
                 <DialogContent>
-                    {selectedTask && (
-                        <TaskCard
-                            id={selectedTask._id}
-                            onAssign={handleAssignTask}
-                            onUpdateDueDate={handleUpdateDueDate}
-                            currentUser={user}
-                        />
-                    )}
+                    {selectedTask && <TaskCard id={selectedTask._id} onUpdate={handleUpdate} />}
                 </DialogContent>
             </Dialog>
         </Box>
