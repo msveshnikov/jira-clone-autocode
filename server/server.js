@@ -4,7 +4,6 @@ import cors from 'cors';
 import dotenv from 'dotenv';
 import helmet from 'helmet';
 import morgan from 'morgan';
-
 import jwt from 'jsonwebtoken';
 import compression from 'compression';
 
@@ -227,7 +226,9 @@ app.post('/sprints/:id/complete', authenticateToken, async (req, res) => {
 
 app.get('/projects', authenticateToken, async (req, res) => {
     try {
-        const projects = await Project.find({ members: req.user.id });
+        const projects = await Project.find({ members: req.user.id })
+            .populate('owner', '-password')
+            .populate('members', '-password');
         res.json(projects);
     } catch (error) {
         res.status(500).json({ message: error.message });
@@ -275,7 +276,7 @@ app.delete('/projects/:id', authenticateToken, async (req, res) => {
 
 app.get('/users', authenticateToken, async (req, res) => {
     try {
-        const users = await User.find();
+        const users = await User.find({}, '-password');
         res.json(users);
     } catch (error) {
         res.status(500).json({ message: error.message });
@@ -284,7 +285,7 @@ app.get('/users', authenticateToken, async (req, res) => {
 
 app.get('/users/me', authenticateToken, async (req, res) => {
     try {
-        const user = await User.findById(req.user.id);
+        const user = await User.findById(req.user.id, '-password');
         if (!user) {
             return res.status(404).json({ message: 'User not found' });
         }

@@ -91,5 +91,4 @@ Comprehensive documentation is available in the `docs` folder, including:
 
 # TODO
 
--   add all initial load tasks to JIRA Clone project and to one active sprint inside it
--   convert ids to Mongo Ids- ValidationError: Task validation failed: project: Cast to ObjectId failed for value "1" (type string) at path "project" because of "BSONError"    
+-   in GET /projects populate owner and members collection bu user objects (without password)
