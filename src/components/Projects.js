@@ -12,6 +12,7 @@ import {
     Dialog,
     DialogTitle,
     DialogContent,
+    DialogContentText,
     DialogActions,
     CircularProgress,
     IconButton,
@@ -28,6 +29,8 @@ import {
 
 const Projects = () => {
     const [openDialog, setOpenDialog] = useState(false);
+    const [openDeleteDialog, setOpenDeleteDialog] = useState(false);
+    const [projectToDelete, setProjectToDelete] = useState(null);
     const [projectData, setProjectData] = useState({ name: '', description: '' });
     const [editingProject, setEditingProject] = useState(null);
     const [projects, setProjects] = useState([]);
@@ -38,7 +41,7 @@ const Projects = () => {
 
     useEffect(() => {
         fetchProjects();
-        // eslint-disable-next-line react-hooks/exhaustive-deps
+    // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [user]);
 
     const fetchProjects = async () => {
@@ -92,14 +95,23 @@ const Projects = () => {
         }
     };
 
-    const handleDeleteProject = async (projectId) => {
-        if (window.confirm('Are you sure you want to delete this project?')) {
-            try {
-                await deleteProject(projectId);
-                fetchProjects();
-            } catch (err) {
-                setError('Error deleting project');
-            }
+    const handleOpenDeleteDialog = (project) => {
+        setProjectToDelete(project);
+        setOpenDeleteDialog(true);
+    };
+
+    const handleCloseDeleteDialog = () => {
+        setOpenDeleteDialog(false);
+        setProjectToDelete(null);
+    };
+
+    const handleDeleteProject = async () => {
+        try {
+            await deleteProject(projectToDelete._id);
+            fetchProjects();
+            handleCloseDeleteDialog();
+        } catch (err) {
+            setError('Error deleting project');
         }
     };
 
@@ -153,7 +165,7 @@ const Projects = () => {
                                 </IconButton>
                                 <IconButton
                                     size="small"
-                                    onClick={() => handleDeleteProject(project._id)}
+                                    onClick={() => handleOpenDeleteDialog(project)}
                                     aria-label="delete"
                                 >
                                     <Delete />
@@ -192,6 +204,27 @@ const Projects = () => {
                     <Button onClick={handleCloseDialog}>Cancel</Button>
                     <Button onClick={handleSubmit} color="primary">
                         {editingProject ? 'Update' : 'Create'}
+                    </Button>
+                </DialogActions>
+            </Dialog>
+            <Dialog
+                open={openDeleteDialog}
+                onClose={handleCloseDeleteDialog}
+                aria-labelledby="alert-dialog-title"
+                aria-describedby="alert-dialog-description"
+            >
+                <DialogTitle id="alert-dialog-title">{"Delete Project"}</DialogTitle>
+                <DialogContent>
+                    <DialogContentText id="alert-dialog-description">
+                        Are you sure you want to delete the project {projectToDelete?.name}? This action cannot be undone.
+                    </DialogContentText>
+                </DialogContent>
+                <DialogActions>
+                    <Button onClick={handleCloseDeleteDialog} color="primary">
+                        Cancel
+                    </Button>
+                    <Button onClick={handleDeleteProject} color="error" autoFocus>
+                        Delete
                     </Button>
                 </DialogActions>
             </Dialog>
