@@ -44,7 +44,7 @@ export const fetchTasks = async (projectId) => {
         const response = await apiService.get(`/projects/${projectId}/tasks`);
         return response.data;
     } catch (error) {
-        handleApiError(error); 
+        handleApiError(error);
     }
 };
 
