@@ -101,7 +101,7 @@ sprintSchema.methods.deleteSprint = async function () {
     if (this.status === 'active') {
         throw new Error('Cannot delete an active sprint');
     }
-    return this.remove();
+    return this.deleteOne();
 };
 
 const Sprint = mongoose.model('Sprint', sprintSchema);

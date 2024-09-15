@@ -16,9 +16,9 @@ import { AuthContext, AuthProvider } from './contexts/AuthContext';
 import PropTypes from 'prop-types';
 
 function PrivateRoute({ children }) {
-    const { user, loading } = useContext(AuthContext);
+    const { isAuthenticated, loading } = useContext(AuthContext);
     if (loading) return null;
-    return user ? children : <Navigate to="/login" />;
+    return isAuthenticated ? children : <Navigate to="/login" />;
 }
 
 PrivateRoute.propTypes = {

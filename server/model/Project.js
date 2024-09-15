@@ -156,6 +156,34 @@ projectSchema.statics.search = function (query) {
     });
 };
 
+projectSchema.methods.getActiveSprint = async function () {
+    return mongoose.model('Sprint').getActiveSprint(this._id);
+};
+
+projectSchema.methods.getUpcomingSprints = async function () {
+    return mongoose.model('Sprint').getUpcomingSprints(this._id);
+};
+
+projectSchema.methods.getCompletedSprints = async function () {
+    return mongoose.model('Sprint').getCompletedSprints(this._id);
+};
+
+projectSchema.methods.getTasks = async function () {
+    return mongoose.model('Task').findByProject(this._id);
+};
+
+projectSchema.methods.getTasksByStatus = async function (status) {
+    return mongoose.model('Task').find({ project: this._id, status });
+};
+
+projectSchema.methods.getMembers = async function () {
+    return mongoose.model('User').find({ _id: { $in: this.members } });
+};
+
+projectSchema.methods.getOwner = async function () {
+    return mongoose.model('User').findById(this.owner);
+};
+
 const Project = mongoose.model('Project', projectSchema);
 
 export default Project;

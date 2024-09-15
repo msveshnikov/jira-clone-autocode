@@ -1,7 +1,6 @@
 {
     "tasks": [
         {
-            "id": "1",
             "title": "Implement backlog ordering functionality",
             "description": "Add the ability to reorder tasks in the backlog using drag-and-drop",
             "points": 8,
@@ -11,11 +10,12 @@
             "attachments": [],
             "comments": [],
             "order": 0,
-            "assignee": "1",
-            "dueDate": "2023-06-01"
+            "assignedTo": "64a3a2f5b4ae6d5aa0f2b123",
+            "project": "64a3a2f5b4ae6d5aa0f2b126",
+            "sprint": "64a3a2f5b4ae6d5aa0f2b127",
+            "dueDate": "2023-06-01T00:00:00.000Z"
         },
         {
-            "id": "2",
             "title": "Fix task update functionality",
             "description": "Resolve issues with updating task details",
             "points": 5,
@@ -25,11 +25,12 @@
             "attachments": [],
             "comments": [],
             "order": 1,
-            "assignee": "1",
-            "dueDate": "2023-05-25"
+            "assignedTo": "64a3a2f5b4ae6d5aa0f2b123",
+            "project": "64a3a2f5b4ae6d5aa0f2b126",
+            "sprint": "64a3a2f5b4ae6d5aa0f2b127",
+            "dueDate": "2023-05-25T00:00:00.000Z"
         },
         {
-            "id": "3",
             "title": "Implement persistent task status",
             "description": "Ensure task status is saved and persists across sessions",
             "points": 3,
@@ -39,11 +40,12 @@
             "attachments": [],
             "comments": [],
             "order": 2,
-            "assignee": "2",
-            "dueDate": "2023-05-28"
+            "assignedTo": "64a3a2f5b4ae6d5aa0f2b124",
+            "project": "64a3a2f5b4ae6d5aa0f2b126",
+            "sprint": "64a3a2f5b4ae6d5aa0f2b127",
+            "dueDate": "2023-05-28T00:00:00.000Z"
         },
         {
-            "id": "4",
             "title": "Add comments functionality to tasks",
             "description": "Implement the ability to add and view comments on tasks",
             "points": 5,
@@ -53,11 +55,12 @@
             "attachments": [],
             "comments": [],
             "order": 3,
-            "assignee": "1",
-            "dueDate": "2023-06-05"
+            "assignedTo": "64a3a2f5b4ae6d5aa0f2b123",
+            "project": "64a3a2f5b4ae6d5aa0f2b126",
+            "sprint": "64a3a2f5b4ae6d5aa0f2b127",
+            "dueDate": "2023-06-05T00:00:00.000Z"
         },
         {
-            "id": "5",
             "title": "Update task status when dragging in Sprint view",
             "description": "Automatically update task status when moved between columns in Sprint Board",
             "points": 5,
@@ -67,11 +70,12 @@
             "attachments": [],
             "comments": [],
             "order": 4,
-            "assignee": "2",
-            "dueDate": "2023-06-10"
+            "assignedTo": "64a3a2f5b4ae6d5aa0f2b124",
+            "project": "64a3a2f5b4ae6d5aa0f2b126",
+            "sprint": "64a3a2f5b4ae6d5aa0f2b127",
+            "dueDate": "2023-06-10T00:00:00.000Z"
         },
         {
-            "id": "6",
             "title": "Enhance TaskCard component with assignee functionality",
             "description": "Add the ability to assign tasks to users in the TaskCard component",
             "points": 3,
@@ -81,11 +85,12 @@
             "attachments": [],
             "comments": [],
             "order": 5,
-            "assignee": "1",
-            "dueDate": "2023-06-15"
+            "assignedTo": "64a3a2f5b4ae6d5aa0f2b123",
+            "project": "64a3a2f5b4ae6d5aa0f2b126",
+            "sprint": "64a3a2f5b4ae6d5aa0f2b127",
+            "dueDate": "2023-06-15T00:00:00.000Z"
         },
         {
-            "id": "7",
             "title": "Implement due date functionality for tasks",
             "description": "Add the ability to set and display due dates for tasks",
             "points": 2,
@@ -95,79 +100,75 @@
             "attachments": [],
             "comments": [],
             "order": 6,
-            "assignee": "2",
-            "dueDate": "2023-06-20"
+            "assignedTo": "64a3a2f5b4ae6d5aa0f2b124",
+            "project": "64a3a2f5b4ae6d5aa0f2b126",
+            "sprint": "64a3a2f5b4ae6d5aa0f2b127",
+            "dueDate": "2023-06-20T00:00:00.000Z"
         }
     ],
     "sprints": [
         {
-            "id": "1",
             "name": "Sprint 1",
-            "startDate": "2023-05-01",
-            "endDate": "2023-05-14"
+            "startDate": "2023-05-01T00:00:00.000Z",
+            "endDate": "2023-05-14T00:00:00.000Z",
+            "project": "64a3a2f5b4ae6d5aa0f2b126",
+            "status": "active"
         },
         {
-            "id": "2",
             "name": "Sprint 2",
-            "startDate": "2023-05-15",
-            "endDate": "2023-05-28"
+            "startDate": "2023-05-15T00:00:00.000Z",
+            "endDate": "2023-05-28T00:00:00.000Z",
+            "project": "64a3a2f5b4ae6d5aa0f2b126",
+            "status": "planning"
         },
         {
-            "id": "3",
             "name": "Sprint 3",
-            "startDate": "2023-05-29",
-            "endDate": "2023-06-11"
+            "startDate": "2023-05-29T00:00:00.000Z",
+            "endDate": "2023-06-11T00:00:00.000Z",
+            "project": "64a3a2f5b4ae6d5aa0f2b126",
+            "status": "planning"
         }
     ],
     "statuses": [
         {
-            "id": "1",
             "name": "todo",
             "order": 0
         },
         {
-            "id": "2",
             "name": "inprogress",
             "order": 1
         },
         {
-            "id": "3",
             "name": "codereview",
             "order": 2
         },
         {
-            "id": "4",
             "name": "readytotest",
             "order": 3
         },
         {
-            "id": "5",
             "name": "qa",
             "order": 4
         },
         {
-            "id": "6",
             "name": "done",
             "order": 5
         }
     ],
     "workflows": [
         {
-            "id": "1",
             "name": "Default",
             "statuses": ["todo", "inprogress", "codereview", "readytotest", "qa", "done"]
         }
     ],
     "users": [
         {
-            "id": "1",
             "name": "John Doe",
             "email": "john@example.com",
-            "role": "developer",
+            "role": "admin",
             "password": "123"
         },
         {
-            "id": "2",
             "name": "Jane Smith",
             "email": "jane@example.com",
             "role": "project_manager",
@@ -176,9 +177,11 @@
     ],
     "projects": [
         {
-            "id": "1",
             "name": "JIRA Clone",
-            "description": "A lightweight project management tool"
+            "description": "A lightweight project management tool",
+            "owner": "64a3a2f5b4ae6d5aa0f2b124",
+            "members": ["64a3a2f5b4ae6d5aa0f2b123", "64a3a2f5b4ae6d5aa0f2b124"],
+            "workflow": "64a3a2f5b4ae6d5aa0f2b130"
         }
     ]
 }
