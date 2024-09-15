@@ -54,7 +54,6 @@ export const loadInitialData = async () => {
             { name: project.name },
             {
                 ...project,
-
                 owner: adminUser._id,
                 workflow: await Workflow.findOne({ name: 'Default' })
             },
@@ -63,9 +62,9 @@ export const loadInitialData = async () => {
 
         for (const sprint of initialData.sprints) {
             await Sprint.findOneAndUpdate(
+                { name: sprint.name },
                 {
                     ...sprint,
-
                     project: newProject._id
                 },
                 { upsert: true, new: true }

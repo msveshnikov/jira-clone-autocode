@@ -91,4 +91,4 @@ Comprehensive documentation is available in the `docs` folder, including:
 
 # TODO
 
--   in GET /projects populate owner and members collection bu user objects (without password)
+-   
