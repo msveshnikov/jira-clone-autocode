@@ -38,7 +38,7 @@ import {
     updateTaskDueDate
 } from '../services/apiService';
 
-const TaskCard = ({ id, onAssign, onUpdateDueDate, onDelete }) => {
+const TaskCard = ({ id, onAssign, onUpdateDueDate, onDelete, onUpdate }) => {
     const [task, setTask] = useState({
         title: '',
         description: '',
@@ -84,6 +84,7 @@ const TaskCard = ({ id, onAssign, onUpdateDueDate, onDelete }) => {
         e.preventDefault();
         try {
             await updateTask({ id, ...task });
+            onUpdate(task);
         } catch (err) {
             setError('Error updating task');
         }

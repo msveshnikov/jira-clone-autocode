@@ -319,7 +319,7 @@ const SprintBoard = () => {
             ) : (
                 <Typography>No active sprint. Please start a sprint from the Backlog.</Typography>
             )}
-            <Dialog open={!!selectedTask} onClose={handleCloseDialog} maxWidth="md" fullWidth>
+            <Dialog open={!!selectedTask} onClose={handleCloseDialog} >
                 <DialogTitle>Task Details</DialogTitle>
                 <DialogContent>
                     {selectedTask && (

@@ -5,7 +5,6 @@ import CssBaseline from '@mui/material/CssBaseline';
 import createCustomTheme from './utils/theme';
 import Backlog from './components/Backlog';
 import SprintBoard from './components/SprintBoard';
-import TaskCard from './components/TaskCard';
 import Header from './components/Header';
 import Login from './components/Login';
 import Register from './components/Register';
@@ -76,14 +75,7 @@ function App() {
                                         </PrivateRoute>
                                     }
                                 />
-                                <Route
-                                    path="/project/:projectId/task/:taskId"
-                                    element={
-                                        <PrivateRoute>
-                                            <TaskCard />
-                                        </PrivateRoute>
-                                    }
-                                />
+
                                 <Route
                                     path="/profile"
                                     element={

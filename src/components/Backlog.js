@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { useParams, useNavigate } from 'react-router-dom';
+import { useParams } from 'react-router-dom';
 import {
     Container,
     Typography,
@@ -15,10 +15,6 @@ import {
     DialogTitle,
     DialogContent,
     DialogActions,
-    Select,
-    MenuItem,
-    FormControl,
-    InputLabel,
     Paper,
     Box,
     Chip,
@@ -41,6 +37,7 @@ import {
 } from '../services/apiService';
 import { useTheme } from '@mui/material/styles';
 import { Delete, Edit, Search } from '@mui/icons-material';
+import TaskCard from './TaskCard';
 
 const Backlog = () => {
     const [open, setOpen] = useState(false);
@@ -65,7 +62,6 @@ const Backlog = () => {
     const [sprints, setSprints] = useState([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
-    const navigate = useNavigate();
     const theme = useTheme();
     const { projectId } = useParams();
 
@@ -150,11 +146,6 @@ const Backlog = () => {
         }
     };
 
-    const handleInputChange = (e) => {
-        const { name, value } = e.target;
-        setNewTask({ ...newTask, [name]: value });
-    };
-
     const onDragEnd = async (result) => {
         if (!result.destination) return;
 
@@ -174,7 +165,8 @@ const Backlog = () => {
     };
 
     const handleTaskClick = (taskId) => {
-        navigate(`/project/${projectId}/task/${taskId}`);
+        setEditingTask(tasks.find((task) => task._id === taskId));
+        setOpen(true);
     };
 
     const handleEditTask = (task) => {
@@ -479,63 +471,12 @@ const Backlog = () => {
                 <Dialog open={open} onClose={handleClose}>
                     <DialogTitle>{editingTask ? 'Edit Task' : 'Add New Task'}</DialogTitle>
                     <DialogContent>
-                        <TextField
-                            autoFocus
-                            margin="dense"
-                            name="title"
-                            label="Title"
-                            type="text"
-                            fullWidth
-                            value={newTask.title}
-                            onChange={handleInputChange}
+                        <TaskCard
+                            id={editingTask ? editingTask._id : null}
+                            onAssign={() => {}}
+                            onUpdateDueDate={() => {}}
+                            onDelete={handleDeleteTask}
                         />
-                        <TextField
-                            margin="dense"
-                            name="description"
-                            label="Description"
-                            type="text"
-                            fullWidth
-                            multiline
-                            rows={4}
-                            value={newTask.description}
-                            onChange={handleInputChange}
-                        />
-                        <TextField
-                            margin="dense"
-                            name="points"
-                            label="Points"
-                            type="number"
-                            fullWidth
-                            value={newTask.points}
-                            onChange={handleInputChange}
-                        />
-                        <FormControl fullWidth margin="dense">
-                            <InputLabel>Priority</InputLabel>
-                            <Select
-                                name="priority"
-                                value={newTask.priority}
-                                onChange={handleInputChange}
-                            >
-                                <MenuItem value="low">Low</MenuItem>
-                                <MenuItem value="medium">Medium</MenuItem>
-                                <MenuItem value="high">High</MenuItem>
-                            </Select>
-                        </FormControl>
-                        <FormControl fullWidth margin="dense">
-                            <InputLabel>Status</InputLabel>
-                            <Select
-                                name="status"
-                                value={newTask.status}
-                                onChange={handleInputChange}
-                            >
-                                <MenuItem value="todo">To Do</MenuItem>
-                                <MenuItem value="inprogress">In Progress</MenuItem>
-                                <MenuItem value="readytotest">Ready to Test</MenuItem>
-                                <MenuItem value="codereview">Code Review</MenuItem>
-                                <MenuItem value="qa">QA</MenuItem>
-                                <MenuItem value="done">Done</MenuItem>
-                            </Select>
-                        </FormControl>
                     </DialogContent>
                     <DialogActions>
                         <Button onClick={handleClose}>Cancel</Button>
