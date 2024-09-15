@@ -104,22 +104,14 @@ const Backlog = () => {
         const destinationId = result.destination.droppableId;
         const taskId = result.draggableId;
 
-        let updatedTasks = [...tasks];
-        const [movedTask] = updatedTasks.splice(result.source.index, 1);
-        updatedTasks.splice(result.destination.index, 0, movedTask);
-
-        setTasks(updatedTasks);
-
-        try {
-            if (sourceId === destinationId) {
-                await updateTaskOrder({ id: taskId, order: result.destination.index });
-            } else {
-                const sprintId = destinationId === 'backlog' ? null : destinationId;
-                await moveTask(projectId, taskId, sprintId, result.destination.index);
-            }
-        } catch (err) {
-            setError('Error updating task order');
+        if (sourceId === destinationId) {
+            await updateTaskOrder({ id: taskId, order: result.destination.index });
+        } else {
+            const sprintId = destinationId === 'backlog' ? null : destinationId;
+            await moveTask(projectId, taskId, sprintId, result.destination.index);
         }
+        const updatedTasks = await fetchBacklogTasks(projectId);
+        setTasks(updatedTasks);
     };
 
     const handleTaskClick = (taskId) => {
