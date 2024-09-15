@@ -88,6 +88,21 @@ export const AuthProvider = ({ children }) => {
         }
     };
 
+    const logout = async () => {
+        try {
+            localStorage.removeItem('token');
+            localStorage.removeItem('rememberMe');
+            delete apiService.defaults.headers.common['Authorization'];
+            setUser(null);
+            setIsAuthenticated(false);
+            setCurrentProject(null);
+            setProjects([]);
+            navigate('/login');
+        } catch (error) {
+            console.error('Logout error:', error);
+        }
+    };
+
     const createProject = async (projectData) => {
         try {
             const newProject = await createUserProject(projectData);
@@ -118,6 +133,7 @@ export const AuthProvider = ({ children }) => {
         user,
         login,
         register,
+        logout,
         loading,
         isAuthenticated,
         setIsAuthenticated,

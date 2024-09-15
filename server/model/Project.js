@@ -62,7 +62,10 @@ projectSchema.pre('save', function (next) {
 });
 
 projectSchema.methods.addMember = function (userId) {
-    if (!this.members.includes(userId)) {
+    if (!this.members?.includes(userId)) {
+        if (!this.members) {
+            this.members = [];
+        }
         this.members.push(userId);
     }
     return this.save();

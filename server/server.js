@@ -99,8 +99,14 @@ app.post('/auth/register', async (req, res) => {
         }
         const user = new User({ email, password, name });
         await user.save();
+        const jiraCloneProject = await Project.findOne({ name: 'JIRA Clone' });
+        if (jiraCloneProject) {
+            await jiraCloneProject.addMember(user._id);
+            await user.addProject(jiraCloneProject._id);
+        }
         res.status(201).json({ message: 'User registered successfully' });
     } catch (error) {
+        console.error(error)
         res.status(500).json({ message: error.message });
     }
 });
@@ -115,6 +121,7 @@ app.post('/auth/login', async (req, res) => {
         const token = jwt.sign({ id: user._id }, process.env.JWT_SECRET, { expiresIn: '14d' });
         res.json({ token, userId: user._id, user });
     } catch (error) {
+        console.error(error)
         res.status(500).json({ message: error.message });
     }
 });

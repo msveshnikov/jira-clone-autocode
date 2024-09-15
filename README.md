@@ -91,4 +91,7 @@ Comprehensive documentation is available in the `docs` folder, including:
 
 # TODO
 
-
+- fix addmembers Server is running on port 5000
+TypeError: Cannot read properties of undefined (reading 'push')
+    at projectSchema.methods.addMember (file:///C:/My-progs/Node.JS/AI/test14/server/model/Project.js:67:22)
+    at file:///C:/My-progs/Node.JS/AI/test14/server/server.js:104:36

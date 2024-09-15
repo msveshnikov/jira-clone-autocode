@@ -19,7 +19,8 @@ import {
     Brightness4,
     Brightness7,
     Menu as MenuIcon,
-    Search as SearchIcon
+    Search as SearchIcon,
+    ExitToApp as LogoutIcon
 } from '@mui/icons-material';
 import { AuthContext } from '../contexts/AuthContext';
 
@@ -29,7 +30,7 @@ const Header = ({ toggleDarkMode, darkMode }) => {
     const [anchorEl, setAnchorEl] = useState(null);
     const [userMenuAnchorEl, setUserMenuAnchorEl] = useState(null);
     const [searchQuery, setSearchQuery] = useState('');
-    const { user, currentProject } = useContext(AuthContext);
+    const { user, currentProject, isAuthenticated, setIsAuthenticated } = useContext(AuthContext);
     const navigate = useNavigate();
 
     const handleMenuOpen = (event) => {
@@ -52,6 +53,12 @@ const Header = ({ toggleDarkMode, darkMode }) => {
         if (event.key === 'Enter') {
             navigate(`/search?q=${encodeURIComponent(searchQuery)}`);
         }
+    };
+
+    const handleLogout = () => {
+        localStorage.removeItem('token');
+        setIsAuthenticated(false);
+        navigate('/login');
     };
 
     const renderMenuItems = () => (
@@ -149,14 +156,14 @@ const Header = ({ toggleDarkMode, darkMode }) => {
                     >
                         {darkMode ? <Brightness7 /> : <Brightness4 />}
                     </IconButton>
-                    {user ? (
+                    {isAuthenticated ? (
                         <>
                             <IconButton
                                 color="inherit"
                                 onClick={handleUserMenuOpen}
                                 aria-label="user menu"
                             >
-                                <Avatar alt={user.name} src={user.avatar} />
+                                <Avatar alt={user?.name} src={user?.avatar} />
                             </IconButton>
                             <Menu
                                 anchorEl={userMenuAnchorEl}
@@ -169,6 +176,10 @@ const Header = ({ toggleDarkMode, darkMode }) => {
                                     onClick={handleUserMenuClose}
                                 >
                                     Profile
+                                </MenuItem>
+                                <MenuItem onClick={handleLogout}>
+                                    <LogoutIcon sx={{ mr: 1 }} />
+                                    Logout
                                 </MenuItem>
                             </Menu>
                         </>
