@@ -285,7 +285,7 @@ app.get('/users', authenticateToken, async (req, res) => {
 
 app.get('/users/me', authenticateToken, async (req, res) => {
     try {
-        const user = await User.findById(req.user.id, '-password');
+        const user = await User.findById(req.user.id, '-password').populate('projects');
         if (!user) {
             return res.status(404).json({ message: 'User not found' });
         }

@@ -54,7 +54,7 @@ export const fetchTask = async (taskId) => {
         return response.data;
     } catch (error) {
         handleApiError(error);
-    }
+    } 
 };
 
 export const createTask = async (projectId, taskData) => {

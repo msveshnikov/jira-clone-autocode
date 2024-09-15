@@ -133,7 +133,7 @@ const TaskCard = ({ id, projectId, onAssign, onUpdateDueDate }) => {
             await removeAttachment(id, attachmentId);
             setTask((prevTask) => ({
                 ...prevTask,
-                attachments: prevTask.attachments.filter((a) => a.id !== attachmentId)
+                attachments: prevTask.attachments.filter((a) => a._id !== attachmentId)
             }));
         } catch (err) {
             setError('Error removing attachment');
@@ -158,7 +158,7 @@ const TaskCard = ({ id, projectId, onAssign, onUpdateDueDate }) => {
             await removeComment(id, commentId);
             setTask((prevTask) => ({
                 ...prevTask,
-                comments: prevTask.comments.filter((c) => c.id !== commentId)
+                comments: prevTask.comments.filter((c) => c._id !== commentId)
             }));
         } catch (err) {
             setError('Error removing comment');
@@ -301,14 +301,14 @@ const TaskCard = ({ id, projectId, onAssign, onUpdateDueDate }) => {
                             <Typography variant="subtitle1">Attachments</Typography>
                             <List>
                                 {task.attachments?.map((attachment) => (
-                                    <ListItem key={attachment.id}>
+                                    <ListItem key={attachment._id}>
                                         <ListItemText primary={attachment.name} />
                                         <ListItemSecondaryAction>
                                             <IconButton
                                                 edge="end"
                                                 aria-label="delete"
                                                 onClick={() =>
-                                                    handleRemoveAttachment(attachment.id)
+                                                    handleRemoveAttachment(attachment._id)
                                                 }
                                             >
                                                 <DeleteIcon />
@@ -337,7 +337,7 @@ const TaskCard = ({ id, projectId, onAssign, onUpdateDueDate }) => {
                             <Typography variant="subtitle1">Comments</Typography>
                             <List>
                                 {task.comments?.map((comment) => (
-                                    <ListItem key={comment.id}>
+                                    <ListItem key={comment._id}>
                                         <ListItemText
                                             primary={comment.text}
                                             secondary={`By ${comment.author}`}
@@ -346,7 +346,7 @@ const TaskCard = ({ id, projectId, onAssign, onUpdateDueDate }) => {
                                             <IconButton
                                                 edge="end"
                                                 aria-label="delete"
-                                                onClick={() => handleRemoveComment(comment.id)}
+                                                onClick={() => handleRemoveComment(comment._id)}
                                             >
                                                 <DeleteIcon />
                                             </IconButton>

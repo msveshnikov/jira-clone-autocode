@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useContext } from 'react';
-import { useParams, useNavigate } from 'react-router-dom';
+import { useParams } from 'react-router-dom';
 import {
     Typography,
     Avatar,
@@ -20,7 +20,7 @@ import {
     DialogContent,
     DialogActions
 } from '@mui/material';
-import { Edit, Delete } from '@mui/icons-material';
+import { Delete } from '@mui/icons-material';
 import { AuthContext } from '../contexts/AuthContext';
 import { getUser, updateUser, deleteProject } from '../services/apiService';
 
@@ -39,7 +39,6 @@ const Profile = () => {
     const [user, setUser] = useState(null);
     const [isLoading, setIsLoading] = useState(true);
     const [isError, setIsError] = useState(false);
-    const navigate = useNavigate();
 
     useEffect(() => {
         const fetchUser = async () => {
@@ -86,7 +85,7 @@ const Profile = () => {
             await deleteProject(projectToDelete);
             setUser({
                 ...user,
-                projects: user.projects.filter((project) => project.id !== projectToDelete)
+                projects: user.projects.filter((project) => project._id !== projectToDelete)
             });
             setConfirmDelete(false);
         } catch (error) {
@@ -164,7 +163,7 @@ const Profile = () => {
                             <Typography variant="body2" sx={{ mt: 2 }}>
                                 {user.bio}
                             </Typography>
-                            {(currentUser.id === user.id || currentUser.role === 'admin') && (
+                            {(currentUser._id === user._id || currentUser.role === 'admin') && (
                                 <Button onClick={() => setEditMode(true)} sx={{ mt: 2 }}>
                                     Edit Profile
                                 </Button>
@@ -177,20 +176,13 @@ const Profile = () => {
                 <Typography variant="h6">Projects</Typography>
                 <List>
                     {user.projects?.map((project) => (
-                        <ListItem key={project.id}>
+                        <ListItem key={project._id}>
                             <ListItemText primary={project.name} />
                             <ListItemSecondaryAction>
                                 <IconButton
                                     edge="end"
-                                    aria-label="edit"
-                                    onClick={() => navigate(`/project/${project.id}`)}
-                                >
-                                    <Edit />
-                                </IconButton>
-                                <IconButton
-                                    edge="end"
                                     aria-label="delete"
-                                    onClick={() => handleDeleteProject(project.id)}
+                                    onClick={() => handleDeleteProject(project._id)}
                                 >
                                     <Delete />
                                 </IconButton>
