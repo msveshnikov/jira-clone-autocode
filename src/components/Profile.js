@@ -3,7 +3,6 @@ import { useParams } from 'react-router-dom';
 import {
     Typography,
     Avatar,
-    Paper,
     Grid,
     TextField,
     Button,
@@ -106,7 +105,11 @@ const Profile = () => {
                 <CardContent>
                     <Grid container spacing={3} alignItems="center">
                         <Grid item>
-                            <Avatar src={user.avatar} alt={user.name} sx={{ width: 120, height: 120 }} />
+                            <Avatar
+                                src={user.avatar}
+                                alt={user.name}
+                                sx={{ width: 120, height: 120 }}
+                            />
                         </Grid>
                         <Grid item xs>
                             {editMode ? (
@@ -159,11 +162,24 @@ const Profile = () => {
                                 </form>
                             ) : (
                                 <>
-                                    <Typography variant="h4" gutterBottom>{user.name}</Typography>
-                                    <Typography variant="subtitle1" color="textSecondary" gutterBottom>{user.email}</Typography>
-                                    <Typography variant="body1" gutterBottom>{user.role}</Typography>
-                                    <Typography variant="body2" sx={{ mt: 2 }}>{user.bio}</Typography>
-                                    {(currentUser._id === user._id || currentUser.role === 'admin') && (
+                                    <Typography variant="h4" gutterBottom>
+                                        {user.name}
+                                    </Typography>
+                                    <Typography
+                                        variant="subtitle1"
+                                        color="textSecondary"
+                                        gutterBottom
+                                    >
+                                        {user.email}
+                                    </Typography>
+                                    <Typography variant="body1" gutterBottom>
+                                        {user.role}
+                                    </Typography>
+                                    <Typography variant="body2" sx={{ mt: 2 }}>
+                                        {user.bio}
+                                    </Typography>
+                                    {(currentUser._id === user._id ||
+                                        currentUser.role === 'admin') && (
                                         <Button
                                             startIcon={<Edit />}
                                             onClick={() => setEditMode(true)}
@@ -182,7 +198,9 @@ const Profile = () => {
 
             <Card sx={{ mt: 4 }}>
                 <CardContent>
-                    <Typography variant="h6" gutterBottom>Skills</Typography>
+                    <Typography variant="h6" gutterBottom>
+                        Skills
+                    </Typography>
                     <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 1, mt: 1 }}>
                         {user.skills?.map((skill) => (
                             <Chip key={skill} label={skill} variant="outlined" />
@@ -193,12 +211,17 @@ const Profile = () => {
 
             <Card sx={{ mt: 4 }}>
                 <CardContent>
-                    <Typography variant="h6" gutterBottom>Projects</Typography>
+                    <Typography variant="h6" gutterBottom>
+                        Projects
+                    </Typography>
                     <List>
                         {user.projects?.map((project) => (
                             <React.Fragment key={project._id}>
                                 <ListItem>
-                                    <ListItemText primary={project.name} secondary={project.description} />
+                                    <ListItemText
+                                        primary={project.name}
+                                        secondary={project.description}
+                                    />
                                     <ListItemSecondaryAction>
                                         <IconButton
                                             edge="end"

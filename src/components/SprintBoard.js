@@ -325,7 +325,6 @@ const SprintBoard = () => {
                     {selectedTask && (
                         <TaskCard
                             id={selectedTask._id}
-                            projectId={projectId}
                             onAssign={handleAssignTask}
                             onUpdateDueDate={handleUpdateDueDate}
                             currentUser={user}

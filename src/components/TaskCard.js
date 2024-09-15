@@ -38,7 +38,7 @@ import {
     updateTaskDueDate
 } from '../services/apiService';
 
-const TaskCard = ({ id, projectId, onAssign, onUpdateDueDate }) => {
+const TaskCard = ({ id, onAssign, onUpdateDueDate }) => {
     const [task, setTask] = useState({
         title: '',
         description: '',
