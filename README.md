@@ -91,7 +91,5 @@ Comprehensive documentation is available in the `docs` folder, including:
 
 # TODO
 
-- fix addmembers Server is running on port 5000
-TypeError: Cannot read properties of undefined (reading 'push')
-    at projectSchema.methods.addMember (file:///C:/My-progs/Node.JS/AI/test14/server/model/Project.js:67:22)
-    at file:///C:/My-progs/Node.JS/AI/test14/server/server.js:104:36
+-   add all initial load tasks to JIRA Clone project and to one active sprint inside it
+-   convert ids to Mongo Ids- ValidationError: Task validation failed: project: Cast to ObjectId failed for value "1" (type string) at path "project" because of "BSONError"    

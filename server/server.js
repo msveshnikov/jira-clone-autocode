@@ -4,9 +4,7 @@ import cors from 'cors';
 import dotenv from 'dotenv';
 import helmet from 'helmet';
 import morgan from 'morgan';
-import { fileURLToPath } from 'url';
-import path from 'path';
-import fs from 'fs';
+
 import jwt from 'jsonwebtoken';
 import compression from 'compression';
 
@@ -16,13 +14,12 @@ import Sprint from './model/Sprint.js';
 import Task from './model/Task.js';
 import Status from './model/Status.js';
 import Workflow from './model/Workflow.js';
+import { loadInitialData } from './load.js';
 
 dotenv.config();
 
 const app = express();
 const PORT = process.env.PORT || 5000;
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = path.dirname(__filename);
 
 app.use(compression());
 app.use(
@@ -41,34 +38,6 @@ app.use(helmet({ crossOriginEmbedderPolicy: false }));
 app.use(morgan('dev'));
 
 mongoose.connect(process.env.MONGODB_URI, {});
-
-const loadInitialData = async () => {
-    const initialData = JSON.parse(
-        fs.readFileSync(path.join(__dirname, 'initial_data.json'), 'utf8')
-    );
-
-    for (const status of initialData.statuses) {
-        await new Status(status).save();
-    }
-
-    for (const workflow of initialData.workflows) {
-        await new Workflow(workflow).save();
-    }
-
-    for (const user of initialData.users) {
-        await new User(user).save();
-    }
-    for (const task of initialData.tasks) {
-        await new Task(task).save();
-    }
-
-    for (const sprint of initialData.sprints) {
-        await new Sprint(sprint).save();
-    }
-    for (const project of initialData.projects) {
-        await new Project(project).save();
-    }
-};
 
 mongoose.connection.once('open', async () => {
     const count = await Task.countDocuments();
