@@ -6,7 +6,7 @@ A lightweight project management tool, built with React and MongoDB
 
 ## DEMO
 
-https://scrum.autocode.work/
+https://jira.autocode.work/
 
 ## Features
 
