@@ -1,9 +1,9 @@
 {
     "tasks": [
         {
-            "title": "Implement backlog ordering functionality",
-            "description": "Add the ability to reorder tasks in the backlog using drag-and-drop",
-            "points": 8,
+            "title": "Implement Sprint start and end dates",
+            "description": "Add date fields to Sprint model, update Sprint creation/editing UI, display dates in Sprint row",
+            "points": 5,
             "priority": "high",
             "status": "todo",
             "timeSpent": 0,
@@ -13,56 +13,56 @@
             "assignedTo": "64a3a2f5b4ae6d5aa0f2b123",
             "project": "64a3a2f5b4ae6d5aa0f2b126",
             "sprint": "64a3a2f5b4ae6d5aa0f2b127",
-            "dueDate": "2023-06-01T00:00:00.000Z"
+            "dueDate": "2023-07-05T00:00:00.000Z"
         },
         {
-            "title": "Fix task update functionality",
-            "description": "Resolve issues with updating task details",
-            "points": 5,
+            "title": "Enhance task reordering functionality",
+            "description": "Implement automatic reordering of tasks within the same sprint/backlog, ensure proper order updates when a task's order is changed",
+            "points": 8,
             "priority": "high",
             "status": "todo",
             "timeSpent": 0,
             "attachments": [],
             "comments": [],
             "order": 1,
-            "assignedTo": "64a3a2f5b4ae6d5aa0f2b123",
+            "assignedTo": "64a3a2f5b4ae6d5aa0f2b124",
             "project": "64a3a2f5b4ae6d5aa0f2b126",
             "sprint": "64a3a2f5b4ae6d5aa0f2b127",
-            "dueDate": "2023-05-25T00:00:00.000Z"
+            "dueDate": "2023-07-10T00:00:00.000Z"
         },
         {
-            "title": "Implement persistent task status",
-            "description": "Ensure task status is saved and persists across sessions",
-            "points": 3,
+            "title": "Implement search functionality",
+            "description": "Create /search route in React, develop Search component, implement server-side search API, display search results as small task cards",
+            "points": 13,
             "priority": "high",
             "status": "todo",
             "timeSpent": 0,
             "attachments": [],
             "comments": [],
             "order": 2,
-            "assignedTo": "64a3a2f5b4ae6d5aa0f2b124",
+            "assignedTo": "64a3a2f5b4ae6d5aa0f2b123",
             "project": "64a3a2f5b4ae6d5aa0f2b126",
             "sprint": "64a3a2f5b4ae6d5aa0f2b127",
-            "dueDate": "2023-05-28T00:00:00.000Z"
+            "dueDate": "2023-07-15T00:00:00.000Z"
         },
         {
-            "title": "Add comments functionality to tasks",
-            "description": "Implement the ability to add and view comments on tasks",
-            "points": 5,
+            "title": "Optimize API integration and data fetching",
+            "description": "Implement efficient data loading strategies, consider using GraphQL for more flexible queries",
+            "points": 8,
             "priority": "medium",
             "status": "todo",
             "timeSpent": 0,
             "attachments": [],
             "comments": [],
             "order": 3,
-            "assignedTo": "64a3a2f5b4ae6d5aa0f2b123",
+            "assignedTo": "64a3a2f5b4ae6d5aa0f2b124",
             "project": "64a3a2f5b4ae6d5aa0f2b126",
             "sprint": "64a3a2f5b4ae6d5aa0f2b127",
-            "dueDate": "2023-06-05T00:00:00.000Z"
+            "dueDate": "2023-07-20T00:00:00.000Z"
         },
         {
-            "title": "Update task status when dragging in Sprint view",
-            "description": "Automatically update task status when moved between columns in Sprint Board",
+            "title": "Enhance security measures",
+            "description": "Implement proper input validation, add XSS protection",
             "points": 5,
             "priority": "medium",
             "status": "todo",
@@ -70,61 +70,61 @@
             "attachments": [],
             "comments": [],
             "order": 4,
-            "assignedTo": "64a3a2f5b4ae6d5aa0f2b124",
+            "assignedTo": "64a3a2f5b4ae6d5aa0f2b123",
             "project": "64a3a2f5b4ae6d5aa0f2b126",
             "sprint": "64a3a2f5b4ae6d5aa0f2b127",
-            "dueDate": "2023-06-10T00:00:00.000Z"
+            "dueDate": "2023-07-25T00:00:00.000Z"
         },
         {
-            "title": "Enhance TaskCard component with assignee functionality",
-            "description": "Add the ability to assign tasks to users in the TaskCard component",
+            "title": "Enhance mobile responsiveness",
+            "description": "Optimize layouts for various screen sizes, implement touch-friendly interactions for mobile devices",
             "points": 3,
-            "priority": "medium",
+            "priority": "low",
             "status": "todo",
             "timeSpent": 0,
             "attachments": [],
             "comments": [],
             "order": 5,
-            "assignedTo": "64a3a2f5b4ae6d5aa0f2b123",
+            "assignedTo": "64a3a2f5b4ae6d5aa0f2b124",
             "project": "64a3a2f5b4ae6d5aa0f2b126",
             "sprint": "64a3a2f5b4ae6d5aa0f2b127",
-            "dueDate": "2023-06-15T00:00:00.000Z"
+            "dueDate": "2023-07-30T00:00:00.000Z"
         },
         {
-            "title": "Implement due date functionality for tasks",
-            "description": "Add the ability to set and display due dates for tasks",
-            "points": 2,
-            "priority": "medium",
+            "title": "Implement error handling and logging",
+            "description": "Create consistent error handling across the application, set up a logging system for better debugging and monitoring",
+            "points": 5,
+            "priority": "low",
             "status": "todo",
             "timeSpent": 0,
             "attachments": [],
             "comments": [],
             "order": 6,
-            "assignedTo": "64a3a2f5b4ae6d5aa0f2b124",
+            "assignedTo": "64a3a2f5b4ae6d5aa0f2b123",
             "project": "64a3a2f5b4ae6d5aa0f2b126",
             "sprint": "64a3a2f5b4ae6d5aa0f2b127",
-            "dueDate": "2023-06-20T00:00:00.000Z"
+            "dueDate": "2023-08-05T00:00:00.000Z"
         }
     ],
     "sprints": [
         {
             "name": "Sprint 1",
-            "startDate": "2023-05-01T00:00:00.000Z",
-            "endDate": "2023-05-14T00:00:00.000Z",
+            "startDate": "2023-07-01T00:00:00.000Z",
+            "endDate": "2023-07-14T00:00:00.000Z",
             "project": "64a3a2f5b4ae6d5aa0f2b126",
             "status": "active"
         },
         {
             "name": "Sprint 2",
-            "startDate": "2023-05-15T00:00:00.000Z",
-            "endDate": "2023-05-28T00:00:00.000Z",
+            "startDate": "2023-07-15T00:00:00.000Z",
+            "endDate": "2023-07-28T00:00:00.000Z",
             "project": "64a3a2f5b4ae6d5aa0f2b126",
             "status": "planning"
         },
         {
             "name": "Sprint 3",
-            "startDate": "2023-05-29T00:00:00.000Z",
-            "endDate": "2023-06-11T00:00:00.000Z",
+            "startDate": "2023-07-29T00:00:00.000Z",
+            "endDate": "2023-08-11T00:00:00.000Z",
             "project": "64a3a2f5b4ae6d5aa0f2b126",
             "status": "planning"
         }
@@ -173,6 +173,18 @@
             "email": "jane@example.com",
             "role": "project_manager",
             "password": "123"
+        },
+        {
+            "name": "Bob Johnson",
+            "email": "bob@example.com",
+            "role": "developer",
+            "password": "123"
+        },
+        {
+            "name": "Alice Brown",
+            "email": "alice@example.com",
+            "role": "developer",
+            "password": "123"
         }
     ],
     "projects": [
@@ -180,7 +192,12 @@
             "name": "SCRUM Clone",
             "description": "A lightweight project management tool",
             "owner": "64a3a2f5b4ae6d5aa0f2b124",
-            "members": ["64a3a2f5b4ae6d5aa0f2b123", "64a3a2f5b4ae6d5aa0f2b124"],
+            "members": [
+                "64a3a2f5b4ae6d5aa0f2b123",
+                "64a3a2f5b4ae6d5aa0f2b124",
+                "64a3a2f5b4ae6d5aa0f2b125",
+                "64a3a2f5b4ae6d5aa0f2b126"
+            ],
             "workflow": "64a3a2f5b4ae6d5aa0f2b130"
         }
     ]
