@@ -397,6 +397,20 @@ app.put('/tasks/:id/order', authenticateToken, async (req, res) => {
             return res.status(404).json({ message: 'Task not found' });
         }
         const updatedTask = await task.updateOrder(req.body.order);
+
+        const tasksToUpdate = await Task.find({
+            $or: [
+                { sprint: task.sprint, order: { $gte: updatedTask.order } },
+                { project: task.project, sprint: null, order: { $gte: updatedTask.order } }
+            ],
+            _id: { $ne: task._id }
+        }).sort({ order: 1 });
+
+        for (let i = 0; i < tasksToUpdate.length; i++) {
+            tasksToUpdate[i].order = updatedTask.order + i + 1;
+            await tasksToUpdate[i].save();
+        }
+
         res.json(updatedTask);
     } catch (error) {
         res.status(400).json({ message: error.message });
@@ -493,6 +507,53 @@ app.put('/projects/:projectId/tasks/:taskId/move', authenticateToken, async (req
         await task.save();
 
         res.json(task);
+    } catch (error) {
+        res.status(400).json({ message: error.message });
+    }
+});
+
+app.post('/projects/:projectId/members', authenticateToken, async (req, res) => {
+    try {
+        const { projectId } = req.params;
+        const { userId } = req.body;
+
+        const project = await Project.findById(projectId);
+        if (!project) {
+            return res.status(404).json({ message: 'Project not found' });
+        }
+
+        const user = await User.findById(userId);
+        if (!user) {
+            return res.status(404).json({ message: 'User not found' });
+        }
+
+        await project.addMember(userId);
+        await user.addProject(projectId);
+
+        res.json({ message: 'Member added successfully' });
+    } catch (error) {
+        res.status(400).json({ message: error.message });
+    }
+});
+
+app.delete('/projects/:projectId/members/:userId', authenticateToken, async (req, res) => {
+    try {
+        const { projectId, userId } = req.params;
+
+        const project = await Project.findById(projectId);
+        if (!project) {
+            return res.status(404).json({ message: 'Project not found' });
+        }
+
+        const user = await User.findById(userId);
+        if (!user) {
+            return res.status(404).json({ message: 'User not found' });
+        }
+
+        await project.removeMember(userId);
+        await user.removeProject(projectId);
+
+        res.json({ message: 'Member removed successfully' });
     } catch (error) {
         res.status(400).json({ message: error.message });
     }
