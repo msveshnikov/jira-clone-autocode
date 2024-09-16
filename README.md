@@ -121,7 +121,4 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 
 # TODO
 
--   reorder other tasks from the same sprint/backlog (so if I set order=2 previous order==2 should
-    be 3 and so on)
--   add apiService.post(`/projects/${projectId}/members`, { userId });
-        apiService.delete(`/projects/${projectId}/members/${userId}`);
+

@@ -37,7 +37,7 @@ export const TaskTable = ({
         }
     };
 
-    if (tasks.length < 1) return;
+    // if (tasks.length < 1) return ;
     return (
         <TableContainer component={Paper} {...provided.droppableProps} ref={provided.innerRef}>
             <Table size="small">
