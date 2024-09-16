@@ -97,6 +97,32 @@ userSchema.methods.resetPassword = async function (newPassword) {
     return this.save();
 };
 
+userSchema.methods.getActivityLog = function () {
+    return mongoose.model('ActivityLog').find({ user: this._id }).sort({ timestamp: -1 });
+};
+
+userSchema.methods.getNotifications = function () {
+    return mongoose.model('Notification').find({ user: this._id }).sort({ createdAt: -1 });
+};
+
+userSchema.methods.markNotificationAsRead = function (notificationId) {
+    return mongoose.model('Notification').findByIdAndUpdate(notificationId, { read: true });
+};
+
+userSchema.methods.getWorkload = async function () {
+    const tasks = await this.getAssignedTasks();
+    return tasks.reduce((total, task) => total + (task.estimatedTime || 0), 0);
+};
+
+userSchema.methods.getProductivity = async function (startDate, endDate) {
+    const completedTasks = await mongoose.model('Task').find({
+        assignedTo: this._id,
+        status: 'completed',
+        completedAt: { $gte: startDate, $lte: endDate }
+    });
+    return completedTasks.length;
+};
+
 const User = mongoose.model('User', userSchema);
 
 export default User;

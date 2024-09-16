@@ -467,7 +467,7 @@ app.post('/projects/:projectId/sprints', authenticateToken, async (req, res) => 
 app.put('/projects/:projectId/tasks/:taskId/move', authenticateToken, async (req, res) => {
     try {
         const { projectId, taskId } = req.params;
-        const { sprintId, order } = req.body; 
+        const { sprintId, order } = req.body;
 
         const project = await Project.findById(projectId);
         if (!project) {

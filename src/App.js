@@ -10,6 +10,7 @@ import Login from './components/Login';
 import Register from './components/Register';
 import Projects from './components/Projects';
 import Profile from './components/Profile';
+import Search from './components/Search';
 import { Container } from '@mui/material';
 import { AuthContext, AuthProvider } from './contexts/AuthContext';
 import PropTypes from 'prop-types';
@@ -80,6 +81,14 @@ function App() {
                                     element={
                                         <PrivateRoute>
                                             <Profile />
+                                        </PrivateRoute>
+                                    }
+                                />
+                                <Route
+                                    path="/search/:projectId"
+                                    element={
+                                        <PrivateRoute>
+                                            <Search />
                                         </PrivateRoute>
                                     }
                                 />

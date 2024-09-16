@@ -157,19 +157,19 @@ projectSchema.statics.search = function (query) {
 };
 
 projectSchema.methods.getActiveSprint = async function () {
-    return mongoose.model('Sprint').getActiveSprint(this._id);
+    return mongoose.model('Sprint').findOne({ project: this._id, status: 'active' });
 };
 
 projectSchema.methods.getUpcomingSprints = async function () {
-    return mongoose.model('Sprint').getUpcomingSprints(this._id);
+    return mongoose.model('Sprint').find({ project: this._id, status: 'planning' });
 };
 
 projectSchema.methods.getCompletedSprints = async function () {
-    return mongoose.model('Sprint').getCompletedSprints(this._id);
+    return mongoose.model('Sprint').find({ project: this._id, status: 'completed' });
 };
 
 projectSchema.methods.getTasks = async function () {
-    return mongoose.model('Task').findByProject(this._id);
+    return mongoose.model('Task').find({ project: this._id });
 };
 
 projectSchema.methods.getTasksByStatus = async function (status) {

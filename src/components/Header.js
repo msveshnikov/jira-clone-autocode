@@ -51,7 +51,7 @@ const Header = ({ toggleDarkMode, darkMode }) => {
 
     const handleSearch = (event) => {
         if (event.key === 'Enter') {
-            navigate(`/search?q=${encodeURIComponent(searchQuery)}`);
+            navigate(`/search/${currentProject._id}?q=${encodeURIComponent(searchQuery)}`);
         }
     };
 

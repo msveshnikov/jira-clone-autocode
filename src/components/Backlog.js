@@ -247,7 +247,11 @@ const Backlog = () => {
                                             }}
                                             {...provided.dragHandleProps}
                                         >
-                                            <Typography variant="h6">{sprint.name}</Typography>
+                                            <Typography variant="h6">
+                                                {sprint.name} (
+                                                {new Date(sprint.startDate).toLocaleDateString()} -{' '}
+                                                {new Date(sprint.endDate).toLocaleDateString()})
+                                            </Typography>
                                             {sprint.status === 'planning' && (
                                                 <Button
                                                     variant="contained"

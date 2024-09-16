@@ -350,4 +350,31 @@ export const moveTaskBetweenSprintsOrBacklog = async (projectId, taskId, sprintI
     }
 };
 
+export const getAllUsers = async () => {
+    try {
+        const response = await apiService.get('/users');
+        return response.data;
+    } catch (error) {
+        handleApiError(error);
+    }
+};
+
+export const addUserToProject = async (projectId, userId) => {
+    try {
+        const response = await apiService.post(`/projects/${projectId}/members`, { userId });
+        return response.data;
+    } catch (error) {
+        handleApiError(error);
+    }
+};
+
+export const removeUserFromProject = async (projectId, userId) => {
+    try {
+        const response = await apiService.delete(`/projects/${projectId}/members/${userId}`);
+        return response.data;
+    } catch (error) {
+        handleApiError(error);
+    }
+};
+
 export default apiService;

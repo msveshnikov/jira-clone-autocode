@@ -84,7 +84,6 @@ Comprehensive documentation is available in the `docs` folder, including:
 
 # TODO
 
--   add Sprint start stop dates to sprint row
--   reorder other tasks from the same sprint/backlog (so if I set order=2 previous order==2 should be 3 and so on)
--   add /search route to React, use search tasks and show them as small cards in Search.js
+-   reorder other tasks from the same sprint/backlog (so if I set order=2 previous order==2 should
+    be 3 and so on)
 -   add user add/delete to projects (by owner), get list of all users from server
