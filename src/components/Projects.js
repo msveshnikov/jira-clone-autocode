@@ -1,3 +1,4 @@
+/* eslint-disable react-hooks/exhaustive-deps */
 import React, { useState, useEffect, useContext } from 'react';
 import { useNavigate } from 'react-router-dom';
 import {
@@ -18,9 +19,13 @@ import {
     IconButton,
     Chip,
     Snackbar,
-    Alert
+    Alert,
+    List,
+    ListItem,
+    ListItemText,
+    ListItemSecondaryAction
 } from '@mui/material';
-import { Add, Edit, Delete, Search } from '@mui/icons-material';
+import { Add, Edit, Delete, Search, PersonAdd, PersonRemove } from '@mui/icons-material';
 import { AuthContext } from '../contexts/AuthContext';
 import {
     getUserProjects,
@@ -35,6 +40,7 @@ import {
 const Projects = () => {
     const [openDialog, setOpenDialog] = useState(false);
     const [openDeleteDialog, setOpenDeleteDialog] = useState(false);
+    const [openUserDialog, setOpenUserDialog] = useState(false);
     const [projectToDelete, setProjectToDelete] = useState(null);
     const [projectData, setProjectData] = useState({ name: '', description: '' });
     const [editingProject, setEditingProject] = useState(null);
@@ -44,12 +50,14 @@ const Projects = () => {
     const [error, setError] = useState(null);
     const [searchTerm, setSearchTerm] = useState('');
     const [snackbar, setSnackbar] = useState({ open: false, message: '', severity: 'success' });
+    const [allUsers, setAllUsers] = useState([]);
+    const [selectedProject, setSelectedProject] = useState(null);
     const { user, selectProject } = useContext(AuthContext);
     const navigate = useNavigate();
 
     useEffect(() => {
         fetchProjects();
-        // eslint-disable-next-line react-hooks/exhaustive-deps
+        fetchAllUsers();
     }, [user]);
 
     useEffect(() => {
@@ -74,6 +82,15 @@ const Projects = () => {
                 setError('Error loading projects');
                 setIsLoading(false);
             }
+        }
+    };
+
+    const fetchAllUsers = async () => {
+        try {
+            const users = await getAllUsers();
+            setAllUsers(users);
+        } catch (err) {
+            setError('Error loading users');
         }
     };
 
@@ -165,6 +182,48 @@ const Projects = () => {
         setSnackbar({ ...snackbar, open: false });
     };
 
+    const handleOpenUserDialog = (project) => {
+        setSelectedProject(project);
+        setOpenUserDialog(true);
+    };
+
+    const handleCloseUserDialog = () => {
+        setOpenUserDialog(false);
+        setSelectedProject(null);
+    };
+
+    const handleAddUser = async (userId) => {
+        try {
+            await addUserToProject(selectedProject._id, userId);
+            fetchProjects();
+            setSnackbar({
+                open: true,
+                message: 'User added to project successfully',
+                severity: 'success'
+            });
+        } catch (err) {
+            setSnackbar({ open: true, message: 'Error adding user to project', severity: 'error' });
+        }
+    };
+
+    const handleRemoveUser = async (userId) => {
+        try {
+            await removeUserFromProject(selectedProject._id, userId);
+            fetchProjects();
+            setSnackbar({
+                open: true,
+                message: 'User removed from project successfully',
+                severity: 'success'
+            });
+        } catch (err) {
+            setSnackbar({
+                open: true,
+                message: 'Error removing user from project',
+                severity: 'error'
+            });
+        }
+    };
+
     if (isLoading) return <CircularProgress />;
     if (error) return <Typography color="error">{error}</Typography>;
 
@@ -231,6 +290,15 @@ const Projects = () => {
                                 >
                                     <Delete />
                                 </IconButton>
+                                {user._id === project.owner._id && (
+                                    <IconButton
+                                        size="small"
+                                        onClick={() => handleOpenUserDialog(project)}
+                                        aria-label="manage users"
+                                    >
+                                        <PersonAdd />
+                                    </IconButton>
+                                )}
                             </CardActions>
                         </Card>
                     </Grid>
@@ -287,6 +355,42 @@ const Projects = () => {
                     </Button>
                     <Button onClick={handleDeleteProject} color="error" autoFocus>
                         Delete
+                    </Button>
+                </DialogActions>
+            </Dialog>
+            <Dialog open={openUserDialog} onClose={handleCloseUserDialog}>
+                <DialogTitle>Manage Project Users</DialogTitle>
+                <DialogContent>
+                    <List>
+                        {allUsers.map((u) => (
+                            <ListItem sx={{ mt: 3 }} key={u._id}>
+                                <ListItemText primary={u.name} secondary={u.email} />
+                                <ListItemSecondaryAction>
+                                    {selectedProject?.users?.some((pu) => pu._id === u._id) ? (
+                                        <IconButton
+                                            edge="end"
+                                            aria-label="remove"
+                                            onClick={() => handleRemoveUser(u._id)}
+                                        >
+                                            <PersonRemove />
+                                        </IconButton>
+                                    ) : (
+                                        <IconButton
+                                            edge="end"
+                                            aria-label="add"
+                                            onClick={() => handleAddUser(u._id)}
+                                        >
+                                            <PersonAdd />
+                                        </IconButton>
+                                    )}
+                                </ListItemSecondaryAction>
+                            </ListItem>
+                        ))}
+                    </List>
+                </DialogContent>
+                <DialogActions>
+                    <Button onClick={handleCloseUserDialog} color="primary">
+                        Close
                     </Button>
                 </DialogActions>
             </Dialog>
