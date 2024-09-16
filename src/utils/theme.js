@@ -2,7 +2,7 @@
 
 import { createTheme } from '@mui/material/styles';
 
-const jiraPalette = {
+const scrumPalette = {
     primary: {
         main: '#0052CC',
         light: '#4C9AFF',
@@ -85,7 +85,7 @@ const darkPalette = {
 };
 
 const createCustomTheme = (mode) => {
-    const palette = mode === 'dark' ? darkPalette : jiraPalette;
+    const palette = mode === 'dark' ? darkPalette : scrumPalette;
 
     return createTheme({
         palette: {

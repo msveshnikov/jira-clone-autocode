@@ -1,8 +1,8 @@
-# JIRA Clone Project Documentation
+# SCRUM Clone Project Documentation
 
 ## Project Overview
 
-This project is a lightweight JIRA-inspired project management tool built with React and MongoDB. It aims to provide essential project management features in a user-friendly interface.
+This project is a lightweight SCRUM-inspired project management tool built with React and MongoDB. It aims to provide essential project management features in a user-friendly interface.
 
 ### Key Features
 
@@ -63,7 +63,7 @@ The project follows a client-server architecture:
 1. Clone the repository:
    ```
    git clone [repository-url]
-   cd jira-clone
+   cd scrum-clone
    ```
 
 2. Install dependencies:
@@ -147,4 +147,4 @@ This project is licensed under the MIT License.
 
 ---
 
-This documentation provides a comprehensive overview of the JIRA Clone project, including its architecture, setup instructions, and usage guidelines. It serves as a starting point for developers to understand and contribute to the project.
+This documentation provides a comprehensive overview of the SCRUM Clone project, including its architecture, setup instructions, and usage guidelines. It serves as a starting point for developers to understand and contribute to the project.

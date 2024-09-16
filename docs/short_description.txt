@@ -1,1 +1,1 @@
-Streamline project management with our intuitive, JIRA-inspired task tracker.
+Streamline project management with our intuitive, SCRUM-inspired task tracker.

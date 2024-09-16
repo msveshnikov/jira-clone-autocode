@@ -2,7 +2,7 @@
 
 ## Overview
 
-This file (`server.js`) is the main entry point for the backend server of the JIRA-like project
+This file (`server.js`) is the main entry point for the backend server of the SCRUM-like project
 management application. It sets up an Express.js server, connects to a MongoDB database, and defines
 various API endpoints for managing tasks, sprints, projects, users, statuses, and workflows.
 

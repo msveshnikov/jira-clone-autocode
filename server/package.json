@@ -1,7 +1,7 @@
 {
-    "name": "jira-backend",
+    "name": "scrum-backend",
     "version": "1.0.0",
-    "description": "Backend for JIRA project",
+    "description": "Backend for SCRUM project",
     "main": "server.js",
     "type": "module",
     "scripts": {

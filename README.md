@@ -1,4 +1,4 @@
-# JIRA (built by [AutoCode](https://autocode.work) in 20 minutes)
+# SCRUM (built by [AutoCode](https://autocode.work) in 20 minutes)
 
 A lightweight project management tool, built with React and MongoDB
 
@@ -6,7 +6,7 @@ A lightweight project management tool, built with React and MongoDB
 
 ## DEMO
 
-https://jira.autocode.work/
+https://scrum.autocode.work/
 
 ## Features
 
@@ -84,4 +84,6 @@ Comprehensive documentation is available in the `docs` folder, including:
 
 # TODO
 
--   Implement   Task.moveTaskToSprint(sprintId) and Task.moveTaskToBacklog()
+-   add Sprint start stop dates to sprint row
+-   reorder other tasks from the same sprint/backlog (so if I set order=2 previous order==2 should be 3 and so on)
+-   add /search route to React, use search tasks and show them as small cards in Search.js

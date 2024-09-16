@@ -24,7 +24,7 @@ app.use(compression());
 app.use(
     cors({
         origin: [
-            'https://jira.autocode.work',
+            'https://scrum.autocode.work',
             'http://localhost:5000',
             'http://localhost:3000',
             '*'
@@ -67,10 +67,10 @@ app.post('/auth/register', async (req, res) => {
         }
         const user = new User({ email, password, name });
         await user.save();
-        const jiraCloneProject = await Project.findOne({ name: 'JIRA Clone' });
-        if (jiraCloneProject) {
-            await jiraCloneProject.addMember(user._id);
-            await user.addProject(jiraCloneProject._id);
+        const scrumCloneProject = await Project.findOne({ name: 'SCRUM Clone' });
+        if (scrumCloneProject) {
+            await scrumCloneProject.addMember(user._id);
+            await user.addProject(scrumCloneProject._id);
         }
         res.status(201).json({ message: 'User registered successfully' });
     } catch (error) {

@@ -2,19 +2,19 @@ version: '3.8'
 
 services:
     backend:
-        image: extender777/jira-backend
+        image: extender777/scrum-backend
         ports:
             - '6005:5000'
         environment:
             - NODE_ENV=production
-            - MONGODB_URI=mongodb://mongodb:27017/jira
+            - MONGODB_URI=mongodb://mongodb:27017/scrum
             - JWT_SECRET=${JWT_SECRET}
         restart: unless-stopped
         depends_on:
             - mongodb
 
     frontend:
-        image: extender777/jira-frontend
+        image: extender777/scrum-frontend
         environment:
             - NODE_ENV=production
             - REACT_APP_API_BASE_URL=http://backend:5000

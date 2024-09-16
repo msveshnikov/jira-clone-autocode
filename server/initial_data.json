@@ -177,7 +177,7 @@
     ],
     "projects": [
         {
-            "name": "JIRA Clone",
+            "name": "SCRUM Clone",
             "description": "A lightweight project management tool",
             "owner": "64a3a2f5b4ae6d5aa0f2b124",
             "members": ["64a3a2f5b4ae6d5aa0f2b123", "64a3a2f5b4ae6d5aa0f2b124"],

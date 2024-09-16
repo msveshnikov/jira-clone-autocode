@@ -1,7 +1,7 @@
 /* global use, db */
 
 // Select the database to use.
-use('jira');
+use('scrum');
 db.tasks.deleteMany({});
 
 // Create collections
@@ -144,9 +144,9 @@ db.projects.updateOne(
 );
 
 // Change project owner
-use('jira');
+use('scrum');
 db.projects.updateOne(
-    { name: 'JIRA Clone' },
+    { name: 'SCRUM Clone' },
     {
         $set: {
             members: [
