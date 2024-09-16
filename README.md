@@ -86,4 +86,3 @@ Comprehensive documentation is available in the `docs` folder, including:
 
 -   reorder other tasks from the same sprint/backlog (so if I set order=2 previous order==2 should
     be 3 and so on)
--   add user add/delete to projects (by owner), get list of all users from server

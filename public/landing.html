@@ -9,6 +9,7 @@
         :root {
             --primary-color: #0052CC;
             --secondary-color: #F4F5F7;
+            --accent-color: #FF5630;
             --text-color: #333;
             --white: #fff;
         }
@@ -18,6 +19,7 @@
             padding: 0;
             color: var(--text-color);
             line-height: 1.6;
+            background-color: var(--secondary-color);
         }
         .container {
             max-width: 1200px;
@@ -31,7 +33,7 @@
             position: fixed;
             width: 100%;
             z-index: 1000;
-            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
         }
         nav {
             display: flex;
@@ -48,41 +50,56 @@
         nav ul li a {
             color: var(--white);
             text-decoration: none;
-            transition: opacity 0.3s ease;
+            transition: all 0.3s ease;
+            font-weight: 500;
         }
         nav ul li a:hover {
             opacity: 0.8;
+            transform: translateY(-2px);
         }
         .hero {
             background: linear-gradient(135deg, #F4F5F7, #E6E9F0);
-            padding: 120px 0 80px;
+            padding: 160px 0 100px;
             text-align: center;
+            clip-path: polygon(0 0, 100% 0, 100% 85%, 0 100%);
         }
         .hero h1 {
-            font-size: 48px;
+            font-size: 56px;
             margin-bottom: 20px;
             color: var(--primary-color);
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.1);
         }
         .hero p {
-            font-size: 20px;
-            max-width: 600px;
-            margin: 0 auto 30px;
+            font-size: 22px;
+            max-width: 700px;
+            margin: 0 auto 40px;
+            color: #555;
         }
         .cta-button {
             display: inline-block;
-            background-color: var(--primary-color);
+            background-color: var(--accent-color);
             color: var(--white);
-            padding: 12px 24px;
+            padding: 15px 30px;
             text-decoration: none;
-            border-radius: 4px;
+            border-radius: 50px;
             font-weight: bold;
-            transition: background-color 0.3s ease;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
         }
         .cta-button:hover {
-            background-color: #003d99;
+            background-color: #FF7452;
+            transform: translateY(-3px);
+            box-shadow: 0 6px 8px rgba(0,0,0,0.15);
         }
         .features {
-            padding: 80px 0;
+            padding: 100px 0;
+            background-color: var(--white);
+        }
+        .section-title {
+            text-align: center;
+            font-size: 36px;
+            margin-bottom: 60px;
+            color: var(--primary-color);
         }
         .feature-grid {
             display: grid;
@@ -91,23 +108,30 @@
         }
         .feature-item {
             text-align: center;
-            padding: 20px;
-            border-radius: 8px;
-            transition: transform 0.3s ease, box-shadow 0.3s ease;
-            background: linear-gradient(135deg, #FFFFFF, #F9FAFC);
+            padding: 30px;
+            border-radius: 12px;
+            transition: all 0.3s ease;
+            background: #FFFFFF;
+            box-shadow: 0 10px 20px rgba(0,0,0,0.05);
         }
         .feature-item:hover {
-            transform: translateY(-5px);
-            box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+            transform: translateY(-10px);
+            box-shadow: 0 15px 30px rgba(0,0,0,0.1);
         }
         .feature-item img {
             width: 80px;
             height: 80px;
             margin-bottom: 20px;
         }
+        .feature-item h3 {
+            font-size: 24px;
+            margin-bottom: 15px;
+            color: var(--primary-color);
+        }
         .pricing {
             background: linear-gradient(135deg, #F4F5F7, #E6E9F0);
-            padding: 80px 0;
+            padding: 100px 0;
+            clip-path: polygon(0 5%, 100% 0, 100% 100%, 0 95%);
         }
         .pricing-grid {
             display: grid;
@@ -116,43 +140,56 @@
         }
         .pricing-item {
             background-color: var(--white);
-            border-radius: 8px;
-            padding: 40px;
+            border-radius: 12px;
+            padding: 50px 40px;
             text-align: center;
-            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-            transition: transform 0.3s ease;
+            box-shadow: 0 15px 30px rgba(0, 0, 0, 0.1);
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
         }
         .pricing-item:hover {
             transform: scale(1.05);
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.15);
+        }
+        .pricing-item::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 5px;
+            background: linear-gradient(90deg, var(--primary-color), var(--accent-color));
         }
         .pricing-item h3 {
-            font-size: 24px;
+            font-size: 28px;
             margin-bottom: 20px;
             color: var(--primary-color);
         }
         .pricing-item .price {
-            font-size: 36px;
+            font-size: 48px;
             font-weight: bold;
-            margin-bottom: 20px;
-            color: var(--primary-color);
+            margin-bottom: 30px;
+            color: var(--accent-color);
         }
         .pricing-item ul {
             list-style-type: none;
             padding: 0;
-            margin-bottom: 20px;
+            margin-bottom: 30px;
         }
         .pricing-item ul li {
-            margin-bottom: 10px;
+            margin-bottom: 15px;
+            color: #555;
         }
         footer {
             background: linear-gradient(135deg, #0052CC, #0077FF);
             color: var(--white);
             text-align: center;
-            padding: 20px 0;
+            padding: 40px 0;
         }
         @media (max-width: 768px) {
             .hero h1 {
-                font-size: 36px;
+                font-size: 40px;
             }
             .hero p {
                 font-size: 18px;
@@ -171,7 +208,7 @@
                 <ul>
                     <li><a href="#features">Features</a></li>
                     <li><a href="#pricing">Pricing</a></li>
-                    <li><a href="https://scrum-clone-autocode.netlify.app/" target="_blank">Demo</a></li>
+                    <li><a href="https://jira.autocode.work/" target="_blank">Demo</a></li>
                 </ul>
             </nav>
         </div>
@@ -180,34 +217,34 @@
     <section class="hero">
         <div class="container">
             <h1>Streamline Your Project Management</h1>
-            <p>A lightweight SCRUM-inspired tool built with React, for tracking and collaboration.</p>
-            <a href="https://scrum-clone-autocode.netlify.app/" class="cta-button" target="_blank">Try Demo</a>
+            <p>A powerful SCRUM-inspired tool built with React and MongoDB, designed for seamless tracking and collaboration.</p>
+            <a href="https://jira.autocode.work/" class="cta-button" target="_blank">Try Demo</a>
         </div>
     </section>
 
     <section id="features" class="features">
         <div class="container">
-            <h2>Key Features</h2>
+            <h2 class="section-title">Key Features</h2>
             <div class="feature-grid">
                 <div class="feature-item">
                     <img src="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSI4MCIgaGVpZ2h0PSI4MCIgdmlld0JveD0iMCAwIDI0IDI0IiBmaWxsPSJub25lIiBzdHJva2U9IiMwMDUyQ0MiIHN0cm9rZS13aWR0aD0iMiIgc3Ryb2tlLWxpbmVjYXA9InJvdW5kIiBzdHJva2UtbGluZWpvaW49InJvdW5kIiBjbGFzcz0iZmVhdGhlciBmZWF0aGVyLWxpc3QiPjxsaW5lIHgxPSI4IiB5MT0iNiIgeDI9IjIxIiB5Mj0iNiI+PC9saW5lPjxsaW5lIHgxPSI4IiB5MT0iMTIiIHgyPSIyMSIgeTI9IjEyIj48L2xpbmU+PGxpbmUgeDE9IjgiIHkxPSIxOCIgeDI9IjIxIiB5Mj0iMTgiPjwvbGluZT48bGluZSB4MT0iMyIgeTE9IjYiIHgyPSIzLjAxIiB5Mj0iNiI+PC9saW5lPjxsaW5lIHgxPSIzIiB5MT0iMTIiIHgyPSIzLjAxIiB5Mj0iMTIiPjwvbGluZT48bGluZSB4MT0iMyIgeTE9IjE4IiB4Mj0iMy4wMSIgeTI9IjE4Ij48L2xpbmU+PC9zdmc+" alt="Backlog">
                     <h3>Backlog</h3>
-                    <p>Manage and prioritize your project tasks efficiently</p>
+                    <p>Efficiently manage and prioritize your project tasks with our intuitive backlog system</p>
                 </div>
                 <div class="feature-item">
                     <img src="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSI4MCIgaGVpZ2h0PSI4MCIgdmlld0JveD0iMCAwIDI0IDI0IiBmaWxsPSJub25lIiBzdHJva2U9IiMwMDUyQ0MiIHN0cm9rZS13aWR0aD0iMiIgc3Ryb2tlLWxpbmVjYXA9InJvdW5kIiBzdHJva2UtbGluZWpvaW49InJvdW5kIiBjbGFzcz0iZmVhdGhlciBmZWF0aGVyLWxheW91dCI+PHJlY3QgeD0iMyIgeT0iMyIgd2lkdGg9IjE4IiBoZWlnaHQ9IjE4IiByeD0iMiIgcnk9IjIiPjwvcmVjdD48bGluZSB4MT0iMyIgeTE9IjkiIHgyPSIyMSIgeTI9IjkiPjwvbGluZT48bGluZSB4MT0iOSIgeTE9IjIxIiB4Mj0iOSIgeTI9IjkiPjwvbGluZT48L3N2Zz4=" alt="Sprint Board">
                     <h3>Sprint Board</h3>
-                    <p>Visualize and track progress during sprints</p>
+                    <p>Visualize and track progress during sprints with our dynamic and customizable boards</p>
                 </div>
                 <div class="feature-item">
                     <img src="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSI4MCIgaGVpZ2h0PSI4MCIgdmlld0JveD0iMCAwIDI0IDI0IiBmaWxsPSJub25lIiBzdHJva2U9IiMwMDUyQ0MiIHN0cm9rZS13aWR0aD0iMiIgc3Ryb2tlLWxpbmVjYXA9InJvdW5kIiBzdHJva2UtbGluZWpvaW49InJvdW5kIiBjbGFzcz0iZmVhdGhlciBmZWF0aGVyLWNyZWRpdC1jYXJkIj48cmVjdCB4PSIxIiB5PSI0IiB3aWR0aD0iMjIiIGhlaWdodD0iMTYiIHJ4PSIyIiByeT0iMiI+PC9yZWN0PjxsaW5lIHgxPSIxIiB5MT0iMTAiIHgyPSIyMyIgeTI9IjEwIj48L2xpbmU+PC9zdmc+" alt="Task Cards">
                     <h3>Task Cards</h3>
-                    <p>Detailed view for individual tasks with title, description, points, and priority</p>
+                    <p>Detailed view for individual tasks with title, description, points, and priority for comprehensive task management</p>
                 </div>
                 <div class="feature-item">
                     <img src="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSI4MCIgaGVpZ2h0PSI4MCIgdmlld0JveD0iMCAwIDI0IDI0IiBmaWxsPSJub25lIiBzdHJva2U9IiMwMDUyQ0MiIHN0cm9rZS13aWR0aD0iMiIgc3Ryb2tlLWxpbmVjYXA9InJvdW5kIiBzdHJva2UtbGluZWpvaW49InJvdW5kIiBjbGFzcz0iZmVhdGhlciBmZWF0aGVyLXNsaWRlcnMiPjxsaW5lIHgxPSI0IiB5MT0iMjEiIHgyPSI0IiB5Mj0iMTQiPjwvbGluZT48bGluZSB4MT0iNCIgeTE9IjEwIiB4Mj0iNCIgeTI9IjMiPjwvbGluZT48bGluZSB4MT0iMTIiIHkxPSIyMSIgeDI9IjEyIiB5Mj0iMTIiPjwvbGluZT48bGluZSB4MT0iMTIiIHkxPSI4IiB4Mj0iMTIiIHkyPSIzIj48L2xpbmU+PGxpbmUgeDE9IjIwIiB5MT0iMjEiIHgyPSIyMCIgeTI9IjE2Ij48L2xpbmU+PGxpbmUgeDE9IjIwIiB5MT0iMTIiIHgyPSIyMCIgeTI9IjMiPjwvbGluZT48bGluZSB4MT0iMSIgeTE9IjE0IiB4Mj0iNyIgeTI9IjE0Ij48L2xpbmU+PGxpbmUgeDE9IjkiIHkxPSI4IiB4Mj0iMTUiIHkyPSI4Ij48L2xpbmU+PGxpbmUgeDE9IjE3IiB5MT0iMTYiIHgyPSIyMyIgeTI9IjE2Ij48L2xpbmU+PC9zdmc+" alt="Customizable">
                     <h3>Customizable</h3>
-                    <p>Flexible workflows and upcoming enhancements for a tailored experience</p>
+                    <p>Flexible workflows and upcoming enhancements for a tailored project management experience</p>
                 </div>
             </div>
         </div>
@@ -215,7 +252,7 @@
 
     <section id="pricing" class="pricing">
         <div class="container">
-            <h2>Pricing Plans</h2>
+            <h2 class="section-title">Pricing Plans</h2>
             <div class="pricing-grid">
                 <div class="pricing-item">
                     <h3>Basic</h3>
@@ -225,6 +262,7 @@
                         <li>Sprint Board</li>
                         <li>Task Cards</li>
                         <li>5 Team Members</li>
+                        <li>Basic Reporting</li>
                     </ul>
                     <a href="#" class="cta-button">Choose Plan</a>
                 </div>
@@ -234,8 +272,9 @@
                     <ul>
                         <li>All Basic Features</li>
                         <li>Customizable Workflows</li>
-                        <li>Reporting & Analytics</li>
+                        <li>Advanced Reporting & Analytics</li>
                         <li>20 Team Members</li>
+                        <li>API Access</li>
                     </ul>
                     <a href="#" class="cta-button">Choose Plan</a>
                 </div>
@@ -245,8 +284,9 @@
                     <ul>
                         <li>All Pro Features</li>
                         <li>Advanced Security</li>
-                        <li>24/7 Support</li>
+                        <li>24/7 Priority Support</li>
                         <li>Unlimited Team Members</li>
+                        <li>Custom Integrations</li>
                     </ul>
                     <a href="#" class="cta-button">Contact Sales</a>
                 </div>
@@ -256,7 +296,7 @@
 
     <footer>
         <div class="container">
-            <p>&copy; 2024 MaxSoft. All rights reserved.</p>
+            <p>&copy; 2024 SCRUM . All rights reserved. | <a href="#" style="color: var(--white);">Privacy Policy</a> | <a href="#" style="color: var(--white);">Terms of Service</a></p>
         </div>
     </footer>
 </body>
