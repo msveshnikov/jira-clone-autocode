@@ -8,7 +8,7 @@ RUN npm ci
 
 COPY . .
 
-ENV REACT_APP_API_BASE_URL https://scrum.autocode.work/api
+ENV REACT_APP_API_BASE_URL https://jira.autocode.work/api
 
 RUN npm run build
 
