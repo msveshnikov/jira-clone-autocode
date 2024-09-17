@@ -612,7 +612,6 @@ app.post('/projects/:projectId/generate-backlog', authenticateToken, async (req,
         if (!project) {
             return res.status(404).json({ message: 'Project not found' });
         }
-
         const response = await anthropic.messages.create({
             model: CLAUDE_MODEL,
             max_tokens: 8192,
@@ -629,13 +628,15 @@ app.post('/projects/:projectId/generate-backlog', authenticateToken, async (req,
             2. Priorities 
             3. Any additional notes or comments
 
-            Generate a backlog of tasks, provide each task with a name, description, priority (High, Medium, Low), and story points (1, 2, 3, 5, 8, 13).
+            Generate a backlog of tasks, provide each task with a title, name, description, priority ('high', 'medium', 'low'), and points (1, 2, 3, 5, 8, 13).
             Return the results in a structured form as a JSON array of task objects.`
                 }
             ]
         });
         console.log(response.content);
-        const generatedTasks = JSON.parse(response.content[0].text);
+        const generatedTasks = JSON.parse(
+            response.content?.[0]?.text?.match(/```json([\s\S]*?)```/)?.[1]
+        );
 
         const createdTasks = [];
         for (const taskData of generatedTasks) {
