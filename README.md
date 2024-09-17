@@ -157,5 +157,3 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 -   Machine learning-based project risk assessment and mitigation suggestions
 
 # TODO
-
--   limit 3 backlog generations per user.backlogGenerationCount

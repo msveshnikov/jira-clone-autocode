@@ -9,6 +9,7 @@ services:
             - NODE_ENV=production
             - MONGODB_URI=mongodb://mongodb:27017/scrum
             - JWT_SECRET=${JWT_SECRET}
+            - CLAUDE_KEY=${CLAUDE_KEY}
         restart: unless-stopped
         depends_on:
             - mongodb
