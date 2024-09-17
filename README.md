@@ -163,11 +163,5 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 
 # TODO
 
-1. Implement AI-generated backlog (13 story points)
-
-    - Integrate AI model for task suggestion
-    - Create UI for AI-generated task review and approval
-    - Implement API endpoint for AI tasks generation
-    - what do you want to build? query in Backlog screen
-    - call Claude Sonnet 3.5 for enlarging idea and splitting to tasks (with name, description,
-      prio, points, etc) and populate backlog with them
+-   add checkbox "AI generate your backlog" hen creating new Project, call
+    /projects/:projectId/generate-backlog with name and description

@@ -1,6 +1,6 @@
-/* eslint-disable react-hooks/exhaustive-deps */
 import React, { useState, useEffect, useContext } from 'react';
 import { useNavigate } from 'react-router-dom';
+import PropTypes from 'prop-types';
 import {
     Container,
     Typography,
@@ -23,7 +23,9 @@ import {
     List,
     ListItem,
     ListItemText,
-    ListItemSecondaryAction
+    ListItemSecondaryAction,
+    Checkbox,
+    FormControlLabel
 } from '@mui/material';
 import { Add, Edit, Delete, Search, PersonAdd, PersonRemove } from '@mui/icons-material';
 import { AuthContext } from '../contexts/AuthContext';
@@ -34,7 +36,8 @@ import {
     deleteProject,
     getAllUsers,
     addUserToProject,
-    removeUserFromProject
+    removeUserFromProject,
+    generateBacklog
 } from '../services/apiService';
 
 const Projects = () => {
@@ -42,7 +45,11 @@ const Projects = () => {
     const [openDeleteDialog, setOpenDeleteDialog] = useState(false);
     const [openUserDialog, setOpenUserDialog] = useState(false);
     const [projectToDelete, setProjectToDelete] = useState(null);
-    const [projectData, setProjectData] = useState({ name: '', description: '' });
+    const [projectData, setProjectData] = useState({
+        name: '',
+        description: '',
+        generateBacklog: false
+    });
     const [editingProject, setEditingProject] = useState(null);
     const [projects, setProjects] = useState([]);
     const [filteredProjects, setFilteredProjects] = useState([]);
@@ -58,6 +65,7 @@ const Projects = () => {
     useEffect(() => {
         fetchProjects();
         fetchAllUsers();
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [user]);
 
     useEffect(() => {
@@ -96,10 +104,14 @@ const Projects = () => {
 
     const handleOpenDialog = (project = null) => {
         if (project) {
-            setProjectData({ name: project.name, description: project.description });
+            setProjectData({
+                name: project.name,
+                description: project.description,
+                generateBacklog: false
+            });
             setEditingProject(project);
         } else {
-            setProjectData({ name: '', description: '' });
+            setProjectData({ name: '', description: '', generateBacklog: false });
             setEditingProject(null);
         }
         setOpenDialog(true);
@@ -107,13 +119,13 @@ const Projects = () => {
 
     const handleCloseDialog = () => {
         setOpenDialog(false);
-        setProjectData({ name: '', description: '' });
+        setProjectData({ name: '', description: '', generateBacklog: false });
         setEditingProject(null);
     };
 
     const handleInputChange = (e) => {
-        const { name, value } = e.target;
-        setProjectData({ ...projectData, [name]: value });
+        const { name, value, checked } = e.target;
+        setProjectData({ ...projectData, [name]: name === 'generateBacklog' ? checked : value });
     };
 
     const handleSubmit = async (e) => {
@@ -127,7 +139,10 @@ const Projects = () => {
                     severity: 'success'
                 });
             } else {
-                await createUserProject(projectData);
+                const newProject = await createUserProject(projectData);
+                if (projectData.generateBacklog) {
+                    await generateBacklog(newProject._id, projectData.description);
+                }
                 setSnackbar({
                     open: true,
                     message: 'Project created successfully',
@@ -328,6 +343,18 @@ const Projects = () => {
                         value={projectData.description}
                         onChange={handleInputChange}
                     />
+                    {!editingProject && (
+                        <FormControlLabel
+                            control={
+                                <Checkbox
+                                    checked={projectData.generateBacklog}
+                                    onChange={handleInputChange}
+                                    name="generateBacklog"
+                                />
+                            }
+                            label="AI generate your backlog"
+                        />
+                    )}
                 </DialogContent>
                 <DialogActions>
                     <Button onClick={handleCloseDialog}>Cancel</Button>
@@ -405,6 +432,11 @@ const Projects = () => {
             </Snackbar>
         </Container>
     );
+};
+
+Projects.propTypes = {
+    user: PropTypes.object,
+    selectProject: PropTypes.func
 };
 
 export default Projects;

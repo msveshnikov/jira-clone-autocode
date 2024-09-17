@@ -382,4 +382,17 @@ export const getProjectUsers = async (projectId) => {
     }
 };
 
+export const generateBacklog = async (projectId, projectDescription) => {
+    try {
+        const response = await apiService.post(`/projects/${projectId}/generate-backlog`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ projectDescription })
+        });
+        return response.data;
+    } catch (error) {
+        handleApiError(error);
+    }
+};
+
 export default apiService;
