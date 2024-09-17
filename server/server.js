@@ -20,7 +20,7 @@ import { loadInitialData } from './load.js';
 dotenv.config();
 
 const app = express();
-app.set("trust proxy", 1);
+app.set('trust proxy', 1);
 const PORT = process.env.PORT || 5000;
 
 const anthropic = new Anthropic({
@@ -450,7 +450,10 @@ app.get('/projects/:projectId/tasks/search', authenticateToken, async (req, res)
 
 app.get('/projects/:id/tasks', authenticateToken, async (req, res) => {
     try {
-        const tasks = await Task.find({ project: req.params.id }).sort({ order: 1 }).populate("assignedTo", "-password");
+        const tasks = await Task.find({ project: req.params.id }).sort({ order: 1 }).populate({
+            path: 'assignedTo',
+            select: 'name'
+        });
         res.json(tasks);
     } catch (error) {
         res.status(500).json({ message: error.message });
