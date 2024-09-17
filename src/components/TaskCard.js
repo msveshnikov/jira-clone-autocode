@@ -332,7 +332,7 @@ const TaskCard = ({ id, onDelete, onUpdate, projectId }) => {
                                     <ListItem key={comment._id}>
                                         <ListItemText
                                             primary={comment.text}
-                                            secondary={`By ${comment.author}`}
+                                            secondary={`By ${comment.author.name} on ${new Date(comment.createdAt).toLocaleString()}`}
                                         />
                                         <ListItemSecondaryAction>
                                             <IconButton

@@ -105,7 +105,10 @@ app.get('/tasks', authenticateToken, async (req, res) => {
 
 app.get('/tasks/:id', authenticateToken, async (req, res) => {
     try {
-        const task = await Task.findById(req.params.id);
+        const task = await Task.findById(req.params.id).populate({
+            path: 'comments.author',
+            select: 'name'
+        });
         if (!task) {
             return res.status(404).json({ message: 'Task not found' });
         }

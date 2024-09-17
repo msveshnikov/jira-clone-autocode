@@ -119,4 +119,4 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 
 # TODO
 
--   show all users from project in AssignTo dropdown
+-   populate comment.author.name if GET /tasks/id
