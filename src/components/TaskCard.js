@@ -161,14 +161,12 @@ const TaskCard = ({ id, onDelete, onUpdate, projectId }) => {
         const userId = e.target.value;
         await assignTask(id, userId);
         setTask((prevTask) => ({ ...prevTask, assignedTo: userId }));
-        onUpdate(id);
     };
 
     const handleDueDateChange = async (e) => {
         const newDueDate = e.target.value;
         await updateTaskDueDate(id, newDueDate);
         setTask((prevTask) => ({ ...prevTask, dueDate: newDueDate }));
-        onUpdate(id);
     };
 
     const truncateUrl = (url, maxLength = 50) => {
@@ -357,7 +355,9 @@ const TaskCard = ({ id, onDelete, onUpdate, projectId }) => {
                                     <ListItem key={comment._id}>
                                         <ListItemText
                                             primary={comment.text}
-                                            secondary={`By ${comment.author.name} on ${new Date(comment.createdAt).toLocaleString()}`}
+                                            secondary={`By ${comment.author.name} on ${new Date(
+                                                comment.createdAt
+                                            ).toLocaleString()}`}
                                         />
                                         <ListItemSecondaryAction>
                                             <IconButton
@@ -389,7 +389,11 @@ const TaskCard = ({ id, onDelete, onUpdate, projectId }) => {
                                     {id ? 'Update Task' : 'Create Task'}
                                 </Button>
                                 {id && (
-                                    <Button variant="contained" color="error" onClick={handleDelete}>
+                                    <Button
+                                        variant="contained"
+                                        color="error"
+                                        onClick={handleDelete}
+                                    >
                                         Delete Task
                                     </Button>
                                 )}

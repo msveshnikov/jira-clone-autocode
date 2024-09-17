@@ -633,7 +633,6 @@ app.post('/projects/:projectId/generate-backlog', authenticateToken, async (req,
                 }
             ]
         });
-        console.log(response.content);
         const generatedTasks = JSON.parse(
             response.content?.[0]?.text?.match(/```json([\s\S]*?)```/)?.[1]
         );

@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useParams } from 'react-router-dom';
+import PropTypes from 'prop-types';
 import {
     Container,
     Typography,
@@ -11,7 +12,8 @@ import {
     DialogActions,
     Paper,
     Box,
-    CircularProgress
+    CircularProgress,
+    Alert
 } from '@mui/material';
 import { DragDropContext, Droppable } from 'react-beautiful-dnd';
 import {
@@ -43,6 +45,7 @@ const Backlog = () => {
     const [sprints, setSprints] = useState([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
+    const [sprintError, setSprintError] = useState(null);
     const { projectId } = useParams();
 
     useEffect(() => {
@@ -153,6 +156,10 @@ const Backlog = () => {
     };
 
     const handleCreateSprint = async () => {
+        if (!newSprint.startDate || !newSprint.endDate) {
+            setSprintError('Start and end dates are required for creating a sprint.');
+            return;
+        }
         try {
             await createSprint(projectId, newSprint);
             const updatedSprints = await getSprints(projectId);
@@ -271,6 +278,11 @@ const Backlog = () => {
                                                 </Button>
                                             )}
                                         </Box>
+                                        {(!sprint.startDate || !sprint.endDate) && (
+                                            <Alert severity="warning" sx={{ mb: 2 }}>
+                                                Start and end dates are required for this sprint.
+                                            </Alert>
+                                        )}
                                         <Droppable droppableId={sprint._id} type="TASK">
                                             {(provided) => (
                                                 <Box
@@ -348,6 +360,8 @@ const Backlog = () => {
                             InputLabelProps={{ shrink: true }}
                             value={newSprint.startDate}
                             onChange={handleSprintInputChange}
+                            required
+                            error={sprintError}
                         />
                         <TextField
                             margin="dense"
@@ -358,6 +372,8 @@ const Backlog = () => {
                             InputLabelProps={{ shrink: true }}
                             value={newSprint.endDate}
                             onChange={handleSprintInputChange}
+                            required
+                            error={sprintError}
                         />
                         <TextField
                             margin="dense"
@@ -381,6 +397,10 @@ const Backlog = () => {
             </Container>
         </Box>
     );
+};
+
+Backlog.propTypes = {
+    projectId: PropTypes.string.isRequired
 };
 
 export default Backlog;
