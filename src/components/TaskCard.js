@@ -1,5 +1,5 @@
-/* eslint-disable react/prop-types */
 import React, { useState, useEffect } from 'react';
+import PropTypes from 'prop-types';
 import {
     Card,
     CardContent,
@@ -171,6 +171,11 @@ const TaskCard = ({ id, onDelete, onUpdate, projectId }) => {
         onUpdate(id);
     };
 
+    const truncateUrl = (url, maxLength = 50) => {
+        if (url?.length <= maxLength) return url;
+        return url?.substring(0, maxLength - 3) + '...';
+    };
+
     if (loading) return <Typography>Loading...</Typography>;
 
     return (
@@ -311,7 +316,7 @@ const TaskCard = ({ id, onDelete, onUpdate, projectId }) => {
                                                         }
                                                     }}
                                                 >
-                                                    {attachment.url}
+                                                    {truncateUrl(attachment.url)}
                                                 </Link>
                                             }
                                         />
@@ -414,6 +419,13 @@ const TaskCard = ({ id, onDelete, onUpdate, projectId }) => {
             </Dialog>
         </Card>
     );
+};
+
+TaskCard.propTypes = {
+    id: PropTypes.string,
+    onDelete: PropTypes.func.isRequired,
+    onUpdate: PropTypes.func.isRequired,
+    projectId: PropTypes.string
 };
 
 export default TaskCard;

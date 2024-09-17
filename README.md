@@ -16,12 +16,15 @@ https://jira.autocode.work/
 -   Projects: Manage multiple projects
 -   Search: Find tasks quickly
 -   Profile: User profile management
+-   Dark mode support
+
+## Requirements
+
+-   Generate PropTypes always
 
 ## Planned Enhancements
 
--   Drag-and-Drop Functionality: Enhance user experience for task management
 -   Reporting: Implement burndown charts and sprint velocity metrics
--   Task Comments: Implement a comment system for tasks
 -   Custom Fields: Allow users to add custom fields to tasks
 -   Version Control Integration: Link tasks to Git commits or pull requests
 -   Workflow Customization: Allow users to define custom workflows
@@ -29,6 +32,17 @@ https://jira.autocode.work/
 -   Integration with External Tools: Connect with popular development tools
 -   Mobile App: Develop a responsive mobile application
 -   Notifications: Implement real-time notifications for task updates
+-   AI-generated backlog
+-   Epics
+-   AI epic detection
+-   Internationalization (i18n) for multi-language support
+-   Task dependencies and subtasks
+-   Team collaboration features (mentions, shared dashboards)
+-   Integration with CI/CD pipelines
+-   Advanced search with filters and saved queries
+-   User roles and permissions management
+-   Customizable dashboards and widgets
+-   API documentation and developer portal
 
 ## Project Structure
 
@@ -74,6 +88,15 @@ server/
 -   Implement rate limiting and request throttling
 -   Containerize the application using Docker for easier deployment
 -   Optimize frontend bundle size and implement code splitting
+-   Implement WebSocket for real-time updates
+-   Integrate GraphQL for more efficient data fetching
+-   Implement automated testing (unit, integration, and end-to-end)
+-   Set up continuous integration and continuous deployment (CI/CD) pipeline
+-   Implement caching strategies (Redis, Memcached) for improved performance
+-   Optimize assets (images, fonts) for faster loading
+-   Implement progressive web app (PWA) features
+-   Set up content delivery network (CDN) for static assets
+-   Implement database migrations for version control of database schema
 
 ## Getting Started
 
@@ -117,6 +140,33 @@ We welcome contributions! Please see our [Contributing Guide](CONTRIBUTING.md) f
 
 This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
 
+## Performance Optimization
+
+-   Implement lazy loading for images and components
+-   Use memoization techniques to optimize expensive computations
+-   Implement infinite scrolling or pagination for large datasets
+-   Optimize database queries with proper indexing and query planning
+-   Use server-side caching for frequently accessed data
+-   Implement client-side caching using service workers
+-   Optimize API responses with compression and minimal payload
+
+## Future Roadmap
+
+-   AI-powered task estimation and sprint planning
+-   Integration with popular project management methodologies (Kanban, Waterfall)
+-   Advanced analytics and business intelligence features
+-   Customizable workflow templates for different industries
+-   Integration with virtual reality (VR) for immersive project visualization
+-   Blockchain integration for secure and transparent project tracking
+-   Machine learning-based project risk assessment and mitigation suggestions
+
 # TODO
 
-- truncate long urls
+1. Implement AI-generated backlog (13 story points)
+
+    - Integrate AI model for task suggestion
+    - Create UI for AI-generated task review and approval
+    - Implement API endpoint for AI tasks generation
+    - what do you want to build? query in Backlog screen
+    - call Claude Sonnet 3.5 for enlarging idea and splitting to tasks (with name, description,
+      prio, points, etc) and populate backlog with them
