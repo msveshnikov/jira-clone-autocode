@@ -7,6 +7,7 @@ import morgan from 'morgan';
 import jwt from 'jsonwebtoken';
 import compression from 'compression';
 import { Anthropic } from '@anthropic-ai/sdk';
+import rateLimit from 'express-rate-limit';
 
 import User from './model/User.js';
 import Project from './model/Project.js';
@@ -42,6 +43,12 @@ app.use(
 app.use(express.json());
 app.use(helmet({ crossOriginEmbedderPolicy: false }));
 app.use(morgan('dev'));
+
+const limiter = rateLimit({
+    windowMs: 15 * 60 * 1000,
+    max: 100
+});
+app.use(limiter);
 
 mongoose.connect(process.env.MONGODB_URI, {});
 
@@ -612,6 +619,12 @@ app.post('/projects/:projectId/generate-backlog', authenticateToken, async (req,
         if (!project) {
             return res.status(404).json({ message: 'Project not found' });
         }
+
+        const user = await User.findById(req.user.id);
+        if (user.backlogGenerationCount >= 3) {
+            return res.status(403).json({ message: 'Backlog generation limit reached' });
+        }
+
         const response = await anthropic.messages.create({
             model: CLAUDE_MODEL,
             max_tokens: 8192,
@@ -648,6 +661,9 @@ app.post('/projects/:projectId/generate-backlog', authenticateToken, async (req,
             await project.addTaskToBacklog(newTask._id);
             createdTasks.push(newTask);
         }
+
+        user.backlogGenerationCount += 1;
+        await user.save();
 
         res.status(201).json(createdTasks);
     } catch (error) {

@@ -19,7 +19,15 @@ const userSchema = new mongoose.Schema({
         theme: { type: String, default: 'light' },
         language: { type: String, default: 'en' },
         notifications: { type: Boolean, default: true }
-    }
+    },
+    backlogGenerationCount: { type: Number, default: 0 },
+    timeTracking: [
+        {
+            task: { type: mongoose.Schema.Types.ObjectId, ref: 'Task' },
+            duration: Number,
+            date: Date
+        }
+    ]
 });
 
 userSchema.pre('save', async function (next) {
@@ -121,6 +129,29 @@ userSchema.methods.getProductivity = async function (startDate, endDate) {
         completedAt: { $gte: startDate, $lte: endDate }
     });
     return completedTasks.length;
+};
+
+userSchema.methods.incrementBacklogGenerationCount = function () {
+    this.backlogGenerationCount += 1;
+    return this.save();
+};
+
+userSchema.methods.canGenerateBacklog = function () {
+    return this.backlogGenerationCount < 3;
+};
+
+userSchema.methods.logTime = function (taskId, duration, date) {
+    this.timeTracking.push({ task: taskId, duration, date });
+    return this.save();
+};
+
+userSchema.methods.getTimeTracking = function (startDate, endDate) {
+    return this.timeTracking.filter((entry) => entry.date >= startDate && entry.date <= endDate);
+};
+
+userSchema.methods.getTotalTimeTracked = function (startDate, endDate) {
+    const entries = this.getTimeTracking(startDate, endDate);
+    return entries.reduce((total, entry) => total + entry.duration, 0);
 };
 
 const User = mongoose.model('User', userSchema);

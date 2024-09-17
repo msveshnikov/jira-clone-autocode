@@ -17,6 +17,8 @@ https://jira.autocode.work/
 -   Search: Find tasks quickly
 -   Profile: User profile management
 -   Dark mode support
+-   AI-generated backlog
+-   Time Tracking: Implement time logging and estimation features
 
 ## Requirements
 
@@ -29,14 +31,11 @@ https://jira.autocode.work/
 -   Custom Fields: Allow users to add custom fields to tasks
 -   Version Control Integration: Link tasks to Git commits or pull requests
 -   Workflow Customization: Allow users to define custom workflows
--   Time Tracking: Implement time logging and estimation features
 -   Integration with External Tools: Connect with popular development tools
 -   Mobile App: Develop a responsive mobile application
 -   Notifications: Implement real-time notifications for task updates
--   AI-generated backlog
 -   Epics
 -   AI epic detection
--   Internationalization (i18n) for multi-language support
 -   Task dependencies and subtasks
 -   Team collaboration features (mentions, shared dashboards)
 -   Integration with CI/CD pipelines
@@ -159,4 +158,4 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 
 # TODO
 
--   limit 3 backlog generations per user
+-   limit 3 backlog generations per user.backlogGenerationCount
