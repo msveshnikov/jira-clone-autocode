@@ -31,7 +31,7 @@ app.use(compression());
 app.use(
     cors({
         origin: [
-            'https://scrum.autocode.work',
+            'https://jira.autocode.work',
             'http://localhost:5000',
             'http://localhost:3000',
             '*'
@@ -615,17 +615,26 @@ app.post('/projects/:projectId/generate-backlog', authenticateToken, async (req,
 
         const response = await anthropic.messages.create({
             model: CLAUDE_MODEL,
-            max_tokens: 4000,
+            max_tokens: 8192,
+            temperature: 0.7,
             messages: [
                 {
                     role: 'user',
-                    content: `Generate a backlog of tasks for the following project description: ${projectDescription}. 
-                    Provide each task with a name, description, priority (High, Medium, Low), and story points (1, 2, 3, 5, 8, 13).
-                    Return the result as a JSON array of task objects.`
+                    content: `
+                 As the Product Owner Agent, update the product backlog based on the current project description:
+                    ${projectDescription}. 
+
+            Please provide an updated product backlog with the following:
+            1. New features or user stories
+            2. Priorities 
+            3. Any additional notes or comments
+
+            Generate a backlog of tasks, provide each task with a name, description, priority (High, Medium, Low), and story points (1, 2, 3, 5, 8, 13).
+            Return the results in a structured form as a JSON array of task objects.`
                 }
             ]
         });
-
+        console.log(response.content);
         const generatedTasks = JSON.parse(response.content[0].text);
 
         const createdTasks = [];

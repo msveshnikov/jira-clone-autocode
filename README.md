@@ -89,8 +89,6 @@ server/
 -   Implement rate limiting and request throttling
 -   Containerize the application using Docker for easier deployment
 -   Optimize frontend bundle size and implement code splitting
--   Implement WebSocket for real-time updates
--   Integrate GraphQL for more efficient data fetching
 -   Implement automated testing (unit, integration, and end-to-end)
 -   Set up continuous integration and continuous deployment (CI/CD) pipeline
 -   Implement caching strategies (Redis, Memcached) for improved performance
@@ -157,11 +155,7 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 -   Integration with popular project management methodologies (Kanban, Waterfall)
 -   Advanced analytics and business intelligence features
 -   Customizable workflow templates for different industries
--   Integration with virtual reality (VR) for immersive project visualization
--   Blockchain integration for secure and transparent project tracking
 -   Machine learning-based project risk assessment and mitigation suggestions
 
 # TODO
 
--   add checkbox "AI generate your backlog" hen creating new Project, call
-    /projects/:projectId/generate-backlog with name and description

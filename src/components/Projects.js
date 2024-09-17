@@ -59,6 +59,7 @@ const Projects = () => {
     const [snackbar, setSnackbar] = useState({ open: false, message: '', severity: 'success' });
     const [allUsers, setAllUsers] = useState([]);
     const [selectedProject, setSelectedProject] = useState(null);
+    const [isGeneratingBacklog, setIsGeneratingBacklog] = useState(false);
     const { user, selectProject } = useContext(AuthContext);
     const navigate = useNavigate();
 
@@ -141,7 +142,9 @@ const Projects = () => {
             } else {
                 const newProject = await createUserProject(projectData);
                 if (projectData.generateBacklog) {
+                    setIsGeneratingBacklog(true);
                     await generateBacklog(newProject._id, projectData.description);
+                    setIsGeneratingBacklog(false);
                 }
                 setSnackbar({
                     open: true,
@@ -153,6 +156,7 @@ const Projects = () => {
             handleCloseDialog();
         } catch (err) {
             setSnackbar({ open: true, message: 'Error saving project', severity: 'error' });
+            setIsGeneratingBacklog(false);
         }
     };
 
@@ -358,7 +362,7 @@ const Projects = () => {
                 </DialogContent>
                 <DialogActions>
                     <Button onClick={handleCloseDialog}>Cancel</Button>
-                    <Button onClick={handleSubmit} color="primary">
+                    <Button onClick={handleSubmit} color="primary" disabled={isGeneratingBacklog}>
                         {editingProject ? 'Update' : 'Create'}
                     </Button>
                 </DialogActions>
@@ -430,6 +434,14 @@ const Projects = () => {
                     {snackbar.message}
                 </Alert>
             </Snackbar>
+            {isGeneratingBacklog && (
+                <Dialog open={isGeneratingBacklog}>
+                    <DialogContent>
+                        <CircularProgress />
+                        <Typography>Generating backlog...</Typography>
+                    </DialogContent>
+                </Dialog>
+            )}
         </Container>
     );
 };
