@@ -12,6 +12,7 @@ const userSchema = new mongoose.Schema({
     },
     projects: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Project' }],
     tasks: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Task' }],
+    bio: { type: String, required: false },
     createdAt: { type: Date, default: Date.now },
     updatedAt: { type: Date, default: Date.now },
     lastLogin: { type: Date },

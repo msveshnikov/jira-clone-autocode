@@ -1,5 +1,4 @@
 import React, { useState, useEffect, useContext } from 'react';
-import { useParams } from 'react-router-dom';
 import {
     Typography,
     Avatar,
@@ -8,7 +7,6 @@ import {
     Button,
     CircularProgress,
     Box,
-    Chip,
     List,
     ListItem,
     ListItemText,
@@ -27,7 +25,6 @@ import { AuthContext } from '../contexts/AuthContext';
 import { getUser, updateUser, deleteProject } from '../services/apiService';
 
 const Profile = () => {
-    const { userId } = useParams();
     const { user: currentUser } = useContext(AuthContext);
     const [editMode, setEditMode] = useState(false);
     const [formData, setFormData] = useState({
@@ -45,7 +42,7 @@ const Profile = () => {
     useEffect(() => {
         const fetchUser = async () => {
             try {
-                const userData = await getUser(userId);
+                const userData = await getUser(currentUser._id);
                 setUser(userData);
                 setFormData({
                     name: userData.name,
@@ -60,7 +57,7 @@ const Profile = () => {
             }
         };
         fetchUser();
-    }, [userId]);
+    }, [currentUser]);
 
     const handleInputChange = (e) => {
         setFormData({ ...formData, [e.target.name]: e.target.value });
@@ -69,7 +66,7 @@ const Profile = () => {
     const handleSubmit = async (e) => {
         e.preventDefault();
         try {
-            await updateUser(userId, formData);
+            await updateUser(currentUser._id, formData);
             setUser({ ...user, ...formData });
             setEditMode(false);
         } catch (error) {
@@ -132,6 +129,7 @@ const Profile = () => {
                                         value={formData.email}
                                         onChange={handleInputChange}
                                         required
+                                        disabled
                                     />
                                     <TextField
                                         fullWidth
@@ -199,24 +197,12 @@ const Profile = () => {
             <Card sx={{ mt: 4 }}>
                 <CardContent>
                     <Typography variant="h6" gutterBottom>
-                        Skills
-                    </Typography>
-                    <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 1, mt: 1 }}>
-                        {user.skills?.map((skill) => (
-                            <Chip key={skill} label={skill} variant="outlined" />
-                        ))}
-                    </Box>
-                </CardContent>
-            </Card>
-
-            <Card sx={{ mt: 4 }}>
-                <CardContent>
-                    <Typography variant="h6" gutterBottom>
                         Projects
                     </Typography>
                     <List>
                         {user.projects?.map((project) => (
                             <React.Fragment key={project._id}>
+                                <br />
                                 <ListItem>
                                     <ListItemText
                                         primary={project.name}

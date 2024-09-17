@@ -37,7 +37,6 @@ export const TaskTable = ({
         }
     };
 
-    // if (tasks.length < 1) return ;
     return (
         <TableContainer component={Paper} {...provided.droppableProps} ref={provided.innerRef}>
             <Table size="small">
@@ -77,11 +76,11 @@ export const TaskTable = ({
                                             sx={{
                                                 bgcolor: getPriorityColor(task.priority),
                                                 color: 'white'
-                                            }}
+                                            }} 
                                         />
                                     </TableCell>
                                     <TableCell onClick={() => handleTaskClick(task._id)}>
-                                        {task.assignedTo}
+                                        {task?.assignedTo?.name}
                                     </TableCell>
                                     <TableCell onClick={() => handleTaskClick(task._id)}>
                                         {task.status}

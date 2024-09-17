@@ -253,7 +253,7 @@ const TaskCard = ({ id, onDelete, onUpdate, projectId }) => {
                                     <MenuItem value="">Unassigned</MenuItem>
                                     {users.map((user) => (
                                         <MenuItem key={user._id} value={user._id}>
-                                            {user.name}
+                                            {user?.name}
                                         </MenuItem>
                                     ))}
                                 </Select>
@@ -355,7 +355,7 @@ const TaskCard = ({ id, onDelete, onUpdate, projectId }) => {
                                     <ListItem key={comment._id}>
                                         <ListItemText
                                             primary={comment.text}
-                                            secondary={`By ${comment.author.name} on ${new Date(
+                                            secondary={`By ${comment.author?.name} on ${new Date(
                                                 comment.createdAt
                                             ).toLocaleString()}`}
                                         />

@@ -156,7 +156,7 @@ const Backlog = () => {
     };
 
     const handleCreateSprint = async () => {
-        if (!newSprint.startDate || !newSprint.endDate) {
+        if (!newSprint.startDate || !newSprint.endDate || !newSprint.name) {
             setSprintError('Start and end dates are required for creating a sprint.');
             return;
         }
@@ -349,6 +349,8 @@ const Backlog = () => {
                             type="text"
                             fullWidth
                             value={newSprint.name}
+                            required
+                            error={sprintError}
                             onChange={handleSprintInputChange}
                         />
                         <TextField
