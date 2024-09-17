@@ -119,18 +119,4 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 
 # TODO
 
-- imement DELETE attachemnts and comments
-http://localhost:5000/tasks/66e7d51b36bd45d36c602fb5/attachments/66e917ccb77de454b0afb70d
-Request Method:
-DELETE
-Status Code:
-404 Not Found
-
-
-http://localhost:5000/tasks/66e7d51b36bd45d36c602fb5/comments/66e915e4b95112cfeefa4a5f
-Request Method:
-DELETE
-Status Code:
-404 Not Found
-
-- show attachemnts with url clickable and wrap/paddings
+- truncate long urls

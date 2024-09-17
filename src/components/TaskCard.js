@@ -21,7 +21,8 @@ import {
     Dialog,
     DialogTitle,
     DialogContent,
-    DialogActions
+    DialogActions,
+    Link
 } from '@mui/material';
 import DeleteIcon from '@mui/icons-material/Delete';
 import AttachFileIcon from '@mui/icons-material/AttachFile';
@@ -294,7 +295,26 @@ const TaskCard = ({ id, onDelete, onUpdate, projectId }) => {
                             <List>
                                 {task.attachments?.map((attachment) => (
                                     <ListItem key={attachment._id}>
-                                        <ListItemText primary={attachment.url} />
+                                        <ListItemText
+                                            primary={
+                                                <Link
+                                                    href={attachment.url}
+                                                    target="_blank"
+                                                    rel="noopener noreferrer"
+                                                    sx={{
+                                                        wordBreak: 'break-all',
+                                                        display: 'inline-block',
+                                                        maxWidth: '100%',
+                                                        padding: '4px 8px',
+                                                        '&:hover': {
+                                                            backgroundColor: 'rgba(0, 0, 0, 0.04)'
+                                                        }
+                                                    }}
+                                                >
+                                                    {attachment.url}
+                                                </Link>
+                                            }
+                                        />
                                         <ListItemSecondaryAction>
                                             <IconButton
                                                 edge="end"
@@ -314,7 +334,7 @@ const TaskCard = ({ id, onDelete, onUpdate, projectId }) => {
                                     label="New Attachment URL"
                                     value={newAttachment}
                                     onChange={(e) => setNewAttachment(e.target.value)}
-                                    sx={{ mr: 2 }}
+                                    sx={{ mr: 2, flexGrow: 1 }}
                                 />
                                 <Button
                                     variant="outlined"
@@ -351,7 +371,7 @@ const TaskCard = ({ id, onDelete, onUpdate, projectId }) => {
                                     label="New Comment"
                                     value={newComment}
                                     onChange={(e) => setNewComment(e.target.value)}
-                                    sx={{ mr: 2 }}
+                                    sx={{ mr: 2, flexGrow: 1 }}
                                 />
                                 <Button variant="outlined" onClick={handleAddComment}>
                                     Add Comment

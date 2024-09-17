@@ -93,8 +93,20 @@ taskSchema.methods.addComment = function (text, author) {
     return this.save();
 };
 
+taskSchema.methods.removeComment = function (commentId) {
+    this.comments = this.comments.filter((comment) => comment._id.toString() !== commentId);
+    return this.save();
+};
+
 taskSchema.methods.addAttachment = function (name, url) {
     this.attachments.push({ name, url });
+    return this.save();
+};
+
+taskSchema.methods.removeAttachment = function (attachmentId) {
+    this.attachments = this.attachments.filter(
+        (attachment) => attachment._id.toString() !== attachmentId
+    );
     return this.save();
 };
 
