@@ -68,13 +68,11 @@ server/
 
 -   Implement server-side rendering for improved performance
 -   Optimize API integration and data fetching strategies
--   Enhance security measures (e.g., input validation, XSS protection)
 -   Implement proper error handling and logging
 -   Optimize database queries and implement indexing
 -   Set up monitoring and alerting systems
 -   Implement rate limiting and request throttling
 -   Containerize the application using Docker for easier deployment
--   Implement CI/CD pipeline for automated testing and deployment
 -   Optimize frontend bundle size and implement code splitting
 
 ## Getting Started
@@ -121,4 +119,4 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 
 # TODO
 
-
+-   show all users from project in AssignTo dropdown

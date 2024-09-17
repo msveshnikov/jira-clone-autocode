@@ -377,4 +377,13 @@ export const removeUserFromProject = async (projectId, userId) => {
     }
 };
 
+export const getProjectUsers = async (projectId) => {
+    try {
+        const response = await apiService.get(`/projects/${projectId}/members`);
+        return response.data;
+    } catch (error) {
+        handleApiError(error);
+    }
+};
+
 export default apiService;

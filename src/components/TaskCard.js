@@ -36,7 +36,8 @@ import {
     removeComment,
     assignTask,
     updateTaskDueDate,
-    createTask
+    createTask,
+    getAllUsers
 } from '../services/apiService';
 
 const TaskCard = ({ id, onDelete, onUpdate, projectId }) => {
@@ -57,12 +58,17 @@ const TaskCard = ({ id, onDelete, onUpdate, projectId }) => {
     const [newComment, setNewComment] = useState('');
     const [confirmDelete, setConfirmDelete] = useState(false);
     const [loading, setLoading] = useState(true);
+    const [users, setUsers] = useState([]);
 
     useEffect(() => {
         const loadTask = async () => {
             const taskData = await fetchTask(id);
             setTask(taskData);
             setLoading(false);
+        };
+        const loadUsers = async () => {
+            const usersData = await getAllUsers();
+            setUsers(usersData);
         };
         if (id) {
             loadTask();
@@ -76,6 +82,7 @@ const TaskCard = ({ id, onDelete, onUpdate, projectId }) => {
             });
             setLoading(false);
         }
+        loadUsers();
     }, [id]);
 
     const handleInputChange = (e) => {
@@ -240,9 +247,11 @@ const TaskCard = ({ id, onDelete, onUpdate, projectId }) => {
                                     onChange={handleAssign}
                                 >
                                     <MenuItem value="">Unassigned</MenuItem>
-                                    <MenuItem value="user1">User 1</MenuItem>
-                                    <MenuItem value="user2">User 2</MenuItem>
-                                    <MenuItem value="user3">User 3</MenuItem>
+                                    {users.map((user) => (
+                                        <MenuItem key={user._id} value={user._id}>
+                                            {user.name}
+                                        </MenuItem>
+                                    ))}
                                 </Select>
                             </FormControl>
                         </Grid>
@@ -352,11 +361,13 @@ const TaskCard = ({ id, onDelete, onUpdate, projectId }) => {
                         <Grid item xs={12}>
                             <Box sx={{ display: 'flex', justifyContent: 'space-between', mt: 2 }}>
                                 <Button type="submit" variant="contained" color="primary">
-                                    Update Task
+                                    {id ? 'Update Task' : 'Create Task'}
                                 </Button>
-                                <Button variant="contained" color="error" onClick={handleDelete}>
-                                    Delete Task
-                                </Button>
+                                {id && (
+                                    <Button variant="contained" color="error" onClick={handleDelete}>
+                                        Delete Task
+                                    </Button>
+                                )}
                             </Box>
                         </Grid>
                     </Grid>
