@@ -562,6 +562,40 @@ app.delete('/projects/:projectId/members/:userId', authenticateToken, async (req
     }
 });
 
+app.delete('/tasks/:taskId/attachments/:attachmentId', authenticateToken, async (req, res) => {
+    try {
+        const { taskId, attachmentId } = req.params;
+        const task = await Task.findById(taskId);
+        if (!task) {
+            return res.status(404).json({ message: 'Task not found' });
+        }
+        const result = await task.removeAttachment(attachmentId);
+        if (!result) {
+            return res.status(404).json({ message: 'Attachment not found' });
+        }
+        res.json({ message: 'Attachment deleted successfully' });
+    } catch (error) {
+        res.status(400).json({ message: error.message });
+    }
+});
+
+app.delete('/tasks/:taskId/comments/:commentId', authenticateToken, async (req, res) => {
+    try {
+        const { taskId, commentId } = req.params;
+        const task = await Task.findById(taskId);
+        if (!task) {
+            return res.status(404).json({ message: 'Task not found' });
+        }
+        const result = await task.removeComment(commentId);
+        if (!result) {
+            return res.status(404).json({ message: 'Comment not found' });
+        }
+        res.json({ message: 'Comment deleted successfully' });
+    } catch (error) {
+        res.status(400).json({ message: error.message });
+    }
+});
+
 app.listen(PORT, () => {
     console.log(`Server is running on port ${PORT}`);
 });

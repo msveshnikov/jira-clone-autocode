@@ -162,11 +162,7 @@ export const logTime = async (taskId, timeSpent) => {
 
 export const addAttachment = async (taskId, attachment) => {
     try {
-        const formData = new FormData();
-        formData.append('attachment', attachment);
-        const response = await apiService.post(`/tasks/${taskId}/attachments`, formData, {
-            headers: { 'Content-Type': 'multipart/form-data' }
-        });
+        const response = await apiService.post(`/tasks/${taskId}/attachments`, { url: attachment });
         return response.data;
     } catch (error) {
         handleApiError(error);

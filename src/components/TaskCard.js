@@ -294,7 +294,7 @@ const TaskCard = ({ id, onDelete, onUpdate, projectId }) => {
                             <List>
                                 {task.attachments?.map((attachment) => (
                                     <ListItem key={attachment._id}>
-                                        <ListItemText primary={attachment.name} />
+                                        <ListItemText primary={attachment.url} />
                                         <ListItemSecondaryAction>
                                             <IconButton
                                                 edge="end"
