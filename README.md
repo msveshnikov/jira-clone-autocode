@@ -21,6 +21,7 @@ https://jira.autocode.work/
 ## Requirements
 
 -   Generate PropTypes always
+-   Claude model claude-3-5-sonnet-20240620
 
 ## Planned Enhancements
 

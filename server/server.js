@@ -6,6 +6,7 @@ import helmet from 'helmet';
 import morgan from 'morgan';
 import jwt from 'jsonwebtoken';
 import compression from 'compression';
+import { Anthropic } from '@anthropic-ai/sdk';
 
 import User from './model/User.js';
 import Project from './model/Project.js';
@@ -19,6 +20,12 @@ dotenv.config();
 
 const app = express();
 const PORT = process.env.PORT || 5000;
+
+const anthropic = new Anthropic({
+    apiKey: process.env.CLAUDE_KEY
+});
+
+const CLAUDE_MODEL = 'claude-3-5-sonnet-20240620';
 
 app.use(compression());
 app.use(
@@ -593,6 +600,50 @@ app.delete('/tasks/:taskId/comments/:commentId', authenticateToken, async (req, 
         res.json({ message: 'Comment deleted successfully' });
     } catch (error) {
         res.status(400).json({ message: error.message });
+    }
+});
+
+app.post('/projects/:projectId/generate-backlog', authenticateToken, async (req, res) => {
+    try {
+        const { projectId } = req.params;
+        const { projectDescription } = req.body;
+
+        const project = await Project.findById(projectId);
+        if (!project) {
+            return res.status(404).json({ message: 'Project not found' });
+        }
+
+        const response = await anthropic.messages.create({
+            model: CLAUDE_MODEL,
+            max_tokens: 4000,
+            messages: [
+                {
+                    role: 'user',
+                    content: `Generate a backlog of tasks for the following project description: ${projectDescription}. 
+                    Provide each task with a name, description, priority (High, Medium, Low), and story points (1, 2, 3, 5, 8, 13).
+                    Return the result as a JSON array of task objects.`
+                }
+            ]
+        });
+
+        const generatedTasks = JSON.parse(response.content[0].text);
+
+        const createdTasks = [];
+        for (const taskData of generatedTasks) {
+            const task = new Task({
+                ...taskData,
+                project: projectId,
+                createdBy: req.user.id
+            });
+            const newTask = await task.save();
+            await project.addTaskToBacklog(newTask._id);
+            createdTasks.push(newTask);
+        }
+
+        res.status(201).json(createdTasks);
+    } catch (error) {
+        console.error('Error generating backlog:', error);
+        res.status(500).json({ message: 'Error generating backlog' });
     }
 });
 
