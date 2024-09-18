@@ -26,6 +26,7 @@ import {
 } from '@mui/material';
 import DeleteIcon from '@mui/icons-material/Delete';
 import AttachFileIcon from '@mui/icons-material/AttachFile';
+import AccessTimeIcon from '@mui/icons-material/AccessTime';
 import {
     fetchTask,
     updateTask,
@@ -65,26 +66,33 @@ const TaskCard = ({ id, onDelete, onUpdate, projectId }) => {
 
     useEffect(() => {
         const loadTask = async () => {
-            const taskData = await fetchTask(id);
-            setTask(taskData);
+            if (id) {
+                const taskData = await fetchTask(id);
+                setTask(taskData);
+            } else {
+                setTask({
+                    title: '',
+                    description: '',
+                    points: 0,
+                    priority: 'low',
+                    status: 'todo',
+                    assignedTo: '',
+                    timeSpent: 0,
+                    timeEstimate: 0,
+                    attachments: [],
+                    comments: [],
+                    dueDate: null,
+                    subtasks: [],
+                    dependencies: []
+                });
+            }
             setLoading(false);
         };
         const loadUsers = async () => {
             const usersData = await getAllUsers();
             setUsers(usersData);
         };
-        if (id) {
-            loadTask();
-        } else {
-            setTask({
-                title: '',
-                description: '',
-                points: 0,
-                priority: 'low',
-                status: 'todo'
-            });
-            setLoading(false);
-        }
+        loadTask();
         loadUsers();
     }, [id]);
 
@@ -190,6 +198,7 @@ const TaskCard = ({ id, onDelete, onUpdate, projectId }) => {
                                 name="title"
                                 value={task.title}
                                 onChange={handleInputChange}
+                                required
                             />
                         </Grid>
                         <Grid item xs={12}>
@@ -247,18 +256,20 @@ const TaskCard = ({ id, onDelete, onUpdate, projectId }) => {
                         <Grid item xs={6}>
                             <FormControl fullWidth>
                                 <InputLabel>Assigned To</InputLabel>
-                                <Select
-                                    name="assignedTo"
-                                    value={task.assignedTo || ''}
-                                    onChange={handleAssign}
-                                >
-                                    <MenuItem value="">Unassigned</MenuItem>
-                                    {users.map((user) => (
-                                        <MenuItem key={user._id} value={user._id}>
-                                            {user?.name}
-                                        </MenuItem>
-                                    ))}
-                                </Select>
+                                {users.length > 0 && (
+                                    <Select
+                                        name="assignedTo"
+                                        value={task.assignedTo || ''}
+                                        onChange={handleAssign}
+                                    >
+                                        <MenuItem value="">Unassigned</MenuItem>
+                                        {users.map((user) => (
+                                            <MenuItem key={user._id} value={user._id}>
+                                                {user?.name}
+                                            </MenuItem>
+                                        ))}
+                                    </Select>
+                                )}
                             </FormControl>
                         </Grid>
                         <Grid item xs={6}>
@@ -273,6 +284,7 @@ const TaskCard = ({ id, onDelete, onUpdate, projectId }) => {
                                 }}
                             />
                         </Grid>
+
                         <Grid item xs={12}>
                             <Box sx={{ mt: 2, mb: 2 }}>
                                 <Chip label={task.priority.toUpperCase()} color="primary" />
@@ -290,7 +302,11 @@ const TaskCard = ({ id, onDelete, onUpdate, projectId }) => {
                                     onChange={(e) => setTimeToLog(Number(e.target.value))}
                                     sx={{ mr: 2 }}
                                 />
-                                <Button variant="outlined" onClick={handleLogTime}>
+                                <Button
+                                    variant="outlined"
+                                    onClick={handleLogTime}
+                                    startIcon={<AccessTimeIcon />}
+                                >
                                     Log Time
                                 </Button>
                             </Box>
