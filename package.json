@@ -20,6 +20,7 @@
     "scripts": {
         "start": "react-scripts start",
         "build": "react-scripts build",
+        "copy": "copy.cmd",
         "lint": "eslint src/**/*.{js,jsx} server/**/*.{js,jsx}",
         "format": "prettier --write src/**/*.{js,jsx,json,css,md} server/**/*.{js,jsx,json,css,md}",
         "autocode": "npx autocode-ai"

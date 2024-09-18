@@ -402,7 +402,7 @@ const Backlog = () => {
 };
 
 Backlog.propTypes = {
-    projectId: PropTypes.string.isRequired
+    projectId: PropTypes.string
 };
 
 export default Backlog;

@@ -278,7 +278,13 @@ const SprintBoard = () => {
             <Dialog open={!!selectedTask} onClose={handleCloseDialog}>
                 <DialogTitle>Task Details</DialogTitle>
                 <DialogContent>
-                    {selectedTask && <TaskCard id={selectedTask._id} onUpdate={handleUpdate} />}
+                    {selectedTask && (
+                        <TaskCard
+                            id={selectedTask._id}
+                            onUpdate={handleUpdate}
+                            onDelete={() => {}}
+                        />
+                    )}
                 </DialogContent>
             </Dialog>
         </Box>

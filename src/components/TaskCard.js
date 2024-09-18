@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useContext } from 'react';
 import PropTypes from 'prop-types';
 import {
     Card,
@@ -40,6 +40,7 @@ import {
     createTask,
     getAllUsers
 } from '../services/apiService';
+import { AuthContext } from '../contexts/AuthContext';
 
 const TaskCard = ({ id, onDelete, onUpdate, projectId }) => {
     const [task, setTask] = useState({
@@ -54,6 +55,7 @@ const TaskCard = ({ id, onDelete, onUpdate, projectId }) => {
         comments: [],
         dueDate: null
     });
+    const { user } = useContext(AuthContext);
     const [timeToLog, setTimeToLog] = useState(0);
     const [newAttachment, setNewAttachment] = useState('');
     const [newComment, setNewComment] = useState('');
@@ -141,10 +143,10 @@ const TaskCard = ({ id, onDelete, onUpdate, projectId }) => {
     };
 
     const handleAddComment = async () => {
-        const comment = await addComment(id, newComment);
+        await addComment(id, newComment);
         setTask((prevTask) => ({
             ...prevTask,
-            comments: [...prevTask.comments, comment]
+            comments: [...prevTask.comments, { text: newComment, author: { name: user.name } }]
         }));
         setNewComment('');
     };
@@ -247,7 +249,7 @@ const TaskCard = ({ id, onDelete, onUpdate, projectId }) => {
                                 <InputLabel>Assigned To</InputLabel>
                                 <Select
                                     name="assignedTo"
-                                    value={task.assignedTo}
+                                    value={task.assignedTo || ''}
                                     onChange={handleAssign}
                                 >
                                     <MenuItem value="">Unassigned</MenuItem>

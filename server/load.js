@@ -16,7 +16,6 @@ export const loadInitialData = async () => {
         fs.readFileSync(path.join(__dirname, 'initial_data.json'), 'utf8')
     );
 
-    console.log('Users');
     for (const user of initialData.users) {
         await User.findOneAndUpdate(
             { email: user.email },
@@ -30,7 +29,6 @@ export const loadInitialData = async () => {
         throw new Error('Admin user not found. Please create an admin user first.');
     }
 
-    console.log('Statuses');
     for (const status of initialData.statuses) {
         await Status.findOneAndUpdate(
             { name: status.name },
@@ -39,7 +37,6 @@ export const loadInitialData = async () => {
         );
     }
 
-    console.log('Workflows');
     for (const workflow of initialData.workflows) {
         await Workflow.findOneAndUpdate(
             { name: workflow.name },
@@ -48,7 +45,6 @@ export const loadInitialData = async () => {
         );
     }
 
-    console.log('Projects');
     for (const project of initialData.projects) {
         const newProject = await Project.findOneAndUpdate(
             { name: project.name },
